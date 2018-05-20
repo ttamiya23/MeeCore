@@ -4,35 +4,28 @@
 #include "util.h"
 #include "SystemSettings.h"
 
-namespace Systems {
-    class System {
-        public:
-            System();
-            System(const uint8 id);
+/* System struct */
+typedef struct System
+{
+    const uint8 ID;
+    int8 state;
+    float targets[SETPOINT_NUM];
+    float values[FEEDBACK_NUM];
 
-            /* Setters (to be implemented by each extending system class) */
-            uint8 SetDir(int8 direction);
-            uint8 SetDuty(int8 direction);
-            uint8 SetSetPoint(uint8 index, float setpoint);
+    STATUS (*setState(struct System* sys, int8 state));
+    STATUS (*setTarget(struct System* sys, uint8 num, float value));
+} System;
 
-            /* Getters */
-            uint8 GetID() { return ID; }
-            uint8 GetState() { return state; }
-            float GetDuty() { return duty; }
-            float* GetSetPoints() { return setpoints; }
-            float* GetFeedBacks() { return feedbacks; }
+/* List of all systems */
+extern System SystemList[SYSTEM_NUM];
 
-        private:
-            uint8 ID;
-            int8 state;
-            float duty;
-            float setpoints[SETPOINT_NUM];
-            float feedbacks[FEEDBACK_NUM];
-    };
+/* Initialize all systems */
+STATUS Systems_Initialize();
 
-    static uint8 InitializeSystems();
-    static System* SystemList;
-};
+/* Set state for some system */
+STATUS Systems_SetState(uint8 sysnum, int8 value);
 
+/* Set target for some system */
+STATUS Systems_SetTarget(uint8 sysnum, uint8 num, float value);
 
 #endif /* SYSTEMS_H_ */

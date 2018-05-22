@@ -23,10 +23,10 @@ void SystemInit(System* sys, uint8 id)
     sys->ID = id;
     sys->state = OFF;
     uint8 index;
-    for (index = 0; index < SETPOINT_NUM; ++index)
-        (sys->setpoints)[index] = 0;
-    for (index = 0; index < FEEDBACK_NUM; ++index)
-        (sys->feedback)[index] = 0;
+    for (index = 0; index < TARGET_NUM; ++index)
+        (sys->target)[index] = 0;
+    for (index = 0; index < VALUE_NUM; ++index)
+        (sys->value)[index] = NULL;
 
     sys->setState = setState_Default;
     sys->setTarget = setTarget_Default;

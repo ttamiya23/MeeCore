@@ -10,7 +10,7 @@ typedef struct System
     const uint8 ID;
     int8 state;
     float targets[SETPOINT_NUM];
-    float values[FEEDBACK_NUM];
+    float* values[FEEDBACK_NUM];
 
     STATUS (*setState(struct System* sys, int8 state));
     STATUS (*setTarget(struct System* sys, uint8 num, float value));

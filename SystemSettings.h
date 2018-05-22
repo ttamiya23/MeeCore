@@ -2,7 +2,7 @@
 #define SYSTEMSETTINGS_H_ 
 
 #define SYSTEM_NUM 8
-#define SETPOINT_NUM 4
-#define FEEDBACK_NUM 4
+#define TARGET_NUM 4
+#define VALUE_NUM 4
 
 #endif /* SYSTEMSETTINGS_H_ */

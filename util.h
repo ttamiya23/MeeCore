@@ -5,11 +5,11 @@
 #define OFF 0
 #define TRUE 1
 #define FALSE 0
-#define NULL 0
+#ifndef NULL
+    #define NULL 0
+#endif /* NULL */
 #define SUCCESS 0
 #define ERROR 1
-
-typedef STATUS uint8;
 
 typedef char int8;
 typedef short int16; 
@@ -20,5 +20,7 @@ typedef unsigned short uint16;
 typedef unsigned long uint32;
 typedef unsigned long long uint64;
 //typedef unsigned int bool;
+
+typedef uint8 STATUS;
 
 #endif /* UTIL_H_ */

@@ -1,0 +1,42 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CheckSystemId	Systems.c	/^STATUS CheckSystemId(uint16 sysId, uint8 isNewSys)$/;"	f
+ERROR	util.h	12;"	d
+FALSE	util.h	7;"	d
+IS_INITIALIZED	Systems.c	23;"	d	file:
+NULL	util.h	9;"	d
+OFF	util.h	5;"	d
+ON	util.h	4;"	d
+RESERVED_SYS	SystemSettings.h	9;"	d
+STATUS	util.h	/^typedef uint8 STATUS;$/;"	t
+SUCCESS	util.h	11;"	d
+SYSTEMDEFINITION_H_	SystemDefinition.h	2;"	d
+SYSTEMSETTINGS_H_	SystemSettings.h	2;"	d
+SYSTEMS_H_	Systems.h	2;"	d
+SYSTEM_NUM	SystemSettings.h	4;"	d
+System	SystemDefinition.h	/^typedef struct System$/;"	s
+System	SystemDefinition.h	/^} System;$/;"	t	typeref:struct:System
+TARGET_NUM	SystemSettings.h	5;"	d
+TRUE	util.h	6;"	d
+UTIL_H_	util.h	2;"	d
+VALUE_NUM	SystemSettings.h	6;"	d
+id	SystemDefinition.h	/^    const uint8 id;$/;"	m	struct:System
+initializedSystems	Systems.c	/^initializedSystems = 0;$/;"	v	file:
+int16	util.h	/^typedef short int16; $/;"	t
+int32	util.h	/^typedef int int32; $/;"	t
+int64	util.h	/^typedef long long int64; $/;"	t
+int8	util.h	/^typedef char int8;$/;"	t
+state	SystemDefinition.h	/^    int8 state;$/;"	m	struct:System
+sys_AddSystem	Systems.c	/^STATUS sys_AddSystem(uint16 sysId, STATUS (*initSys)(System*))$/;"	f
+sys_SetState	Systems.c	/^STATUS sys_SetState(uint16 sysId, int8 state)$/;"	f
+systemList	Systems.c	/^static struct System systemList[SYSTEM_NUM];$/;"	v	typeref:struct:System	file:
+targets	SystemDefinition.h	/^    float targets[TARGET_NUM];$/;"	m	struct:System
+uint16	util.h	/^typedef unsigned short uint16;$/;"	t
+uint32	util.h	/^typedef unsigned long uint32;$/;"	t
+uint64	util.h	/^typedef unsigned long long uint64;$/;"	t
+uint8	util.h	/^typedef unsigned char uint8;$/;"	t
+values	SystemDefinition.h	/^    float* values[VALUE_NUM];$/;"	m	struct:System

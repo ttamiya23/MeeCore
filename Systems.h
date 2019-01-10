@@ -1,31 +1,30 @@
 #ifndef SYSTEMS_H_
-#define SYSTEMS_H_ 
+#define SYSTEMS_H_
 
 #include "util.h"
 #include "SystemSettings.h"
 
-/* System struct */
-typedef struct System
-{
-    const uint8 ID;
-    int8 state;
-    float targets[SETPOINT_NUM];
-    float* values[FEEDBACK_NUM];
+/* Definition of System struct */
+struct System;
 
-    STATUS (*setState(struct System* sys, int8 state));
-    STATUS (*setTarget(struct System* sys, uint8 num, float value));
-} System;
+/* Function to add a new system with some ID number. Takes in a systemID and a
+ * pointer to a function that takes in a pointer to a system and initializes
+ * it */
+STATUS sys_AddSystem(uint16 sysId, STATUS (*initSys)(System*));
 
-/* List of all systems */
-extern System SystemList[SYSTEM_NUM];
+/* Function to set a system to some state */
+STATUS sys_SetState(uint16 sysId, int8 state);
 
-/* Initialize all systems */
-STATUS Systems_Initialize();
+/* Function to get the state of a system */
+STATUS sys_GetState(uint16 sysId, int8* statePtr);
 
-/* Set state for some system */
-STATUS Systems_SetState(uint8 sysnum, int8 value);
+/* Function to set a target of a system to some value */
+STATUS sys_SetTarget(uint16 sysId, uint8 targetNum, float value);
 
-/* Set target for some system */
-STATUS Systems_SetTarget(uint8 sysnum, uint8 num, float value);
+/* Function to get the target of a system */
+STATUS sys_GetTarget(uint16 sysId, uint8 targetNum, float* valuePtr);
+
+/* Function to get the value of a system */
+STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* valuePtr);
 
 #endif /* SYSTEMS_H_ */

@@ -5,4 +5,7 @@
 #define TARGET_NUM 4
 #define VALUE_NUM 4
 
+/* System 0 is reserved */
+#define RESERVED_SYS 0
+
 #endif /* SYSTEMSETTINGS_H_ */

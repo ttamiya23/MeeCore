@@ -1,10 +1,10 @@
 #include "Systems.h"
+#include "SystemsSettings.h"
 #include "SystemDefinition.h"
-#include "SystemSettings.h"
 #include "stdlib.h"
 
 /* List of all systems */
-static struct System systemList[SYSTEM_NUM];
+static System systemList[SYSTEM_NUM];
 
 /* Variable to store which systems are initialized */
 static
@@ -20,10 +20,10 @@ uint64
 initializedSystems = 0;
 
 /* Macro to check if system with sysId is initialized */
-#define IS_INITIALIZED(sysId) initializedSystems & ((sysId - 1) << 1)
+#define IS_INITIALIZED(sysId) (initializedSystems & (1 << (sysId - 1)))
 
 /* Macro to add system with sysId as initialized */
-#define ADD_INITIALIZED(sysId) initializedSystems | ((sysId - 1) << 1)
+#define ADD_INITIALIZED(sysId) initializedSystems |= (1 << (sysId - 1))
 
 /* 
  * Private function to check if sysId is a valid ID

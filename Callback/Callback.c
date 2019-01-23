@@ -1,5 +1,5 @@
 #include "Callback.h"
-#include "Iterator\Iterator.h"
+#include "Iterator/Iterator.h"
 
 /* Request a callback handle. If no more space available, cbHandle is set to
  * NULL and returns ERROR */
@@ -25,9 +25,8 @@ STATUS cb_AddCallback(CallbackHandle cbHandle, CallbackFunction cbFunction)
 /* Call all callbacks. If cbHandle is NULL, returns ERROR */
 STATUS cb_CallCallbacks(CallbackHandle cbHandle, void* args, uint8 argsLength)
 {
-    STATUS ret = ERROR;
     if (cbHandle == NULL)
-        return ret;
+        return ERROR;
 
     // Call all CallbackFunctions while nodes exist
     Node* currNode;
@@ -40,7 +39,9 @@ STATUS cb_CallCallbacks(CallbackHandle cbHandle, void* args, uint8 argsLength)
             func(args, argsLength);
         iter_GetNext(currNode, &currNode);
     }
-    return ret;
+
+    // Regardless of outcome of callbacks, this method returns success
+    return SUCCESS;
 }
 
 /* Delete callbackFunction. If callback is NULL or does not belong to cbHandle,
@@ -56,18 +57,18 @@ STATUS cb_DeleteCallback(CallbackHandle cbHandle, CallbackFunction cbFunction)
     if (ret != SUCCESS)
         return ret;
 
-    ret = iter_DeleteNode((Iterator*)cbHandle, node);
+    ret = iter_DeleteNode((Iterator*)cbHandle, &node);
     return ret;
 }
 
 /* Delete cbHandle and sets cbHandle to NULL. If cbHandle is NULL, returns
  * ERROR */
-STATUS cb_DeleteCallbackHandler(CallbackHandle cbHandle)
+STATUS cb_DeleteCallbackHandle(CallbackHandle* cbHandle)
 {
     STATUS ret = ERROR;
     if (cbHandle == NULL)
         return ret;
 
-    ret = iter_DeleteIterator((Iterator*)cbHandle);
+    ret = iter_DeleteIterator((Iterator**)cbHandle);
     return ret;
 }

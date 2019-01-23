@@ -46,12 +46,12 @@ STATUS dbg_Log(LogLevel level, const char* format, ...);
 
 #endif /* DEBUG_MODE */
 
-#define dbg_LogTrace(format, args...) dbg_Log(LOG_LEVEL_TRACE, format, args)
-#define dbg_LogDebug(format, args...) dbg_Log(LOG_LEVEL_DEBUG, format, args)
-#define dbg_LogInformation(format, args...) dbg_Log(LOG_LEVEL_INFORMATION, format, args)
-#define dbg_LogWarning(format, args...) dbg_Log(LOG_LEVEL_WARNING, format, args)
-#define dbg_LogError(format, args...) dbg_Log(LOG_LEVEL_ERROR, format, args)
-#define dbg_LogCritical(format, args...) dbg_Log(LOG_LEVEL_CRITICAL, format, args)
+#define dbg_LogTrace(args...) dbg_Log(LOG_LEVEL_TRACE, args)
+#define dbg_LogDebug(args...) dbg_Log(LOG_LEVEL_DEBUG, args)
+#define dbg_LogInformation(args...) dbg_Log(LOG_LEVEL_INFORMATION, args)
+#define dbg_LogWarning(args...) dbg_Log(LOG_LEVEL_WARNING, args)
+#define dbg_LogError(args...) dbg_Log(LOG_LEVEL_ERROR, args)
+#define dbg_LogCritical(args...) dbg_Log(LOG_LEVEL_CRITICAL, args)
 
 #ifdef __cplusplus
 }

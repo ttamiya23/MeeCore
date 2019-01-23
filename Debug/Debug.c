@@ -3,16 +3,13 @@
 #ifdef DEBUG_MODE
 
 #include <stdarg.h>
-#include <stdio.h>
+#include "IO/IO.h"
 
 /* Private global variable of current debug state */
 static uint8 currentDebugState = DEBUG_DEFAULT_STATE;
 
 /* Private global variable of current log level */
 static LogLevel currentLogLevel = DEBUG_DEFAULT_LOG_LEVEL;
-
-/* Buffer for printing messages */
-static char debugBuffer[DEBUG_BUFFER_SIZE];
 
 /* Returns 0 if debug is off and 1 otherwise */
 uint8 dbg_GetDebugState(void)
@@ -52,9 +49,33 @@ STATUS dbg_Log(LogLevel level, const char* format, ...)
     va_list args;
     va_start(args, format);
 
-    int success = vsnprintf(debugBuffer, DEBUG_BUFFER_SIZE, format, args);
-    if (success > 0)
-        ret = printf(debugBuffer);
+    switch (level)
+    {
+        case LOG_LEVEL_TRACE:
+            ret = io_WriteString("TRACE: ");
+            break;
+        case LOG_LEVEL_DEBUG:
+            ret = io_WriteString("DEBUG: ");
+            break;
+        case LOG_LEVEL_INFORMATION:
+            ret = io_WriteString("INFORMATION: ");
+            break;
+        case LOG_LEVEL_WARNING:
+            ret = io_WriteString("WARNING: ");
+            break;
+        case LOG_LEVEL_ERROR:
+            ret = io_WriteString("ERROR: ");
+            break;
+        default:
+            ret = io_WriteString("CRITICAL: ");
+            break;
+    }
+
+    if (ret != ERROR)
+    {
+        ret = io_VariableWriteString(format, args) ||
+              io_WriteString("\r\n");
+    }
 
     va_end(args);
 

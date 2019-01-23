@@ -6,16 +6,19 @@ extern "C" {
 #endif
 
 #include "Systems.h"
+#include "SystemsSettings.h"
 
 /* System struct */
+#pragma pack(1)
 typedef struct System
 {
     uint8 id;
     int8 state;
-    float targets[TARGET_NUM];
+    float parameters[PARAMETER_NUM];
     float values[VALUE_NUM];
+    const char* help;
     STATUS (*setState)(System* sys, int8 state);
-    STATUS (*setTarget)(System* sys, uint8 num, float value);
+    STATUS (*setParameter)(System* sys, uint8 parameterNum, float parameter);
 } System;
 
 #ifdef __cplusplus

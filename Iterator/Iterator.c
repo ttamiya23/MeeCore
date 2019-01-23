@@ -2,6 +2,7 @@
 #include "IteratorSettings.h"
 
 /* Definition of Iterator struct */
+#pragma pack(1)
 typedef struct Iterator
 {
     Node* start;
@@ -10,6 +11,7 @@ typedef struct Iterator
 } Iterator;
 
 /* Definition of Node struct */
+#pragma pack(1)
 typedef struct Node
 {
     void* data;
@@ -55,15 +57,6 @@ uint64
 #endif
 initializedNodes = 0;
 
-/* Macro to check if iterator/node is initialized */
-#define IS_INITIALIZED(id, initVariable) (initVariable & (1 << id))
-
-/* Macro to add iterator/node as initialized */
-#define ADD_INITIALIZED(id, initVariable) initVariable |= (1 << id)
-
-/* Macro to remove iterator/node */
-#define REMOVE_INITIALIZED(id, initVariable) initVariable &= ~(1 << id)
-
 /* Request an iterator. If no more space available, iterator is set to NULL and
  * returns ERROR */
 STATUS iter_CreateIterator(Iterator** iterator)
@@ -83,15 +76,15 @@ STATUS iter_CreateIterator(Iterator** iterator)
     (iteratorList + emptyIteratorIndex)->count = 0;
     *iterator = iteratorList + emptyIteratorIndex;
 
-    ADD_INITIALIZED(emptyIteratorIndex, initializedIterators);
+    SET_BIT(initializedIterators, emptyIteratorIndex);
     ret = SUCCESS;
 
     // Linearly search for empty iterator
-    uint16 index = emptyIteratorIndex;
-    for (uint16 i = 1; i < ITERATOR_NUM; ++i)
+    uint16 i, index;
+    for (i = 1; i < ITERATOR_NUM; ++i)
     {
-        index = (index + i) % ITERATOR_NUM;
-        if (!IS_INITIALIZED(index, initializedIterators))
+        index = (emptyIteratorIndex + i) % ITERATOR_NUM;
+        if (!IS_BIT_SET(initializedIterators, index))
         {
             emptyIteratorIndex = index;
             return ret;
@@ -137,15 +130,15 @@ STATUS iter_AddNode(Iterator* iterator, void* data)
     }
     (iterator->count)++;
 
-    ADD_INITIALIZED(emptyNodeIndex, initializedNodes);
+    SET_BIT(initializedNodes, emptyNodeIndex);
     ret = SUCCESS;
 
     // Linearly search for empty node
-    uint16 index = emptyNodeIndex;
-    for (uint16 i = 1; i < NODE_NUM; ++i)
+    uint16 i, index;
+    for (i = 1; i < NODE_NUM; ++i)
     {
-        index = (index + i) % NODE_NUM;
-        if (!IS_INITIALIZED(index, initializedNodes))
+        index = (emptyNodeIndex + i) % NODE_NUM;
+        if (!IS_BIT_SET(initializedNodes, index))
         {
             emptyNodeIndex = index;
             return ret;
@@ -252,40 +245,43 @@ STATUS iter_FindNode(Iterator* iterator, void* data, Node** node)
 
 /* Delete iterator and sets iterator to NULL. If iterator is NULL, returns
  * ERROR */
-STATUS iter_DeleteIterator(Iterator* iterator)
+STATUS iter_DeleteIterator(Iterator** iterator)
 {
     STATUS ret = ERROR;
-    if (iterator == NULL)
+    if (iterator == NULL || *iterator == NULL)
         return ret;
 
     // Delete all nodes in iterator
+    Iterator* iteratorToDelete = *iterator;
     Node* nextNode;
-    Node* currNode = iterator->start;
+    Node* currNode = iteratorToDelete->start;
     while(currNode)
     {
         nextNode = currNode->next;
-        iter_DeleteNode(iterator, currNode);
+        iter_DeleteNode(iteratorToDelete, &currNode);
         currNode = nextNode;
     }
 
     // Update emptyIteratorIndex and remove from initializedIterators
-    emptyIteratorIndex = iterator - iteratorList;
-    REMOVE_INITIALIZED(emptyIteratorIndex, initializedIterators);
+    emptyIteratorIndex = iteratorToDelete - iteratorList;
+    UNSET_BIT(initializedIterators, emptyIteratorIndex);
+    *iterator = NULL;
     ret = SUCCESS;
     return ret;
 }
 
 /* Delete node and sets node to NULL. If node is NULL or does not belong to
  * iterator, returns ERROR */
-STATUS iter_DeleteNode(Iterator* iterator, Node* node)
+STATUS iter_DeleteNode(Iterator* iterator, Node** node)
 {
     STATUS ret = ERROR;
-    if (node == NULL)
+    if (node == NULL || *node == NULL)
         return ret;
 
     // Check if node belongs to iterator. Can do so by comparing last nodes
-    Node* currNode = node;
-    Node* nextNode = node->next;
+    Node* nodeToDelete = *node;
+    Node* currNode = nodeToDelete;
+    Node* nextNode = currNode->next;
     while(nextNode)
     {
         currNode = nextNode;
@@ -295,24 +291,25 @@ STATUS iter_DeleteNode(Iterator* iterator, Node* node)
         return ret;
 
     // If previous node exists, tie previous and next nodes together
-    if (node->prev)
-        node->prev->next = node->next;
+    if (nodeToDelete->prev)
+        nodeToDelete->prev->next = nodeToDelete->next;
     // Else, must be first node. Update iterator->start
     else
-        iterator->start = node->next;
+        iterator->start = nodeToDelete->next;
 
     // If next node exists, tie next and previous nodes together
-    if (node->next)
-        node->next->prev = node->prev;
+    if (nodeToDelete->next)
+        nodeToDelete->next->prev = nodeToDelete->prev;
     // Else, must be last node. Update iterator->end
     else
-        iterator->end = node->prev;
+        iterator->end = nodeToDelete->prev;
 
     (iterator->count)--;
 
     // Update emptyNodeIndex and remove from initializedNodes
-    emptyNodeIndex = node - nodeList;
-    REMOVE_INITIALIZED(emptyNodeIndex, initializedNodes);
+    emptyNodeIndex = nodeToDelete - nodeList;
+    UNSET_BIT(initializedNodes, emptyNodeIndex);
+    *node = NULL;
     ret = SUCCESS;
     return ret;
 }

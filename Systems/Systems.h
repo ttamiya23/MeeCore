@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #include "util.h"
-#include "SystemSettings.h"
 
 /* Definition of System struct */
 typedef struct System System;
@@ -24,14 +23,17 @@ STATUS sys_SetState(uint16 sysId, int8 state);
 /* Function to get the state of a system */
 STATUS sys_GetState(uint16 sysId, int8* statePtr);
 
-/* Function to set a target of a system to some value */
-STATUS sys_SetTarget(uint16 sysId, uint8 targetNum, float value);
+/* Function to set a parameter of a system to some value */
+STATUS sys_SetParameter(uint16 sysId, uint8 parameterNum, float parameter);
 
-/* Function to get the target of a system */
-STATUS sys_GetTarget(uint16 sysId, uint8 targetNum, float* valuePtr);
+/* Function to get the parameter of a system */
+STATUS sys_GetParameter(uint16 sysId, uint8 parameterNum, float* parameter);
 
 /* Function to get the value of a system */
 STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* valuePtr);
+
+/* Function to get the description of a system */
+STATUS sys_GetHelp(uint16 sysId, const char** help);
 
 #ifdef __cplusplus
 }

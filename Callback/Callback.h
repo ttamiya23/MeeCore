@@ -31,7 +31,7 @@ STATUS cb_DeleteCallback(CallbackHandle cbHandle, CallbackFunction cbFunction);
 
 /* Delete cbHandle and sets cbHandle to NULL. If cbHandle is NULL, returns
  * ERROR */
-STATUS cb_DeleteCallbackHandler(CallbackHandle cbHandle);
+STATUS cb_DeleteCallbackHandle(CallbackHandle* cbHandle);
 
 #ifdef __cplusplus
 }

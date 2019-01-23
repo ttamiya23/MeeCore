@@ -11,6 +11,11 @@
 #define SUCCESS 0
 #define ERROR 1
 
+#define IS_BIT_SET(value, bit) (value & (1 << bit))
+#define SET_BIT(value, bit) value |= (1 << bit)
+#define UNSET_BIT(value, bit) value &= ~(1 << bit)
+#define TOGGLE_BIT(value, bit) value ^= (1 << bit)
+
 typedef char int8;
 typedef short int16; 
 typedef int int32; 

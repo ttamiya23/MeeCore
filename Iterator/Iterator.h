@@ -40,11 +40,11 @@ STATUS iter_FindNode(Iterator* iterator, void* data, Node** node);
 
 /* Delete iterator and sets iterator to NULL. If iterator is NULL, returns
  * ERROR */
-STATUS iter_DeleteIterator(Iterator* iterator);
+STATUS iter_DeleteIterator(Iterator** iterator);
 
 /* Delete node and sets node to NULL. If node is NULL or does not belong to
  * iterator, returns ERROR */
-STATUS iter_DeleteNode(Iterator* iterator, Node* node);
+STATUS iter_DeleteNode(Iterator* iterator, Node** node);
 
 #ifdef __cplusplus
 }

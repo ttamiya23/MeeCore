@@ -144,7 +144,7 @@ STATUS io_ReadInput()
     newMsgBuffer[0] = inputBuffer;
 
     // Rare case: Last io_ReadInput() overflowed with a EOM char
-    if (inputBuffer[inputLength-1] == '\0' && inputLength > 0)
+    if (inputLength > 0 && inputBuffer[inputLength-1] == '\0')
     {
         newMsgCount++;
         newMsgBuffer[newMsgCount] = inputBuffer + inputLength;

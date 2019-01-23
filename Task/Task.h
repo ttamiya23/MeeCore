@@ -19,8 +19,8 @@ typedef STATUS (*TaskFunction)(void);
 
 /* Request a task. Will call function for count number of times at interval ms.
  * If no more space available, task is set to NULL and returns ERROR */
-STATUS tsk_CreateTask(Task** task, TaskFunction function, uint16 count,
-        uint32 intervalMs);
+STATUS tsk_CreateTask(Task** task, TaskFunction function, uint32 intervalMs,
+        uint16 count);
 
 /* Pause task. If task is NULL, returns ERROR */
 STATUS tsk_Pause(Task* task);

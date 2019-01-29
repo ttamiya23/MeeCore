@@ -1,5 +1,6 @@
 #include "Timer.h"
 #include "TimerDriver.h"
+#include "assert.h"
 
 static uint8 initialized = 0;
 
@@ -23,8 +24,7 @@ STATUS tmr_GetTimeMs(uint32* ellapsedTimeMs)
     if (!initialized)
     {
         ret = tmr_Initialize();
-        if (ret != SUCCESS)
-            return ret;
+        assert(ret == SUCCESS);
     }
 
     ret = tmrDriver_GetTimeMs(ellapsedTimeMs);
@@ -38,8 +38,7 @@ STATUS tmr_DelayMs(uint32 timeMs)
     if (!initialized)
     {
         ret = tmr_Initialize();
-        if (ret != SUCCESS)
-            return ret;
+        assert(ret == SUCCESS);
     }
 
     ret = tmrDriver_DelayMs(timeMs);

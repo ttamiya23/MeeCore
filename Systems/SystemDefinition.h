@@ -19,6 +19,7 @@ typedef struct System
     const char* help;
     STATUS (*setState)(System* sys, int8 state);
     STATUS (*setParameter)(System* sys, uint8 parameterNum, float parameter);
+    STATUS (*update)(System* sys);
 } System;
 
 #ifdef __cplusplus

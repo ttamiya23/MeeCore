@@ -17,37 +17,35 @@ typedef struct Task Task;
 /* Task function: takes in no parameters and returns STATUS */
 typedef STATUS (*TaskFunction)(void);
 
-/* Request a task. Will call function for count number of times at interval ms.
- * If no more space available, task is set to NULL and returns ERROR */
+/* Request a task. Will call function for count times at interval ms */
 STATUS tsk_CreateTask(Task** task, TaskFunction function, uint32 intervalMs,
         uint16 count);
 
-/* Pause task. If task is NULL, returns ERROR */
+/* Pause task */
 STATUS tsk_Pause(Task* task);
 
-/* Resume task. If task is NULL, returns ERROR */
+/* Resume task */
 STATUS tsk_Resume(Task* task);
 
-/* Query whether task is running or not. If task is NULL, returns ERROR */
+/* Query whether task is running or not */
 STATUS tsk_IsRunning(Task* task, uint8* isRunning);
 
-/* Stop and trigger task. Will delete task. If task is NULL, returns ERROR */
+/* Stop and trigger task. Will delete task. */
 STATUS tsk_StopAndTriggerTask(Task** task);
 
-/* Cancel without triggering task. Will delete task. If task is NULL, returns
- * ERROR */
+/* Cancel without triggering task. Will delete task */
 STATUS tsk_Cancel(Task** task);
 
-/* Change TaskFunction. If task is NULL, returns ERROR */
+/* Change TaskFunction */
 STATUS tsk_ChangeTaskFunction(Task* task, TaskFunction function);
 
-/* Change count number. If task is NULL, returns ERROR */
+/* Change count number */
 STATUS tsk_ChangeCount(Task* task, uint16 count);
 
-/* Change interval time. If task is NULL, returns ERROR */
+/* Change interval time */
 STATUS tsk_ChangeIntervalMs(Task* task, uint16 intervalMs);
 
-/* Delete task and sets task to NULL. If task is NULL, returns ERROR */
+/* Delete task and sets task to NULL */
 STATUS tsk_DeleteTask(Task** task);
 
 /* Start scheduler. Will never return */

@@ -3,6 +3,7 @@
 #include "Iterator/Iterator.h"
 #include "Timer/Timer.h"
 #include "Debug/Debug.h"
+#include "assert.h"
 
 /* Definition of struct Task */
 #pragma pack(1)
@@ -35,19 +36,19 @@ uint64
 #endif
 initializedTasks = 0;
 
-/* Request a task. Will call function for count number of times at interval ms.
- * If no more space available, task is set to NULL and returns ERROR */
+/* Request a task. Will call function for count times at interval ms */
 STATUS tsk_CreateTask(Task** task, TaskFunction function, uint32 intervalMs,
         uint16 count)
 {
     STATUS ret = ERROR;
-    if (task == NULL || *task == NULL || function == NULL)
-        return ret;
-    if (emptyTaskIndex < 0)
-    {
-        *task = NULL;
-        return ret;
-    }
+
+    assert(task != NULL);
+    assert(*task != NULL);
+    assert(function != NULL);
+    assert(emptyTaskIndex >= 0);
+
+    dbg_LogInformation("Adding new task[%i] with interval %i ms and count %i",
+            emptyTaskIndex, intervalMs, count);
 
     // Initialize task
     (taskList + emptyTaskIndex)->function = function;
@@ -62,10 +63,10 @@ STATUS tsk_CreateTask(Task** task, TaskFunction function, uint32 intervalMs,
     ret = SUCCESS;
 
     // Linearly search for empty iterator
-    uint16 i, index;
-    for (i = 1; i < TASK_NUM; ++i)
+    uint16 offset, index;
+    for (offset = 1; offset < TASK_NUM; ++offset)
     {
-        index = (emptyTaskIndex + i) % TASK_NUM;
+        index = (emptyTaskIndex + offset) % TASK_NUM;
         if (!IS_BIT_SET(initializedTasks, index))
         {
             emptyTaskIndex = index;
@@ -79,51 +80,74 @@ STATUS tsk_CreateTask(Task** task, TaskFunction function, uint32 intervalMs,
 
 }
 
-/* Pause task. If task is NULL, returns ERROR */
+/* Pause task */
 STATUS tsk_Pause(Task* task)
 {
     STATUS ret = ERROR;
-    if (task == NULL)
-        return ret;
+    int16 id = task - taskList;
 
+    assert(task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    dbg_LogInformation("Paused task[%i]", id);
     task->isRunning = FALSE;
 
     ret = SUCCESS;
     return ret;
 }
 
-/* Resume task. If task is NULL, returns ERROR */
+/* Resume task */
 STATUS tsk_Resume(Task* task)
 {
     STATUS ret = ERROR;
-    if (task == NULL)
-        return ret;
+    int16 id = task - taskList;
 
+    assert(task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    dbg_LogInformation("Resumed task[%i]", id);
     task->isRunning = TRUE;
 
     ret = SUCCESS;
     return ret;
 }
 
-/* Query whether task is running or not. If task is NULL, returns ERROR */
+/* Query whether task is running or not */
 STATUS tsk_IsRunning(Task* task, uint8* isRunning)
 {
     STATUS ret = ERROR;
-    if (task == NULL || isRunning == NULL)
-        return ret;
+    int16 id = task - taskList;
+
+    assert(task != NULL);
+    assert(isRunning != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
 
     *isRunning = task->isRunning;
+    dbg_LogDebug("Task[%i] IsRunning == %i", id, *isRunning);
 
     ret = SUCCESS;
     return ret;
 }
 
-/* Stop and trigger task. Will delete task. If task is NULL, returns ERROR */
+/* Stop and trigger task. Will delete task. */
 STATUS tsk_StopAndTriggerTask(Task** task)
 {
     STATUS ret = ERROR;
-    if (task == NULL || *task == NULL)
-        return ret;
+    assert(task != NULL);
+    int16 id = *task - taskList;
+
+    assert(*task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    dbg_LogInformation("Stopping and triggering task[%i]", id);
 
     (*task)->function();
     ret = tsk_DeleteTask(task);
@@ -131,25 +155,37 @@ STATUS tsk_StopAndTriggerTask(Task** task)
     return ret;
 }
 
-/* Cancel without triggering task. Will delete task. If task is NULL, returns
- * ERROR */
+/* Cancel without triggering task. Will delete task */
 STATUS tsk_Cancel(Task** task)
 {
     STATUS ret = ERROR;
-    if (task == NULL || *task == NULL)
-        return ret;
+    assert(task != NULL);
+    int16 id = *task - taskList;
 
+    assert(*task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    dbg_LogInformation("Canceling task[%i]", id);
     ret = tsk_DeleteTask(task);
 
     return ret;
 }
 
-/* Change TaskFunction. If task is NULL, returns ERROR */
+/* Change TaskFunction */
 STATUS tsk_ChangeTaskFunction(Task* task, TaskFunction function)
 {
     STATUS ret = ERROR;
-    if (task == NULL || function == NULL)
-        return ret;
+    int16 id = task - taskList;
+
+    assert(task != NULL);
+    assert(function != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    dbg_LogInformation("Changing task function for task[%i]", id);
 
     task->function = function;
 
@@ -157,12 +193,19 @@ STATUS tsk_ChangeTaskFunction(Task* task, TaskFunction function)
     return ret;
 }
 
-/* Change count number. If task is NULL, returns ERROR */
+/* Change count number */
 STATUS tsk_ChangeCount(Task* task, uint16 count)
 {
     STATUS ret = ERROR;
-    if (task == NULL)
-        return ret;
+    int16 id = task - taskList;
+
+    assert(task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    dbg_LogInformation("Changing count for task[%i] from %i to %i", id,
+            task->remainingCount, count);
 
     task->remainingCount = count;
 
@@ -171,12 +214,19 @@ STATUS tsk_ChangeCount(Task* task, uint16 count)
 }
 
 
-/* Change interval time. If task is NULL, returns ERROR */
+/* Change interval time */
 STATUS tsk_ChangeIntervalMs(Task* task, uint16 intervalMs)
 {
     STATUS ret = ERROR;
-    if (task == NULL)
-        return ret;
+    int16 id = task - taskList;
+
+    assert(task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    dbg_LogInformation("Changing interval for task[%i] from %i ms to %i ms", id,
+            task->intervalMs, intervalMs);
 
     task->intervalMs = intervalMs;
 
@@ -184,15 +234,21 @@ STATUS tsk_ChangeIntervalMs(Task* task, uint16 intervalMs)
     return ret;
 }
 
-/* Delete task and sets task to NULL. If task is NULL, returns ERROR */
+/* Delete task and sets task to NULL */
 STATUS tsk_DeleteTask(Task** task)
 {
     STATUS ret = ERROR;
-    if (task == NULL || *task == NULL)
-        return ret;
+    assert(task != NULL);
+    int16 id = *task - taskList;
+
+    assert(*task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
 
     // Update emptyIteratorIndex and remove from initializedIterators
-    emptyTaskIndex = *task - taskList;
+    dbg_LogInformation("Deleting task[%i]", id);
+    emptyTaskIndex = id;
     UNSET_BIT(initializedTasks, emptyTaskIndex);
     *task = NULL;
     ret = SUCCESS;
@@ -207,6 +263,8 @@ STATUS tsk_StartScheduler()
     uint32 diff;
     uint16 index;
     Task* currentTask;
+
+    dbg_LogInformation("Starting task scheduler");
 
     // Forever loop
     while(TRUE)
@@ -230,6 +288,8 @@ STATUS tsk_StartScheduler()
             // Trigger task if interval ms time has passed
             if (currentTask->elapsedTimeMs >= currentTask->intervalMs)
             {
+                dbg_LogTrace("Triggering task[%i]", index);
+
                 currentTask->function();
                 if (!(currentTask->isInfinite))
                 {

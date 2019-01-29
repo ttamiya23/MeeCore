@@ -13,37 +13,32 @@ typedef struct Iterator Iterator;
 /* Definition of struct Node */
 typedef struct Node Node;
 
-/* Request an iterator. If no more space available, iterator is set to NULL and
- * returns ERROR */
+/* Request an iterator */
 STATUS iter_CreateIterator(Iterator** iterator);
 
-/* Add new node to iterator. If no more space available or iterator is NULL,
- * returns ERROR */
+/* Add new node to iterator */
 STATUS iter_AddNode(Iterator* iterator, void* data);
 
-/* Get start node. If iterator is NULL, node is set to NULL and returns ERROR */
+/* Get start node */
 STATUS iter_GetStart(Iterator* iterator, Node** node);
 
-/* Get next node. If startNode has no next or startNode is NULL, nextNode is set
- * to NULL and returns ERROR*/
+/* Get next node. If startNode has no next, nextNode is set to NULL and returns
+ * ERROR*/
 STATUS iter_GetNext(Node* startNode, Node** nextNode);
 
-/* Get count. If iterator or count is NULL, returns ERROR */
+/* Get count */
 STATUS iter_GetCount(Iterator* iterator, uint16* count);
 
-/* Get data from node. If node is NULL, data is set to NULL and returns ERROR */
+/* Get data from node */
 STATUS iter_GetData(Node* node, void** data);
 
-/* Find node from data. If iterator or data is NULL, node is set to NULL and
- * returns ERROR */
+/* Find node from data. If not found, node is set to NULL and returns ERROR */
 STATUS iter_FindNode(Iterator* iterator, void* data, Node** node);
 
-/* Delete iterator and sets iterator to NULL. If iterator is NULL, returns
- * ERROR */
+/* Delete iterator and sets iterator to NULL */
 STATUS iter_DeleteIterator(Iterator** iterator);
 
-/* Delete node and sets node to NULL. If node is NULL or does not belong to
- * iterator, returns ERROR */
+/* Delete node and sets node to NULL */
 STATUS iter_DeleteNode(Iterator* iterator, Node** node);
 
 #ifdef __cplusplus

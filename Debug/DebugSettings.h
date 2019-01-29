@@ -1,13 +1,16 @@
 #ifndef DEBUGSETTINGS_H_
 #define DEBUGSETTINGS_H_
 
-/* Comment this line to disable debug mode at compile time */
-#define DEBUG_MODE
+/* Log level of the debugger. Change this to adjust log level */
+#define DEBUG_LOG_LEVEL LOG_LEVEL_WARNING
 
-/* The default state the debugger should be in at start up */
-#define DEBUG_DEFAULT_STATE ON
-
-/* The default log level the debugger should be in at start up */
-#define DEBUG_DEFAULT_LOG_LEVEL LOG_LEVEL_DEBUG
+/* Different levels of debug log */
+#define LOG_LEVEL_NONE        0
+#define LOG_LEVEL_TRACE       1
+#define LOG_LEVEL_DEBUG       2
+#define LOG_LEVEL_INFORMATION 3
+#define LOG_LEVEL_WARNING     4
+#define LOG_LEVEL_ERROR       5
+#define LOG_LEVEL_CRITICAL    6
 
 #endif /* DEBUGSETTINGS_H_ */

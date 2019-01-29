@@ -21,7 +21,7 @@ STATUS sys_AddSystem(uint16 sysId, InitializeSystem initSys);
 STATUS sys_SetState(uint16 sysId, int8 state);
 
 /* Function to get the state of a system */
-STATUS sys_GetState(uint16 sysId, int8* statePtr);
+STATUS sys_GetState(uint16 sysId, int8* state);
 
 /* Function to set a parameter of a system to some value */
 STATUS sys_SetParameter(uint16 sysId, uint8 parameterNum, float parameter);
@@ -30,10 +30,13 @@ STATUS sys_SetParameter(uint16 sysId, uint8 parameterNum, float parameter);
 STATUS sys_GetParameter(uint16 sysId, uint8 parameterNum, float* parameter);
 
 /* Function to get the value of a system */
-STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* valuePtr);
+STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* value);
 
 /* Function to get the description of a system */
 STATUS sys_GetHelp(uint16 sysId, const char** help);
+
+/* Function to update all systems. Should be called periodically */
+STATUS sys_Update();
 
 #ifdef __cplusplus
 }

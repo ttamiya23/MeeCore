@@ -14,23 +14,19 @@ typedef uint8* CallbackHandle;
  * arguments */
 typedef STATUS (*CallbackFunction)(void* args, uint8 argsLength);
 
-/* Request a callback handle. If no more space available, cbHandle is set to
- * NULL and returns ERROR */
+/* Request a callback handle */
 STATUS cb_CreateCallbackHandle(CallbackHandle* cbHandle);
 
-/* Add new callback to cbHandle. If no more space available or cbHandle is
- * NULL, returns ERROR */
+/* Add new callback to cbHandle */
 STATUS cb_AddCallback(CallbackHandle cbHandle, CallbackFunction cbFunction);
 
-/* Call all callbacks. If cbHandle is NULL, returns ERROR */
+/* Call all callbacks */
 STATUS cb_CallCallbacks(CallbackHandle cbHandle, void* args, uint8 argsLength);
 
-/* Delete callbackFunction. If callback is NULL or does not belong to cbHandle,
- * returns ERROR */
+/* Delete callback. If callback does not belong to cbHandle, returns ERROR */
 STATUS cb_DeleteCallback(CallbackHandle cbHandle, CallbackFunction cbFunction);
 
-/* Delete cbHandle and sets cbHandle to NULL. If cbHandle is NULL, returns
- * ERROR */
+/* Delete cbHandle and sets cbHandle to NULL */
 STATUS cb_DeleteCallbackHandle(CallbackHandle* cbHandle);
 
 #ifdef __cplusplus

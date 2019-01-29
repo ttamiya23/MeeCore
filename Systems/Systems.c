@@ -2,6 +2,7 @@
 #include "SystemsSettings.h"
 #include "SystemDefinition.h"
 #include "stdlib.h"
+#include "assert.h"
 
 /* List of all systems */
 static System systemList[SYSTEM_NUM];
@@ -29,6 +30,21 @@ const char *systemsHelp = \
     "VALUE: Feedback values of system\r\n";
 
 /* Private function to initialize reserved */
+STATUS InitializeReservedSystem(void);
+
+/* Private function to check if sysId is a valid ID */
+STATUS CheckSystemId(uint16 sysId, uint8 isNewSys);
+
+/* Private Set State function for reserved (does nothing) */
+STATUS ReservedSetState(System* sys, int8 state);
+
+/* Private Set Parameter function for reserved (does nothing) */
+STATUS ReservedSetParameter(System* sys, uint8 parameterNum, float parameter);
+
+/* Private update function for reserved (does nothing) */
+STATUS ReservedUpdate(System* sys);
+
+/* Private function to initialize reserved */
 STATUS InitializeReservedSystem(void)
 {
     STATUS ret = ERROR;
@@ -37,6 +53,9 @@ STATUS InitializeReservedSystem(void)
     reservedSystem->id = RESERVED_SYS;
     reservedSystem->state = ON;
     reservedSystem->help = systemsHelp;
+    reservedSystem->setState = ReservedSetState;
+    reservedSystem->setParameter = ReservedSetParameter;
+    reservedSystem->update = ReservedUpdate;
     SET_BIT(initializedSystems, RESERVED_SYS);
 
     ret = SUCCESS;
@@ -53,10 +72,10 @@ STATUS InitializeReservedSystem(void)
  */
 STATUS CheckSystemId(uint16 sysId, uint8 isNewSys)
 {
-    STATUS ret = ERROR;;
+    STATUS ret = ERROR;
 
     // Check if RESERVED_SYS is initialized
-    if (IS_BIT_SET(initializedSystems, RESERVED_SYS))
+    if (!IS_BIT_SET(initializedSystems, RESERVED_SYS))
         InitializeReservedSystem();
         
     uint8 err = sysId >= SYSTEM_NUM                                          ||
@@ -68,6 +87,24 @@ STATUS CheckSystemId(uint16 sysId, uint8 isNewSys)
     return ret;
 }
 
+/* Private Set State function for reserved (does nothing) */
+STATUS ReservedSetState(System* sys, int8 state)
+{
+    return SUCCESS;
+}
+
+/* Private Set Parameter function for reserved (does nothing) */
+STATUS ReservedSetParameter(System* sys, uint8 parameterNum, float parameter)
+{
+    return SUCCESS;
+}
+
+/* Private Set update function for reserved (does nothing) */
+STATUS ReservedUpdate(System* sys)
+{
+    return SUCCESS;
+}
+
 /* 
  * Function to add a new system with some ID number. Takes in a systemID and a
  * pointer to a function that takes in a pointer to a system and initializes
@@ -76,8 +113,7 @@ STATUS CheckSystemId(uint16 sysId, uint8 isNewSys)
 STATUS sys_AddSystem(uint16 sysId, STATUS (*initSys)(System*))
 {
     STATUS ret = CheckSystemId(sysId, TRUE);
-    if (ret != SUCCESS)
-        return ret;
+    assert(ret == SUCCESS);
 
     ret = initSys(systemList + sysId);
     if (ret == SUCCESS)
@@ -103,13 +139,15 @@ STATUS sys_SetState(uint16 sysId, int8 state)
 }
 
 /* Function to get the state of a system */
-STATUS sys_GetState(uint16 sysId, int8* statePtr)
+STATUS sys_GetState(uint16 sysId, int8* state)
 {
     STATUS ret = CheckSystemId(sysId, FALSE);
-    if (ret != SUCCESS || statePtr == NULL)
+    assert(state != NULL);
+
+    if (ret != SUCCESS)
         return ret;
 
-    *statePtr = systemList[sysId].state;
+    *state = systemList[sysId].state;
 
     ret = SUCCESS;
     return ret;
@@ -119,8 +157,9 @@ STATUS sys_GetState(uint16 sysId, int8* statePtr)
 STATUS sys_SetParameter(uint16 sysId, uint8 parameterNum, float parameter)
 {
     STATUS ret = CheckSystemId(sysId, FALSE);
+
     if (ret != SUCCESS || parameterNum >= PARAMETER_NUM)
-        return ret;
+        return ERROR;
 
     System* currSystemPtr = systemList + sysId;
     ret = currSystemPtr->setParameter(currSystemPtr, parameterNum, parameter);
@@ -132,8 +171,10 @@ STATUS sys_SetParameter(uint16 sysId, uint8 parameterNum, float parameter)
 STATUS sys_GetParameter(uint16 sysId, uint8 parameterNum, float* parameter)
 {
     STATUS ret = CheckSystemId(sysId, FALSE);
-    if (ret != SUCCESS || parameter == NULL || parameterNum >= PARAMETER_NUM)
-        return ret;
+    assert(parameter != NULL);
+
+    if (ret != SUCCESS || parameterNum >= PARAMETER_NUM)
+        return ERROR;
 
     *parameter = systemList[sysId].parameters[parameterNum];
 
@@ -142,13 +183,15 @@ STATUS sys_GetParameter(uint16 sysId, uint8 parameterNum, float* parameter)
 }
 
 /* Function to get the value of a system */
-STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* valuePtr)
+STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* value)
 {
     STATUS ret = CheckSystemId(sysId, FALSE);
-    if (ret != SUCCESS || valuePtr == NULL || valueNum >= VALUE_NUM)
-        return ret;
+    assert(value != NULL);
 
-    *valuePtr = systemList[sysId].values[valueNum];
+    if (ret != SUCCESS || valueNum >= VALUE_NUM)
+        return ERROR;
+
+    *value = systemList[sysId].values[valueNum];
 
     ret = SUCCESS;
     return ret;
@@ -158,10 +201,31 @@ STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* valuePtr)
 STATUS sys_GetHelp(uint16 sysId, const char** help)
 {
     STATUS ret = CheckSystemId(sysId, FALSE);
-    if (ret != SUCCESS || help == NULL)
+
+    assert(help != NULL);
+
+    if (ret != SUCCESS)
         return ret;
 
     *help = systemList[sysId].help;
+
+    ret = SUCCESS;
+    return ret;
+}
+
+/* Function to update all systems. Should be called periodically */
+STATUS sys_Update()
+{
+    STATUS ret = ERROR;
+
+    for (uint16 sysId = 0; sysId < SYSTEM_NUM; ++sysId)
+    {
+        ret = CheckSystemId(sysId, FALSE);
+        if (ret != SUCCESS)
+            continue;
+
+        (systemList+sysId)->update(systemList+sysId);
+    }
 
     ret = SUCCESS;
     return ret;

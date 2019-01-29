@@ -1,9 +1,47 @@
 #include "SystemsIO.h"
+#include "SystemsIOSettings.h"
 #include "Systems/Systems.h"
 #include "Systems/SystemsSettings.h"
 #include "IO/IO.h"
 #include "Timer/Timer.h"
+#include "assert.h"
+#include <string.h>
 #include <stdlib.h>
+
+/* Command function */
+typedef STATUS (*CommandFunction)(uint16 sysId, char** args, uint8 argsLength);
+
+/* Command struct for parsing the command */
+#pragma pack(1)
+typedef struct Command
+{
+    const char* name;
+    CommandFunction function;
+} Command;
+
+/* Private function for getting/setting state */
+static STATUS StateCommand(uint16 sysId, char** args, uint8 argsLength);
+
+/* Private function for getting/setting parameter */
+static STATUS ParameterCommand(uint16 sysId, char** args, uint8 argsLength);
+
+/* Private function for getting value */
+static STATUS ValueCommand(uint16 sysId, char** args, uint8 argsLength);
+
+/* Private function for getting help */
+static STATUS HelpCommand(uint16 sysId, char** args, uint8 argsLength);
+
+/* Private function for getting system query */
+static STATUS QueryCommand(uint16 sysId, char** args, uint8 argsLength);
+
+const Command commandList[] =
+{
+    {"state", StateCommand},
+    {"parameter", ParameterCommand},
+    {"value", ValueCommand},
+    {"help", HelpCommand},
+    {"query", QueryCommand}
+};
 
 /* Query the system and output result */
 STATUS sysio_Query(uint16 sysId)
@@ -53,30 +91,189 @@ STATUS sysio_Help(uint16 sysId)
     STATUS ret = ERROR;
 
     // Get help string and write to output
-    const char** help;
-    ret = sys_GetHelp(sysId, help);
-    if (ret != SUCCESS)
-        return ret;
-    ret = io_WriteString(*help);
+    const char* help;
+    ret = sys_GetHelp(sysId, &help);
+    if (ret == SUCCESS)
+        io_WriteString("%s\r\n", help);
+    else
+        io_WriteString("HELP NOT FOUND\r\n");
 
     return ret;
 }
 
 /* Parse input command and make appropriate system call */
-STATUS sysio_ParseCommand(char* command)
+STATUS sysio_ParseCommand(char* commandString)
 {
     STATUS ret = ERROR;
 
-    if (!command)
-        return ret;
+    assert(commandString != NULL);
 
-    char* start = command;
-    char** end = &command;
-    int sysNum = strtol(command, end, 10);
+    // Get system ID
+    char *commandName, *args[SYSIO_ARGS_BUFFER_SIZE], *start, *end;
+    int sysId = strtol(commandString, &end, 10);
+    if (commandString == end || end == NULL || sysId < 0 || sysId > SYSTEM_NUM)
+        goto PrintHelp;
 
-    if (start == *end || sysNum < 0 || sysNum > SYSTEM_NUM)
+    // Get command name
+    commandName = strtok(end, SYSIO_DELIMITERS);
+    if (commandName == NULL)
+        goto PrintHelp;
+
+    // Find the corresponding command
+    static const uint8 commandNum = sizeof(commandList) / sizeof(Command);
+    CommandFunction function;
+    uint8 index;
+    for (index = 0; index < commandNum; ++index)
     {
-        ret = sysio_Help(RESERVED_SYS);
-        return ret;
+
+        if (strcmp(commandList[index].name, commandName) == 0)
+        {
+            function = commandList[index].function;
+            break;
+        }
     }
+    if (index == commandNum)    // Couldn't find corresponding function
+        goto PrintHelp;
+    
+    // Get rest of the arguments
+    uint8 argsLength;
+    start = strtok(NULL, SYSIO_DELIMITERS);
+    for (argsLength = 0; start != NULL &&
+            argsLength < SYSIO_ARGS_BUFFER_SIZE; ++argsLength)
+    {
+        args[argsLength] = start;
+        start = strtok(NULL, SYSIO_DELIMITERS);
+    }
+
+    ret = function(sysId, args, argsLength);
+    return ret;
+
+PrintHelp:
+    ret = sysio_Help(sysId);
+    if (ret != SUCCESS)
+        sysio_Help(RESERVED_SYS);
+    return ERROR;
+}
+
+/* Callback function for message received event */
+STATUS sysio_MessageReceivedCallback(void* args, uint8 argsLength)
+{
+    IOMessageReceivedEventArgs messages = args;
+
+    assert(messages != NULL && *messages != NULL);
+
+    for (uint8 index = 0; index < argsLength; ++index)
+    {
+        io_WriteString("%s\r\n", messages[index]);
+        sysio_ParseCommand(messages[index]);
+        io_WriteString("\r\n", messages[index]);
+    }
+
+    return SUCCESS;
+}
+
+/* Private function for getting/setting state */
+static STATUS StateCommand(uint16 sysId, char** args, uint8 argsLength)
+{
+    STATUS ret = ERROR;
+    assert(args != NULL);
+
+    int8 state;
+    if (argsLength > 0)
+    {
+        char* end;
+        state = strtol(args[0], &end, 10);
+
+        // GetState if failed to parse args, SetState if it worked
+        if (args[0] == end)
+            ret = sys_GetState(sysId, &state);
+        else
+            ret = sys_SetState(sysId, state);
+    }
+    else
+    {
+        ret = sys_GetState(sysId, &state);
+    }
+
+
+    // If no success, print out ERROR and error code
+    if (ret != SUCCESS)
+        io_WriteString("ID:%i\r\nState:ERROR CODE 0x%08x\r\n", sysId, ret);
+    else
+        io_WriteString("ID:%i\r\nState:%i\r\n", sysId, state);
+
+    return ret;
+}
+
+/* Private function for getting/setting parameter */
+static STATUS ParameterCommand(uint16 sysId, char** args, uint8 argsLength)
+{
+    STATUS ret = ERROR;
+
+    char* end;
+    float parameter;
+    uint8 paramNum = 0;
+
+    // Get param num
+    if (argsLength > 0)
+        paramNum = strtoul(args[0], &end, 10);
+
+    if (argsLength > 1)
+    {
+        // Get next parameter
+        parameter = strtof(args[1], &end);
+
+        // GetParameter if failed to parse, SetParameter if it worked
+        if (args[1] == end)
+            ret = sys_GetParameter(sysId, paramNum, &parameter);
+        else
+            ret = sys_SetParameter(sysId, paramNum, parameter);
+    }
+    else
+    {
+        ret = sys_GetParameter(sysId, paramNum, &parameter);
+    }
+
+    // If no success, print out ERROR
+    if (ret != SUCCESS)
+    {
+        io_WriteString("ID:%i\r\nParameter[%i]:ERROR CODE 0x%08x\r\n", sysId,
+                paramNum, ret);
+    }
+    else
+    {
+        io_WriteString("ID:%i\r\nParameter[%i]:%f\r\n", sysId, paramNum,
+                parameter);
+    }
+
+    return ret;
+}
+
+/* Private function for getting value */
+static STATUS ValueCommand(uint16 sysId, char** args, uint8 argsLength)
+{
+    char* end;
+    uint8 valueNum = 0;
+    if (argsLength > 0)
+        valueNum = strtoul(args[0], &end, 10);
+
+    // Get value
+    float value;
+    sys_GetValue(sysId, valueNum, &value);
+
+    io_WriteString("ID:%i\r\nValue[%i]:%f\r\n", sysId, valueNum, value);
+
+    return SUCCESS;
+}
+
+/* Private function for getting help */
+static STATUS HelpCommand(uint16 sysId, char** args, uint8 argsLength)
+{
+    return sysio_Help(sysId);
+}
+
+/* Private function for getting system query */
+static STATUS QueryCommand(uint16 sysId, char** args, uint8 argsLength)
+{
+    return sysio_Query(sysId);
 }

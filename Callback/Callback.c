@@ -1,32 +1,43 @@
 #include "Callback.h"
 #include "Iterator/Iterator.h"
+#include "Debug/Debug.h"
+#include "assert.h"
 
-/* Request a callback handle. If no more space available, cbHandle is set to
- * NULL and returns ERROR */
+/* Request a callback handle */
 STATUS cb_CreateCallbackHandle(CallbackHandle* cbHandle)
 {
     STATUS ret = ERROR;
+
+    assert(cbHandle != NULL);
+
     ret = iter_CreateIterator((Iterator**)cbHandle);
+    if (ret == SUCCESS)
+        dbg_LogDebug("Created new cbHandle[%i]", *cbHandle);
+
     return ret;
 }
 
-/* Add new callback to cbHandle. If no more space available or cbHandle is
- * NULL, returns ERROR */
+/* Add new callback to cbHandle */
 STATUS cb_AddCallback(CallbackHandle cbHandle, CallbackFunction cbFunction)
 {
     STATUS ret = ERROR;
-    if (cbHandle == NULL || cbFunction == NULL)
-        return ret;
+
+    assert(cbHandle != NULL);
+    assert(cbFunction != NULL);
 
     ret = iter_AddNode((Iterator*)cbHandle, cbFunction);
+    if (ret == SUCCESS)
+        dbg_LogDebug("Added cbFunction to cbHandle[%i]", cbHandle);
+
     return ret;
 }
 
-/* Call all callbacks. If cbHandle is NULL, returns ERROR */
+/* Call all callbacks */
 STATUS cb_CallCallbacks(CallbackHandle cbHandle, void* args, uint8 argsLength)
 {
-    if (cbHandle == NULL)
-        return ERROR;
+    assert(cbHandle != NULL);
+ 
+    dbg_LogTrace("Calling all cbFunction for cbHandle[%i]", cbHandle);
 
     // Call all CallbackFunctions while nodes exist
     Node* currNode;
@@ -34,24 +45,29 @@ STATUS cb_CallCallbacks(CallbackHandle cbHandle, void* args, uint8 argsLength)
     iter_GetStart((Iterator*)cbHandle, &currNode);
     while(currNode)
     {
+        dbg_LogTrace("Calling cbFunction for cbHandle[%i]", cbHandle);
+
         iter_GetData(currNode, (void**)&func);
         if (func != NULL)
             func(args, argsLength);
         iter_GetNext(currNode, &currNode);
     }
 
+    dbg_LogTrace("Finished all cbFunction for callback handle[%i]",
+            cbHandle);
+
     // Regardless of outcome of callbacks, this method returns success
     return SUCCESS;
 }
 
-/* Delete callbackFunction. If callback is NULL or does not belong to cbHandle,
- * returns ERROR */
+/* Delete callback. If callback does not belong to cbHandle, returns ERROR */
 STATUS cb_DeleteCallback(CallbackHandle cbHandle, CallbackFunction cbFunction)
 {
     STATUS ret = ERROR;
-    if (cbHandle == NULL || cbFunction == NULL)
-        return ret;
+    assert(cbHandle != NULL);
+    assert(cbFunction != NULL);
 
+    dbg_LogDebug("Deleting cbFunction for cbHandle[%i]", cbHandle);
     Node* node;
     ret = iter_FindNode((Iterator*)cbHandle, cbFunction, &node);
     if (ret != SUCCESS)
@@ -61,13 +77,14 @@ STATUS cb_DeleteCallback(CallbackHandle cbHandle, CallbackFunction cbFunction)
     return ret;
 }
 
-/* Delete cbHandle and sets cbHandle to NULL. If cbHandle is NULL, returns
- * ERROR */
+/* Delete cbHandle and sets cbHandle to NULL */
 STATUS cb_DeleteCallbackHandle(CallbackHandle* cbHandle)
 {
     STATUS ret = ERROR;
-    if (cbHandle == NULL)
-        return ret;
+    assert(cbHandle != NULL);
+    assert(*cbHandle != NULL);
+
+    dbg_LogDebug("Deleting cbHandle[%i]", *cbHandle);
 
     ret = iter_DeleteIterator((Iterator**)cbHandle);
     return ret;

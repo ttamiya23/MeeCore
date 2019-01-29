@@ -1,6 +1,7 @@
 #include "IO/IODriver.h"
 #include <stdio.h>
 #include <conio.h>
+#include "assert.h"
 
 /* Initialize IO Driver */
 STATUS ioDriver_Initialize(void)
@@ -22,8 +23,7 @@ STATUS ioDriver_WriteChar(const char ch)
 STATUS ioDriver_GetChar(char* ch)
 {
     STATUS ret = ERROR;
-    if (ch == NULL)
-        return ret;
+    assert(ch != NULL);
 
     if (_kbhit())
     {

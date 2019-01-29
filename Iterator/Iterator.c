@@ -1,5 +1,6 @@
 #include "Iterator.h"
 #include "IteratorSettings.h"
+#include "assert.h"
 
 /* Definition of Iterator struct */
 #pragma pack(1)
@@ -57,18 +58,13 @@ uint64
 #endif
 initializedNodes = 0;
 
-/* Request an iterator. If no more space available, iterator is set to NULL and
- * returns ERROR */
+/* Request an iterator */
 STATUS iter_CreateIterator(Iterator** iterator)
 {
     STATUS ret = ERROR;
-    if (iterator == NULL)
-        return ret;
-    if (emptyIteratorIndex < 0)
-    {
-        *iterator = NULL;
-        return ret;
-    }
+
+    assert(iterator != NULL);
+    assert(emptyIteratorIndex >= 0);
 
     // Initialize iterator
     (iteratorList + emptyIteratorIndex)->start = NULL;
@@ -96,13 +92,16 @@ STATUS iter_CreateIterator(Iterator** iterator)
     return ret;
 }
 
-/* Add new node to iterator. If no more space available or iterator is NULL,
- * returns ERROR */
+/* Add new node to iterator */
 STATUS iter_AddNode(Iterator* iterator, void* data)
 {
     STATUS ret = ERROR;
-    if (emptyNodeIndex < 0 || iterator == NULL)
-        return ret;
+    int16 id = iterator - iteratorList;
+
+    assert(emptyNodeIndex >= 0);
+    assert(iterator != NULL);
+    assert(id >= 0);
+    assert(id < ITERATOR_NUM);
 
     // Initialize node
     Node* newNode = nodeList + emptyNodeIndex;
@@ -123,10 +122,10 @@ STATUS iter_AddNode(Iterator* iterator, void* data)
         iterator->end->next = newNode;
         iterator->end = newNode;
     }
-    // Weird case... Just return error. Should never happen
+    // Weird case... Cause error. Should never happen
     else
     {
-        return ret;
+        assert(TRUE);
     }
     (iterator->count)++;
 
@@ -150,38 +149,41 @@ STATUS iter_AddNode(Iterator* iterator, void* data)
     return ret;
 }
 
-/* Get start node. If iterator is NULL, node is set to NULL and returns ERROR */
+/* Get start node */
 STATUS iter_GetStart(Iterator* iterator, Node** node)
 {
     STATUS ret = ERROR;
-    if (node == NULL)
-        return ret;
-    if (iterator == NULL)
-    {
-        *node = NULL;
-        return ret;
-    }
+    int16 id = iterator - iteratorList;
+
+    assert(iterator != NULL);
+    assert(node != NULL);
+    assert(id >= 0);
+    assert(id < ITERATOR_NUM);
 
     *node = iterator->start;
     ret = SUCCESS;
     return ret;
 }
 
-/* Get next node. If startNode has no next or startNode is NULL, nextNode is set
- * to NULL and returns ERROR*/
+/* Get next node. If startNode has no next, nextNode is set to NULL and returns
+ * ERROR*/
 STATUS iter_GetNext(Node* startNode, Node** nextNode)
 {
     STATUS ret = ERROR;
-    if (nextNode == NULL)
-        return ret;
-    if (startNode == NULL || startNode->next == NULL)
-    {
-        *nextNode = NULL;
-        return ret;
-    }
+    int16 id = startNode - nodeList;
+
+    assert(startNode != NULL);
+    assert(nextNode != NULL);
+    assert(id >= 0);
+    assert(id < NODE_NUM);
 
     *nextNode = startNode->next;
-    ret = SUCCESS;
+
+    if (*nextNode != NULL)
+        ret = SUCCESS;
+    else
+        ret = ERROR;
+
     return ret;
 }
 

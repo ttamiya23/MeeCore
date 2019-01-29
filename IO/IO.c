@@ -1,6 +1,7 @@
 #include "IO.h"
 #include "IOSettings.h"
 #include "IODriver.h"
+#include "assert.h"
 #include <stdio.h>
 
 /* Output buffer for storing messages to send */
@@ -22,7 +23,7 @@ static uint8 initialized = FALSE;
 static const char eomCharacters[] = IO_EOM_CHARACTERS;
 
 /* Helper to check if ch is an EOM char */
-uint8 IsEOMChar(char);
+static uint8 IsEOMChar(char);
 
 /* Initialize IO */
 STATUS io_Initialize(void)
@@ -32,12 +33,10 @@ STATUS io_Initialize(void)
         return ret;
 
     ret = cb_CreateCallbackHandle(&msgReceivedHandle);
-    if (ret != SUCCESS)
-        return ret;
+    assert(ret == SUCCESS);
 
     ret = ioDriver_Initialize();
-    if (ret != SUCCESS)
-        return ret;
+    assert(ret == SUCCESS);
 
     initialized = TRUE;
     return ret;
@@ -48,7 +47,10 @@ STATUS io_WriteString(const char* format, ...)
 {
     STATUS ret = ERROR;
     if (!initialized)
-        return ret;
+    {
+        ret = io_Initialize();
+        assert(ret == SUCCESS);
+    }
 
     va_list args;
     va_start(args, format);
@@ -64,7 +66,11 @@ STATUS io_VariableWriteString(const char* format, va_list args)
 {
     STATUS ret = ERROR;
     if (!initialized)
-        return ret;
+    {
+        ret = io_Initialize();
+        assert(ret == SUCCESS);
+        ret = ERROR;    // Return ret back to error state
+    }
 
     int success = vsnprintf(outputBuffer, IO_OUTPUT_BUFFER_SIZE, format, args);
     if (success < 0)
@@ -87,7 +93,10 @@ STATUS io_VariableWriteString(const char* format, va_list args)
 STATUS io_WriteChar(const char ch)
 {
     if (!initialized)
-        return ERROR;
+    {
+        STATUS ret = io_Initialize();
+        assert(ret == SUCCESS);
+    }
     return ioDriver_WriteChar(ch);
 }
 
@@ -96,7 +105,10 @@ STATUS io_WriteCharArray(const char* charArray, uint32 n)
 {
     STATUS ret = ERROR;
     if (!initialized)
-        return ret;
+    {
+        ret = io_Initialize();
+        assert(ret == SUCCESS);
+    }
 
     // Write each char including NULL charater
     for (uint32 index = 0; index < n; ++index)
@@ -113,7 +125,10 @@ STATUS io_WriteCharArray(const char* charArray, uint32 n)
 STATUS io_AddMessageReceivedCallback(CallbackFunction callback)
 {
     if (!initialized)
-        return ERROR;
+    {
+        STATUS ret = io_Initialize();
+        assert(ret == SUCCESS);
+    }
 
     return cb_AddCallback(msgReceivedHandle, callback);
 }
@@ -122,7 +137,10 @@ STATUS io_AddMessageReceivedCallback(CallbackFunction callback)
 STATUS io_DeleteMessageReceivedCallback(CallbackFunction callback)
 {
     if (!initialized)
-        return ERROR;
+    {
+        STATUS ret = io_Initialize();
+        assert(ret == SUCCESS);
+    }
 
     return cb_DeleteCallback(msgReceivedHandle, callback);
 }
@@ -130,9 +148,11 @@ STATUS io_DeleteMessageReceivedCallback(CallbackFunction callback)
 /* Read input. If message is ready, will trigger message received event */
 STATUS io_ReadInput()
 {
-    STATUS ret = ERROR;
     if (!initialized)
-        return ret;
+    {
+        STATUS ret = io_Initialize();
+        assert(ret == SUCCESS);
+    }
 
     // Initialize variables
     char newChar, overflowed = FALSE;
@@ -191,7 +211,7 @@ STATUS io_ReadInput()
     }
 
     // Call all callbacks
-    ret = cb_CallCallbacks(msgReceivedHandle, newMsgBuffer, newMsgCount);
+    cb_CallCallbacks(msgReceivedHandle, newMsgBuffer, newMsgCount);
 
     // Move extra characters to beginning of input buffer. These characters
     // starts from the beginning of the last new message
@@ -222,11 +242,11 @@ STATUS io_ReadInput()
         inputLength++;
     }
 
-    return ret;
+    return SUCCESS;
 }
 
 /* Helper to check if ch is an EOM char */
-uint8 IsEOMChar(char ch)
+static uint8 IsEOMChar(char ch)
 {
     static const uint8 eomLength = sizeof(eomCharacters);
     for (uint8 index = 0; index < eomLength; ++index)

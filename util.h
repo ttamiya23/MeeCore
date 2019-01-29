@@ -16,9 +16,9 @@
 #define UNSET_BIT(value, bit) value &= ~(1 << bit)
 #define TOGGLE_BIT(value, bit) value ^= (1 << bit)
 
-typedef char int8;
+typedef signed char int8;
 typedef short int16; 
-typedef int int32; 
+typedef signed long int32; 
 typedef long long int64; 
 typedef unsigned char uint8;
 typedef unsigned short uint16;

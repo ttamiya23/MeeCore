@@ -47,10 +47,7 @@ STATUS io_WriteString(const char* format, ...)
 {
     STATUS ret = ERROR;
     if (!initialized)
-    {
-        ret = io_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ret;
 
     va_list args;
     va_start(args, format);
@@ -66,11 +63,7 @@ STATUS io_VariableWriteString(const char* format, va_list args)
 {
     STATUS ret = ERROR;
     if (!initialized)
-    {
-        ret = io_Initialize();
-        assert(ret == SUCCESS);
-        ret = ERROR;    // Return ret back to error state
-    }
+        return ret;
 
     int success = vsnprintf(outputBuffer, IO_OUTPUT_BUFFER_SIZE, format, args);
     if (success < 0)
@@ -93,10 +86,7 @@ STATUS io_VariableWriteString(const char* format, va_list args)
 STATUS io_WriteChar(const char ch)
 {
     if (!initialized)
-    {
-        STATUS ret = io_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ERROR;
     return ioDriver_WriteChar(ch);
 }
 
@@ -105,10 +95,7 @@ STATUS io_WriteCharArray(const char* charArray, uint32 n)
 {
     STATUS ret = ERROR;
     if (!initialized)
-    {
-        ret = io_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ret;
 
     // Write each char including NULL charater
     for (uint32 index = 0; index < n; ++index)
@@ -125,10 +112,7 @@ STATUS io_WriteCharArray(const char* charArray, uint32 n)
 STATUS io_AddMessageReceivedCallback(CallbackFunction callback)
 {
     if (!initialized)
-    {
-        STATUS ret = io_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ERROR;
 
     return cb_AddCallback(msgReceivedHandle, callback);
 }
@@ -137,10 +121,7 @@ STATUS io_AddMessageReceivedCallback(CallbackFunction callback)
 STATUS io_DeleteMessageReceivedCallback(CallbackFunction callback)
 {
     if (!initialized)
-    {
-        STATUS ret = io_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ERROR;
 
     return cb_DeleteCallback(msgReceivedHandle, callback);
 }
@@ -149,10 +130,7 @@ STATUS io_DeleteMessageReceivedCallback(CallbackFunction callback)
 STATUS io_ReadInput()
 {
     if (!initialized)
-    {
-        STATUS ret = io_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ERROR;
 
     // Initialize variables
     char newChar, overflowed = FALSE;

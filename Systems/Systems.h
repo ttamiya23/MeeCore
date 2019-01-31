@@ -36,7 +36,7 @@ STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* value);
 STATUS sys_GetHelp(uint16 sysId, const char** help);
 
 /* Function to update all systems. Should be called periodically */
-STATUS sys_Update();
+STATUS sys_Update(void);
 
 #ifdef __cplusplus
 }

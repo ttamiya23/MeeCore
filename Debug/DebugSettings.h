@@ -2,7 +2,7 @@
 #define DEBUGSETTINGS_H_
 
 /* Log level of the debugger. Change this to adjust log level */
-#define DEBUG_LOG_LEVEL LOG_LEVEL_WARNING
+#define DEBUG_LOG_LEVEL LOG_LEVEL_DEBUG
 
 /* Different levels of debug log */
 #define LOG_LEVEL_NONE        0

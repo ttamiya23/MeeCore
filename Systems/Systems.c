@@ -116,11 +116,10 @@ STATUS sys_AddSystem(uint16 sysId, STATUS (*initSys)(System*))
     assert(ret == SUCCESS);
 
     ret = initSys(systemList + sysId);
-    if (ret == SUCCESS)
-    {
-        (systemList + sysId) -> id = sysId;
-        SET_BIT(initializedSystems, sysId);
-    }
+    assert(ret == SUCCESS);
+
+    (systemList + sysId) -> id = sysId;
+    SET_BIT(initializedSystems, sysId);
 
     return ret;
 }
@@ -214,7 +213,7 @@ STATUS sys_GetHelp(uint16 sysId, const char** help)
 }
 
 /* Function to update all systems. Should be called periodically */
-STATUS sys_Update()
+STATUS sys_Update(void)
 {
     STATUS ret = ERROR;
 

@@ -43,7 +43,6 @@ STATUS tsk_CreateTask(Task** task, TaskFunction function, uint32 intervalMs,
     STATUS ret = ERROR;
 
     assert(task != NULL);
-    assert(*task != NULL);
     assert(function != NULL);
     assert(emptyTaskIndex >= 0);
 
@@ -117,22 +116,16 @@ STATUS tsk_Resume(Task* task)
 }
 
 /* Query whether task is running or not */
-STATUS tsk_IsRunning(Task* task, uint8* isRunning)
+uint8 tsk_IsRunning(Task* task)
 {
-    STATUS ret = ERROR;
     int16 id = task - taskList;
 
     assert(task != NULL);
-    assert(isRunning != NULL);
     assert(id >= 0);
     assert(id < TASK_NUM);
     assert(IS_BIT_SET(initializedTasks, id));
 
-    *isRunning = task->isRunning;
-    dbg_LogDebug("Task[%i] IsRunning == %i", id, *isRunning);
-
-    ret = SUCCESS;
-    return ret;
+    return task->isRunning;
 }
 
 /* Stop and trigger task. Will delete task. */
@@ -173,8 +166,8 @@ STATUS tsk_Cancel(Task** task)
     return ret;
 }
 
-/* Change TaskFunction */
-STATUS tsk_ChangeTaskFunction(Task* task, TaskFunction function)
+/* Set TaskFunction */
+STATUS tsk_SetTaskFunction(Task* task, TaskFunction function)
 {
     STATUS ret = ERROR;
     int16 id = task - taskList;
@@ -193,8 +186,8 @@ STATUS tsk_ChangeTaskFunction(Task* task, TaskFunction function)
     return ret;
 }
 
-/* Change count number */
-STATUS tsk_ChangeCount(Task* task, uint16 count)
+/* Set count number */
+STATUS tsk_SetCount(Task* task, uint16 count)
 {
     STATUS ret = ERROR;
     int16 id = task - taskList;
@@ -213,9 +206,8 @@ STATUS tsk_ChangeCount(Task* task, uint16 count)
     return ret;
 }
 
-
-/* Change interval time */
-STATUS tsk_ChangeIntervalMs(Task* task, uint16 intervalMs)
+/* Set interval time */
+STATUS tsk_SetIntervalMs(Task* task, uint16 intervalMs)
 {
     STATUS ret = ERROR;
     int16 id = task - taskList;
@@ -232,6 +224,45 @@ STATUS tsk_ChangeIntervalMs(Task* task, uint16 intervalMs)
 
     ret = SUCCESS;
     return ret;
+}
+
+/* Get TaskFunction */
+TaskFunction tsk_GetTaskFunction(Task* task)
+{
+    int16 id = task - taskList;
+
+    assert(task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    return task->function;
+}
+
+/* Get count number */
+uint16 tsk_GetCount(Task* task)
+{
+    int16 id = task - taskList;
+
+    assert(task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    return task->remainingCount;
+}
+
+/* Get interval time */
+uint16 tsk_GetIntervalMs(Task* task)
+{
+    int16 id = task - taskList;
+
+    assert(task != NULL);
+    assert(id >= 0);
+    assert(id < TASK_NUM);
+    assert(IS_BIT_SET(initializedTasks, id));
+
+    return task->intervalMs;
 }
 
 /* Delete task and sets task to NULL */

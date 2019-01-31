@@ -28,7 +28,7 @@ STATUS tsk_Pause(Task* task);
 STATUS tsk_Resume(Task* task);
 
 /* Query whether task is running or not */
-STATUS tsk_IsRunning(Task* task, uint8* isRunning);
+uint8 tsk_IsRunning(Task* task);
 
 /* Stop and trigger task. Will delete task. */
 STATUS tsk_StopAndTriggerTask(Task** task);
@@ -36,14 +36,23 @@ STATUS tsk_StopAndTriggerTask(Task** task);
 /* Cancel without triggering task. Will delete task */
 STATUS tsk_Cancel(Task** task);
 
-/* Change TaskFunction */
-STATUS tsk_ChangeTaskFunction(Task* task, TaskFunction function);
+/* Set TaskFunction */
+STATUS tsk_SetTaskFunction(Task* task, TaskFunction function);
 
-/* Change count number */
-STATUS tsk_ChangeCount(Task* task, uint16 count);
+/* Set count number */
+STATUS tsk_SetCount(Task* task, uint16 count);
 
-/* Change interval time */
-STATUS tsk_ChangeIntervalMs(Task* task, uint16 intervalMs);
+/* Set interval time */
+STATUS tsk_SetIntervalMs(Task* task, uint16 intervalMs);
+
+/* Get TaskFunction */
+TaskFunction tsk_GetTaskFunction(Task* task);
+
+/* Get count number */
+uint16 tsk_GetCount(Task* task);
+
+/* Get interval time */
+uint16 tsk_GetIntervalMs(Task* task);
 
 /* Delete task and sets task to NULL */
 STATUS tsk_DeleteTask(Task** task);

@@ -22,10 +22,7 @@ STATUS tmr_GetTimeMs(uint32* ellapsedTimeMs)
 {
     STATUS ret = ERROR;
     if (!initialized)
-    {
-        ret = tmr_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ret;
 
     ret = tmrDriver_GetTimeMs(ellapsedTimeMs);
     return ret;
@@ -36,10 +33,7 @@ STATUS tmr_DelayMs(uint32 timeMs)
 {
     STATUS ret = ERROR;
     if (!initialized)
-    {
-        ret = tmr_Initialize();
-        assert(ret == SUCCESS);
-    }
+        return ret;
 
     ret = tmrDriver_DelayMs(timeMs);
     return ret;

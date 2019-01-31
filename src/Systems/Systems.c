@@ -27,7 +27,7 @@ const char *systemsHelp = \
     "STATE: State of system. 1 for ON, 0 for OFF (typically)\r\n"
     "HELP: Description of system\r\n"
     "PARAMETER: Parameters affecting system's behavior\r\n"
-    "VALUE: Feedback values of system\r\n";
+    "VALUE: Feedback values of system";
 
 /* Private function to initialize reserved */
 STATUS InitializeReservedSystem(void);

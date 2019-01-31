@@ -16,6 +16,9 @@
 #define UNSET_BIT(value, bit) value &= ~(1 << bit)
 #define TOGGLE_BIT(value, bit) value ^= (1 << bit)
 
+#define STR(str) #str
+#define XSTR(str) STR(str)
+
 typedef signed char int8;
 typedef short int16; 
 typedef signed long int32; 

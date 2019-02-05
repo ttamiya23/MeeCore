@@ -8,6 +8,15 @@ extern "C" {
 #include "util.h"
 #include "DebugSettings.h"
 
+/* Different levels of debug log */
+#define LOG_LEVEL_NONE        0
+#define LOG_LEVEL_TRACE       1
+#define LOG_LEVEL_DEBUG       2
+#define LOG_LEVEL_INFORMATION 3
+#define LOG_LEVEL_WARNING     4
+#define LOG_LEVEL_ERROR       5
+#define LOG_LEVEL_CRITICAL    6
+
 /* Define Log function */
 #if DEBUG_LOG_LEVEL > LOG_LEVEL_NONE
 

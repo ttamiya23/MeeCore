@@ -34,7 +34,7 @@ STATUS io_AddMessageReceivedCallback(CallbackFunction callback);
 STATUS io_DeleteMessageReceivedCallback(CallbackFunction callback);
 
 /* Read input. If message is ready, will trigger message received event */
-STATUS io_ReadInput();
+STATUS io_ReadInput(void);
 
 #ifdef __cplusplus
 }

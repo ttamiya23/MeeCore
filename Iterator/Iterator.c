@@ -1,5 +1,6 @@
 #include "Iterator.h"
 #include "IteratorSettings.h"
+#include "Debug/Debug.h"
 #include "assert.h"
 
 /* Definition of Iterator struct */
@@ -40,7 +41,7 @@ uint64
 initializedIterators = 0;
 
 /* List of all nodes */
-static Node nodeList[ITERATOR_NUM];
+static Node nodeList[NODE_NUM];
 
 /* Index of the first empty node. -1 if all nodes are used up */
 static int16 emptyNodeIndex = 0;
@@ -63,6 +64,8 @@ STATUS iter_CreateIterator(Iterator** iterator)
 {
     STATUS ret = ERROR;
 
+    dbg_LogInformation("Initializing iterator[%i]", emptyIteratorIndex);
+
     assert(iterator != NULL);
     assert(emptyIteratorIndex >= 0);
 
@@ -83,12 +86,15 @@ STATUS iter_CreateIterator(Iterator** iterator)
         if (!IS_BIT_SET(initializedIterators, index))
         {
             emptyIteratorIndex = index;
+            dbg_LogDebug("Next iterator: %i", emptyIteratorIndex);
             return ret;
         }
     }
 
     // All iterators are used up!
+    dbg_LogDebug("All iterators used up");
     emptyIteratorIndex = -1;
+
     return ret;
 }
 
@@ -97,6 +103,8 @@ STATUS iter_AddNode(Iterator* iterator, void* data)
 {
     STATUS ret = ERROR;
     int16 id = iterator - iteratorList;
+
+    dbg_LogInformation("Adding node[%i] to iterator[%i]", emptyNodeIndex, emptyIteratorIndex);
 
     assert(emptyNodeIndex >= 0);
     assert(iterator != NULL);
@@ -139,12 +147,14 @@ STATUS iter_AddNode(Iterator* iterator, void* data)
         index = (emptyNodeIndex + i) % NODE_NUM;
         if (!IS_BIT_SET(initializedNodes, index))
         {
+            dbg_LogDebug("Next node: %i", emptyNodeIndex);
             emptyNodeIndex = index;
             return ret;
         }
     }
 
     // All nodes are used up!
+    dbg_LogDebug("All nodes are used up");
     emptyNodeIndex = -1;
     return ret;
 }
@@ -152,7 +162,6 @@ STATUS iter_AddNode(Iterator* iterator, void* data)
 /* Get start node */
 STATUS iter_GetStart(Iterator* iterator, Node** node)
 {
-    STATUS ret = ERROR;
     int16 id = iterator - iteratorList;
 
     assert(iterator != NULL);
@@ -161,15 +170,14 @@ STATUS iter_GetStart(Iterator* iterator, Node** node)
     assert(id < ITERATOR_NUM);
 
     *node = iterator->start;
-    ret = SUCCESS;
-    return ret;
+
+    return SUCCESS;
 }
 
 /* Get next node. If startNode has no next, nextNode is set to NULL and returns
  * ERROR*/
 STATUS iter_GetNext(Node* startNode, Node** nextNode)
 {
-    STATUS ret = ERROR;
     int16 id = startNode - nodeList;
 
     assert(startNode != NULL);
@@ -180,55 +188,50 @@ STATUS iter_GetNext(Node* startNode, Node** nextNode)
     *nextNode = startNode->next;
 
     if (*nextNode != NULL)
-        ret = SUCCESS;
-    else
-        ret = ERROR;
-
-    return ret;
+        return SUCCESS;
+    return ERROR;
 }
 
-/* Get count. If iterator or count is NULL, returns ERROR */
+/* Get count */
 STATUS iter_GetCount(Iterator* iterator, uint16* count)
 {
-    STATUS ret = ERROR;
-    if (iterator == NULL || count == NULL)
-        return ret;
+    int16 id = iterator - iteratorList;
+
+    assert(iterator != NULL);
+    assert(count != NULL);
+    assert(id >= 0);
+    assert(id < ITERATOR_NUM);
 
     *count = iterator->count;
 
-    ret = SUCCESS;
-    return ret;
+    return SUCCESS;
 }
 
-/* Get data from node. If node is NULL, data is set to NULL and returns ERROR */
+/* Get data from node */
 STATUS iter_GetData(Node* node, void** data)
 {
-    STATUS ret = ERROR;
-    if (data == NULL)
-        return ret;
-    if (node == NULL)
-    {
-        *data = NULL;
-        return ret;
-    }
+    int16 id = node - nodeList;
+
+    assert(data != NULL);
+    assert(node != NULL);
+    assert(id >= 0);
+    assert(id < NODE_NUM);
 
     *data = node->data;
-    ret = SUCCESS;
-    return ret;
+
+    return SUCCESS;
 }
 
-/* Find node from data. If iterator or data is NULL, node is set to NULL and
- * returns ERROR */
+/* Find node from data. If not found, node is set to NULL and returns ERROR */
 STATUS iter_FindNode(Iterator* iterator, void* data, Node** node)
 {
-    STATUS ret = ERROR;
-    if (node == NULL)
-        return ret;
-    if (iterator == NULL || data == NULL)
-    {
-        *node = NULL;
-        return ret;
-    }
+    int16 id = iterator - iteratorList;
+
+    assert(iterator != NULL);
+    assert(data != NULL);
+    assert(node != NULL);
+    assert(id >= 0);
+    assert(id < ITERATOR_NUM);
 
     Node* currNode = iterator->start;
     while(currNode)
@@ -236,22 +239,26 @@ STATUS iter_FindNode(Iterator* iterator, void* data, Node** node)
         if (currNode->data == data)
         {
             *node = currNode;
-            ret = SUCCESS;
-            break;
+            return SUCCESS;
         }
         currNode = currNode->next;
     }
 
-    return ret;
+    return ERROR;
 }
 
-/* Delete iterator and sets iterator to NULL. If iterator is NULL, returns
- * ERROR */
+/* Delete iterator and sets iterator to NULL */
 STATUS iter_DeleteIterator(Iterator** iterator)
 {
-    STATUS ret = ERROR;
-    if (iterator == NULL || *iterator == NULL)
-        return ret;
+    assert(iterator != NULL);
+    assert(*iterator != NULL);
+
+    int16 id = *iterator - iteratorList;
+
+    dbg_LogInformation("Deleting iterator[%i]", id);
+
+    assert(id >= 0);
+    assert(id < ITERATOR_NUM);
 
     // Delete all nodes in iterator
     Iterator* iteratorToDelete = *iterator;
@@ -268,17 +275,26 @@ STATUS iter_DeleteIterator(Iterator** iterator)
     emptyIteratorIndex = iteratorToDelete - iteratorList;
     UNSET_BIT(initializedIterators, emptyIteratorIndex);
     *iterator = NULL;
-    ret = SUCCESS;
-    return ret;
+
+    return SUCCESS;
 }
 
-/* Delete node and sets node to NULL. If node is NULL or does not belong to
- * iterator, returns ERROR */
+/* Delete node and sets node to NULL */
 STATUS iter_DeleteNode(Iterator* iterator, Node** node)
 {
-    STATUS ret = ERROR;
-    if (node == NULL || *node == NULL)
-        return ret;
+    assert(iterator != NULL);
+    assert(node != NULL);
+    assert(*node != NULL);
+
+    int16 iteratorId = iterator - iteratorList;
+    int16 nodeId = *node - nodeList;
+
+    dbg_LogInformation("Deleting node[%i] in iterator[%i]", nodeId, iteratorId);
+
+    assert(iteratorId >= 0);
+    assert(iteratorId < ITERATOR_NUM);
+    assert(nodeId >= 0);
+    assert(nodeId < NODE_NUM);
 
     // Check if node belongs to iterator. Can do so by comparing last nodes
     Node* nodeToDelete = *node;
@@ -289,8 +305,7 @@ STATUS iter_DeleteNode(Iterator* iterator, Node** node)
         currNode = nextNode;
         nextNode = currNode->next;
     }
-    if (currNode != iterator->end)
-        return ret;
+    assert(currNode == iterator->end);
 
     // If previous node exists, tie previous and next nodes together
     if (nodeToDelete->prev)
@@ -312,6 +327,5 @@ STATUS iter_DeleteNode(Iterator* iterator, Node** node)
     emptyNodeIndex = nodeToDelete - nodeList;
     UNSET_BIT(initializedNodes, emptyNodeIndex);
     *node = NULL;
-    ret = SUCCESS;
-    return ret;
+    return SUCCESS;
 }

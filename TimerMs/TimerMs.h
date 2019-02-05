@@ -1,5 +1,5 @@
-#ifndef TIMER_H_
-#define TIMER_H_ 
+#ifndef TIMERMS_H_
+#define TIMERMS_H_ 
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,16 +8,16 @@ extern "C" {
 #include "util.h"
 
 /* Initialize timer */
-STATUS tmr_Initialize(void);
+STATUS tms_Initialize(void);
 
 /* Get time since start up in milliseconds */
-STATUS tmr_GetTimeMs(uint32* ellapsedTimeMs);
+STATUS tms_GetTimeMs(uint32* ellapsedTimeMs);
 
 /* Delay timer for time milliseconds */
-STATUS tmr_DelayMs(uint32 timeMs);
+STATUS tms_DelayMs(uint32 timeMs);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TIMER_H_ */
+#endif /* TIMERMS_H_ */

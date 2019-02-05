@@ -1,6 +1,6 @@
 #include "IO.h"
 #include "IOSettings.h"
-#include "IODriver.h"
+#include "Drivers/IODriver.h"
 #include "assert.h"
 #include <stdio.h>
 
@@ -20,7 +20,7 @@ static CallbackHandle msgReceivedHandle;
 static uint8 initialized = FALSE;
 
 /* Character array of end-of-message characters */
-static const char eomCharacters[] = IO_EOM_CHARACTERS;
+static const char* eomCharacters = IO_EOM_CHARACTERS;
 
 /* Helper to check if ch is an EOM char */
 static uint8 IsEOMChar(char);
@@ -127,7 +127,7 @@ STATUS io_DeleteMessageReceivedCallback(CallbackFunction callback)
 }
 
 /* Read input. If message is ready, will trigger message received event */
-STATUS io_ReadInput()
+STATUS io_ReadInput(void)
 {
     if (!initialized)
         return ERROR;

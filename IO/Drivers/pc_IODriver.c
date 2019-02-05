@@ -1,3 +1,5 @@
+#ifdef PC
+
 #include "IO/IODriver.h"
 #include <stdio.h>
 #include <conio.h>
@@ -33,3 +35,5 @@ STATUS ioDriver_GetChar(char* ch)
 
     return ret;
 }
+
+#endif /* PC */

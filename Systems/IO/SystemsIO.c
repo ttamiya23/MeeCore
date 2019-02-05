@@ -3,7 +3,6 @@
 #include "Systems/Systems.h"
 #include "Systems/SystemsSettings.h"
 #include "IO/IO.h"
-#include "Timer/Timer.h"
 #include "assert.h"
 #include <string.h>
 #include <stdlib.h>
@@ -195,13 +194,7 @@ static STATUS StateCommand(uint16 sysId, char** args, uint8 argsLength)
         ret = sys_GetState(sysId, &state);
     }
 
-
-    // If no success, print out ERROR and error code
-    if (ret != SUCCESS)
-        io_WriteString("ID:%i\r\nState:ERROR CODE 0x%08x\r\n", sysId, ret);
-    else
-        io_WriteString("ID:%i\r\nState:%i\r\n", sysId, state);
-
+    io_WriteString("ID:%i\r\nState:%i\r\nError:0x%08x\r\n", sysId, state, ret);
     return ret;
 }
 
@@ -234,17 +227,8 @@ static STATUS ParameterCommand(uint16 sysId, char** args, uint8 argsLength)
         ret = sys_GetParameter(sysId, paramNum, &parameter);
     }
 
-    // If no success, print out ERROR
-    if (ret != SUCCESS)
-    {
-        io_WriteString("ID:%i\r\nParameter[%i]:ERROR CODE 0x%08x\r\n", sysId,
-                paramNum, ret);
-    }
-    else
-    {
-        io_WriteString("ID:%i\r\nParameter[%i]:%f\r\n", sysId, paramNum,
-                parameter);
-    }
+    io_WriteString("ID:%i\r\nParameter[%i]:%f\r\nError:0x%08x\r\n", sysId,
+            paramNum, parameter, ret);
 
     return ret;
 }

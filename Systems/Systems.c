@@ -1,6 +1,7 @@
 #include "Systems.h"
 #include "SystemsSettings.h"
 #include "SystemDefinition.h"
+#include "Debug/Debug.h"
 #include "stdlib.h"
 #include "assert.h"
 
@@ -47,7 +48,7 @@ STATUS ReservedUpdate(System* sys);
 /* Private function to initialize reserved */
 STATUS InitializeReservedSystem(void)
 {
-    STATUS ret = ERROR;
+    dbg_LogInformation("Initializing reserved system[%i]", RESERVED_SYS);
 
     System* reservedSystem = systemList + RESERVED_SYS;
     reservedSystem->id = RESERVED_SYS;
@@ -58,8 +59,7 @@ STATUS InitializeReservedSystem(void)
     reservedSystem->update = ReservedUpdate;
     SET_BIT(initializedSystems, RESERVED_SYS);
 
-    ret = SUCCESS;
-    return ret;
+    return SUCCESS;
 }
 
 /* 
@@ -72,8 +72,6 @@ STATUS InitializeReservedSystem(void)
  */
 STATUS CheckSystemId(uint16 sysId, uint8 isNewSys)
 {
-    STATUS ret = ERROR;
-
     // Check if RESERVED_SYS is initialized
     if (!IS_BIT_SET(initializedSystems, RESERVED_SYS))
         InitializeReservedSystem();
@@ -82,9 +80,12 @@ STATUS CheckSystemId(uint16 sysId, uint8 isNewSys)
                 isNewSys && sysId == RESERVED_SYS                            ||
                 isNewSys && IS_BIT_SET(initializedSystems, sysId)            ||
                 !isNewSys && !IS_BIT_SET(initializedSystems, sysId);
-
-    ret = err ? ERROR : SUCCESS;
-    return ret;
+    if (err)
+    {
+        dbg_LogDebug("System[%i] is not a valid system", sysId);
+        return ERROR;
+    }
+    return SUCCESS;
 }
 
 /* Private Set State function for reserved (does nothing) */
@@ -112,6 +113,8 @@ STATUS ReservedUpdate(System* sys)
  */
 STATUS sys_AddSystem(uint16 sysId, STATUS (*initSys)(System*))
 {
+    dbg_LogInformation("Adding system %i", sysId);
+
     STATUS ret = CheckSystemId(sysId, TRUE);
     assert(ret == SUCCESS);
 
@@ -127,6 +130,8 @@ STATUS sys_AddSystem(uint16 sysId, STATUS (*initSys)(System*))
 /* Function to set a system to some state */
 STATUS sys_SetState(uint16 sysId, int8 state)
 {
+    dbg_LogDebug("Setting system[%i] state to %i", sysId, state);
+
     STATUS ret = CheckSystemId(sysId, FALSE);
     if (ret != SUCCESS)
         return ret;
@@ -140,9 +145,11 @@ STATUS sys_SetState(uint16 sysId, int8 state)
 /* Function to get the state of a system */
 STATUS sys_GetState(uint16 sysId, int8* state)
 {
-    STATUS ret = CheckSystemId(sysId, FALSE);
+    dbg_LogTrace("Getting system[%i] state", sysId);
+
     assert(state != NULL);
 
+    STATUS ret = CheckSystemId(sysId, FALSE);
     if (ret != SUCCESS)
         return ret;
 
@@ -155,10 +162,20 @@ STATUS sys_GetState(uint16 sysId, int8* state)
 /* Function to set a parameter of a system to some value */
 STATUS sys_SetParameter(uint16 sysId, uint8 parameterNum, float parameter)
 {
+    dbg_LogDebug("Setting system[%i] parameter[%i] to %f", sysId, parameterNum,
+        parameter);
+
     STATUS ret = CheckSystemId(sysId, FALSE);
 
-    if (ret != SUCCESS || parameterNum >= PARAMETER_NUM)
+    if (ret != SUCCESS)
+    {
         return ERROR;
+    }
+    else if (parameterNum >= PARAMETER_NUM)
+    {
+        dbg_LogDebug("Parameter[%i] is not a valid parameter", parameterNum);
+        return ERROR;
+    }
 
     System* currSystemPtr = systemList + sysId;
     ret = currSystemPtr->setParameter(currSystemPtr, parameterNum, parameter);
@@ -169,11 +186,20 @@ STATUS sys_SetParameter(uint16 sysId, uint8 parameterNum, float parameter)
 /* Function to get the parameter of a system */
 STATUS sys_GetParameter(uint16 sysId, uint8 parameterNum, float* parameter)
 {
-    STATUS ret = CheckSystemId(sysId, FALSE);
+    dbg_LogTrace("Getting system[%i] parameter[%i]", sysId, parameterNum);
+
     assert(parameter != NULL);
 
-    if (ret != SUCCESS || parameterNum >= PARAMETER_NUM)
+    STATUS ret = CheckSystemId(sysId, FALSE);
+    if (ret != SUCCESS)
+    {
         return ERROR;
+    }
+    else if (parameterNum >= PARAMETER_NUM)
+    {
+        dbg_LogDebug("Parameter[%i] is not a valid parameter", parameterNum);
+        return ERROR;
+    }
 
     *parameter = systemList[sysId].parameters[parameterNum];
 
@@ -184,9 +210,11 @@ STATUS sys_GetParameter(uint16 sysId, uint8 parameterNum, float* parameter)
 /* Function to get the value of a system */
 STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* value)
 {
-    STATUS ret = CheckSystemId(sysId, FALSE);
+    dbg_LogTrace("Getting system[%i] value[%i]", sysId, valueNum);
+
     assert(value != NULL);
 
+    STATUS ret = CheckSystemId(sysId, FALSE);
     if (ret != SUCCESS || valueNum >= VALUE_NUM)
         return ERROR;
 
@@ -199,10 +227,11 @@ STATUS sys_GetValue(uint16 sysId, uint8 valueNum, float* value)
 /* Function to get the description of a system */
 STATUS sys_GetHelp(uint16 sysId, const char** help)
 {
-    STATUS ret = CheckSystemId(sysId, FALSE);
+    dbg_LogTrace("Getting system[%i] help", sysId);
 
     assert(help != NULL);
 
+    STATUS ret = CheckSystemId(sysId, FALSE);
     if (ret != SUCCESS)
         return ret;
 
@@ -217,14 +246,19 @@ STATUS sys_Update(void)
 {
     STATUS ret = ERROR;
 
+    dbg_LogTrace("Updating each system");
+
     for (uint16 sysId = 0; sysId < SYSTEM_NUM; ++sysId)
     {
         ret = CheckSystemId(sysId, FALSE);
         if (ret != SUCCESS)
             continue;
 
+        dbg_LogTrace("Updating system[%i]", sysId);
         (systemList+sysId)->update(systemList+sysId);
     }
+
+    dbg_LogTrace("Updating finished");
 
     ret = SUCCESS;
     return ret;

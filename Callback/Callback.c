@@ -12,7 +12,7 @@ STATUS cb_CreateCallbackHandle(CallbackHandle* cbHandle)
 
     ret = iter_CreateIterator((Iterator**)cbHandle);
     if (ret == SUCCESS)
-        dbg_LogDebug("Created new cbHandle[%i]", *cbHandle);
+        dbg_LogInformation("Created new cbHandle[%i]", *cbHandle);
 
     return ret;
 }
@@ -27,7 +27,7 @@ STATUS cb_AddCallback(CallbackHandle cbHandle, CallbackFunction cbFunction)
 
     ret = iter_AddNode((Iterator*)cbHandle, cbFunction);
     if (ret == SUCCESS)
-        dbg_LogDebug("Added cbFunction to cbHandle[%i]", cbHandle);
+        dbg_LogInformation("Added cbFunction to cbHandle[%i]", cbHandle);
 
     return ret;
 }
@@ -67,7 +67,7 @@ STATUS cb_DeleteCallback(CallbackHandle cbHandle, CallbackFunction cbFunction)
     assert(cbHandle != NULL);
     assert(cbFunction != NULL);
 
-    dbg_LogDebug("Deleting cbFunction for cbHandle[%i]", cbHandle);
+    dbg_LogInformation("Deleting cbFunction for cbHandle[%i]", cbHandle);
     Node* node;
     ret = iter_FindNode((Iterator*)cbHandle, cbFunction, &node);
     if (ret != SUCCESS)
@@ -84,7 +84,7 @@ STATUS cb_DeleteCallbackHandle(CallbackHandle* cbHandle)
     assert(cbHandle != NULL);
     assert(*cbHandle != NULL);
 
-    dbg_LogDebug("Deleting cbHandle[%i]", *cbHandle);
+    dbg_LogInformation("Deleting cbHandle[%i]", *cbHandle);
 
     ret = iter_DeleteIterator((Iterator**)cbHandle);
     return ret;

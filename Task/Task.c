@@ -1,7 +1,7 @@
 #include "Task.h"
 #include "TaskSettings.h"
 #include "Iterator/Iterator.h"
-#include "Timer/Timer.h"
+#include "TimerMs/TimerMs.h"
 #include "Debug/Debug.h"
 #include "assert.h"
 
@@ -301,7 +301,7 @@ STATUS tsk_StartScheduler()
     while(TRUE)
     {
         // Tick every millisecond
-        tmr_GetTimeMs(&timeMs);
+        tms_GetTimeMs(&timeMs);
         diff = (uint32)(timeMs-lastMs);
         if (diff == 0)
             continue;

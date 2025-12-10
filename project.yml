@@ -1,0 +1,42 @@
+---
+:project:
+  :use_exceptions: FALSE
+  :use_test_preprocessor: :tests
+  :use_auxiliary_dependencies: TRUE
+  :build_root: build
+  :release_build: TRUE
+  :test_file_prefix: test_
+  :which_ce: .
+
+:paths:
+  :test:
+    - +:tests/**
+    - -:tests/support
+  :source:
+    - src/**
+  :support:
+    - tests/support
+
+:defines:
+  :test:
+    - MEECORE_USE_PROJECT_CONFIG
+    - TEST_MODE
+  :test_preprocess:
+    - MEECORE_USE_PROJECT_CONFIG
+    - "SERIAL_IO_BUFFER_LENGTH=16"
+
+:cmock:
+  :mock_prefix: mock_
+  :when_no_prototypes: :warn
+  :enforce_strict_ordering: TRUE
+  :plugins:
+    - :ignore
+    - :callback
+    - :return_thru_ptr
+    - :expect_any_args
+    - :array
+
+:plugins:
+  :enabled:
+    - module_generator
+...

@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 #include "util.h"
-#include "Systems/Systems.h"
-#include "Callback/Callback.h"
+#include "Systems.h"
+#include "Callback.h"
 
 /* Query the system and output result */
 STATUS sysio_Query(uint16 sysId);

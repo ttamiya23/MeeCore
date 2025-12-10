@@ -1,5 +1,4 @@
-#ifndef SYSTEMS_H_
-#define SYSTEMS_H_
+S_H_
 
 #ifdef __cplusplus
 extern "C" {

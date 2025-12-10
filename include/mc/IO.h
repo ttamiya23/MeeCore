@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include "util.h"
-#include "Callback/Callback.h"
+#include "Callback.h"
 #include <stdarg.h>
 
 /* Type of event args for message received event */

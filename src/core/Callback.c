@@ -1,6 +1,6 @@
 #include "Callback.h"
-#include "Iterator/Iterator.h"
-#include "Debug/Debug.h"
+#include "Iterator.h"
+#include "Debug.h"
 #include "assert.h"
 
 /* Request a callback handle */

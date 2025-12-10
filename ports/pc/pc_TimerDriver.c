@@ -1,8 +1,8 @@
 #ifdef PC
 
 #include "util.h"
-#include "TimerMs/TimerMsDriver.h"
-#include "Debug/Debug.h"
+#include "TimerMsDriver.h"
+#include "Debug.h"
 #include <time.h>
 #include <stdio.h>
 

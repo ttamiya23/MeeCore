@@ -1,7 +1,7 @@
 #include "Systems.h"
 #include "SystemsSettings.h"
 #include "SystemDefinition.h"
-#include "Debug/Debug.h"
+#include "Debug.h"
 #include "stdlib.h"
 #include "assert.h"
 

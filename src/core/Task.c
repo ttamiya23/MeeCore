@@ -1,8 +1,8 @@
 #include "Task.h"
 #include "TaskSettings.h"
-#include "Iterator/Iterator.h"
-#include "TimerMs/TimerMs.h"
-#include "Debug/Debug.h"
+#include "Iterator.h"
+#include "TimerMs.h"
+#include "Debug.h"
 #include "assert.h"
 
 /* Definition of struct Task */

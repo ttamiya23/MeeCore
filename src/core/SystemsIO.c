@@ -1,8 +1,8 @@
 #include "SystemsIO.h"
 #include "SystemsIOSettings.h"
-#include "Systems/Systems.h"
-#include "Systems/SystemsSettings.h"
-#include "IO/IO.h"
+#include "Systems.h"
+#include "SystemsSettings.h"
+#include "IO.h"
 #include "assert.h"
 #include <string.h>
 #include <stdlib.h>

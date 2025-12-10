@@ -1,6 +1,6 @@
 #include "Iterator.h"
 #include "IteratorSettings.h"
-#include "Debug/Debug.h"
+#include "Debug.h"
 #include "assert.h"
 
 /* Definition of Iterator struct */

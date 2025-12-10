@@ -3,7 +3,7 @@
 #if DEBUG_LOG_LEVEL > LOG_LEVEL_NONE
 
 #include <stdarg.h>
-#include "IO/IO.h"
+#include "IO.h"
 
 /* Log a debug message with a specified log level */
 STATUS dbg_Log(uint8 level, const char* format, ...)

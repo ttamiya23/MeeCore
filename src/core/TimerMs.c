@@ -1,6 +1,6 @@
 #include "TimerMs.h"
-#include "Drivers/TimerMsDriver.h"
-#include "Debug/Debug.h"
+#include "TimerMsDriver.h"
+#include "Debug.h"
 #include "assert.h"
 
 static uint8 initialized = 0;

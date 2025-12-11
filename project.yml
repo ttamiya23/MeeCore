@@ -44,10 +44,16 @@
 :plugins:
   :enabled:
     - module_generator
+    - report_tests_log_factory
 
 :flags:
   :test:
     :compile:
       :add:
         - -Iinclude
+
+:report_tests_log_factory:
+  :reports:
+    - cppunit
+
 ...

@@ -1,34 +1,29 @@
-#ifndef UTIL_H_
-#define UTIL_H_ 
+#ifndef MC_UTILS_H_
+#define MC_UTILS_H_
 
-#define ON 1
-#define OFF 0
-#define TRUE 1
-#define FALSE 0
-#ifndef NULL
-    #define NULL 0
-#endif /* NULL */
-#define SUCCESS 0
-#define ERROR 1
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#define IS_BIT_SET(value, bit) (value & (1 << bit))
-#define SET_BIT(value, bit) value |= (1 << bit)
-#define UNSET_BIT(value, bit) value &= ~(1 << bit)
-#define TOGGLE_BIT(value, bit) value ^= (1 << bit)
+#define MC_ON  1
+#define MC_OFF 0
+#define MC_BIT_CHECK(val, bit)  ((val) & (1U << (bit)))
+#define MC_BIT_SET(val, bit)    ((val) |= (1U << (bit)))
+#define MC_BIT_CLEAR(val, bit)  ((val) &= ~(1U << (bit)))
+#define MC_BIT_TOGGLE(val, bit) ((val) ^= (1U << (bit)))
+#define MC_STR_HELPER(x) #x
+#define MC_STR(x) MC_STR_HELPER(x)
 
-#define STR(str) #str
-#define XSTR(str) STR(str)
+#ifndef MC_MIN
+    #define MC_MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
 
-typedef signed char int8;
-typedef short int16; 
-typedef signed long int32; 
-typedef long long int64; 
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned long uint32;
-typedef unsigned long long uint64;
-//typedef unsigned int bool;
+#ifndef MC_MAX
+    #define MC_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
 
-typedef uint8 STATUS;
+#ifndef MC_ARRAY_SIZE
+    #define MC_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+#endif
 
-#endif /* UTIL_H_ */
+#endif /* MC_UTILS_H_ */

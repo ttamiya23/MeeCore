@@ -14,6 +14,9 @@
     - -:tests/support
   :source:
     - src/**
+    - include/**
+  :include:
+    - include/**
   :support:
     - tests/support
 
@@ -35,8 +38,16 @@
     - :return_thru_ptr
     - :expect_any_args
     - :array
+    - :ignore_arg
+    - :cexception
 
 :plugins:
   :enabled:
     - module_generator
+
+:flags:
+  :test:
+    :compile:
+      :add:
+        - -Iinclude
 ...

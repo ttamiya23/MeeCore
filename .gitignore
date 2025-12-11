@@ -3,3 +3,4 @@ Main.c
 *.gch
 build
 cmake_build
+.vscode/*

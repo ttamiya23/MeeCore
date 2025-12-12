@@ -156,7 +156,6 @@ mc_node_t *mc_list_peek_tail(mc_list_t *list)
 
 mc_node_t *mc_list_next(mc_node_t *node)
 {
-    CHECK_NODE(node);
     if (node == NULL)
     {
         return NULL;
@@ -166,7 +165,6 @@ mc_node_t *mc_list_next(mc_node_t *node)
 
 mc_node_t *mc_list_prev(mc_node_t *node)
 {
-    CHECK_NODE(node);
     if (node == NULL)
     {
         return NULL;

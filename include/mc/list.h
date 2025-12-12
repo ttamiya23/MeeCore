@@ -38,6 +38,12 @@ extern "C"
 #define MC_LIST_FOR_EACH(pos, list) \
     for (pos = mc_list_peek_head(list); pos != NULL; pos = mc_list_next(pos))
 
+/* Iterate safely (allows removing the current node). */
+#define MC_LIST_FOR_EACH_SAFE(pos, storage, list)                    \
+    for (pos = mc_list_peek_head(list), storage = mc_list_next(pos); \
+         pos != NULL;                                                \
+         pos = storage, storage = mc_list_next(pos))
+
     typedef struct mc_node_t
     {
         struct mc_node_t *next;

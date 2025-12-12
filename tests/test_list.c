@@ -146,6 +146,58 @@ void test_macro_entry_should_recover_parent_struct(void)
     TEST_ASSERT_EQUAL_INT(10, recovered_item->id);
 }
 
+void test_macro_entry_should_iterate_list(void)
+{
+    mc_list_t list;
+    my_data_t item1 = {.id = 10};
+    my_data_t item2 = {.id = 20};
+    my_data_t item3 = {.id = 30};
+    mc_list_init(&list);
+    mc_list_append(&list, &item1.node);
+    mc_list_append(&list, &item2.node);
+    mc_list_append(&list, &item3.node);
+    int i = 0;
+    my_data_t *expected[] = {&item1, &item2, &item3};
+    mc_node_t *curr;
+    MC_LIST_FOR_EACH(curr, &list)
+    {
+        // Assert it matches the original object
+        TEST_ASSERT_EQUAL_PTR(&expected[i]->node, curr);
+        i++;
+    }
+}
+
+void test_macro_entry_should_iterate_list_safely(void)
+{
+    mc_list_t list;
+    my_data_t item1 = {.id = 10};
+    my_data_t item2 = {.id = 20};
+    my_data_t item3 = {.id = 30};
+    mc_list_init(&list);
+    mc_list_append(&list, &item1.node);
+    mc_list_append(&list, &item2.node);
+    mc_list_append(&list, &item3.node);
+    int i = 0;
+    my_data_t *expected[] = {&item1, &item2, &item3};
+    mc_node_t *curr, *temp;
+
+    MC_LIST_FOR_EACH_SAFE(curr, temp, &list)
+    {
+        // Assert it matches the original object
+        TEST_ASSERT_EQUAL_PTR(&expected[i]->node, curr);
+        // Remove middle element
+        if (i == 1)
+        {
+            mc_list_remove(&list, curr);
+        }
+        i++;
+    }
+    // Expect list to be [1, 3]
+    TEST_ASSERT_EQUAL_UINT32(2, mc_list_count(&list));
+    TEST_ASSERT_EQUAL_PTR(&item1.node, mc_list_peek_head(&list));
+    TEST_ASSERT_EQUAL_PTR(&item3.node, mc_list_peek_tail(&list));
+}
+
 void test_peek_should_return_null_when_empty(void)
 {
     mc_list_t list;
@@ -292,7 +344,7 @@ void test_append_should_assert_if_list_is_null(void)
     TEST_ASSERT_DEATH(mc_list_append(NULL, &item1.node));
 }
 
-void test_append_should_assert_if_magic_number_is_corrupt(void)
+void test_append_should_assert_if_initialized(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};

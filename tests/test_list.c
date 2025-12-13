@@ -344,7 +344,7 @@ void test_append_should_assert_if_list_is_null(void)
     TEST_ASSERT_DEATH(mc_list_append(NULL, &item1.node));
 }
 
-void test_append_should_assert_if_initialized(void)
+void test_append_should_assert_if_list_not_initialized(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};

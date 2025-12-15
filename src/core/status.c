@@ -13,6 +13,7 @@ bool mc_status_is_critical(mc_status_t status)
     case MC_ERROR_BUSY:
     case MC_ERROR_TIMEOUT:
     case MC_ERROR_NO_RESPONSE:
+    case MC_ERROR_NO_RESOURCE:
         return false;
 
     // --- CRITICAL ---
@@ -46,6 +47,8 @@ const char *mc_status_to_string(mc_status_t status)
         return "NOT_SUPPORTED";
     case MC_ERROR_NO_RESPONSE:
         return "NO_RESPONSE";
+    case MC_ERROR_NO_RESOURCE:
+        return "NO_RESOURCE";
     default:
         return "UNKNOWN";
     }

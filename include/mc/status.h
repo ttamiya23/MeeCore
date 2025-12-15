@@ -7,43 +7,42 @@
 /**
  * @brief Standard Status Codes for MeeCore
  */
-typedef enum {
-    MC_OK = 0,                  // Success (Always 0)
-    MC_ERROR = -1,              // Generic Error
-    MC_ERROR_INVALID_ARGS = -2, // NULL pointer or bad input
-    MC_ERROR_BUSY = -3,         // Resource is locked/busy
-    MC_ERROR_TIMEOUT = -4,      // Operation timed out (Software timer expired)
-    MC_ERROR_NO_MEM = -5,       // Malloc failed or buffer full
-    MC_ERROR_NOT_SUPPORTED = -6,// Feature not implemented on this MCU
-    MC_ERROR_NO_RESPONSE = -7   // Peripheral did not acknowledge (NACK) or is disconnected
+typedef enum
+{
+    MC_OK = 0,                   // Success (Always 0)
+    MC_ERROR = -1,               // Generic Error
+    MC_ERROR_INVALID_ARGS = -2,  // NULL pointer or bad input
+    MC_ERROR_BUSY = -3,          // Resource is locked/busy
+    MC_ERROR_TIMEOUT = -4,       // Operation timed out (Software timer expired)
+    MC_ERROR_NO_MEM = -5,        // Malloc failed or heap full
+    MC_ERROR_NOT_SUPPORTED = -6, // Feature not implemented on this MCU
+    MC_ERROR_NO_RESPONSE = -7,   // Peripheral did not acknowledge (NACK) or is disconnected
+    MC_ERROR_NO_RESOURCE = -8,   // The fixed resource (buffer) limit was hit.
 } mc_status_t;
 
 /**
- * @brief Checks if an error is severe enough to warrant a system halt/reset.
- * * @details
+ * Checks if an error is severe enough to warrant a system halt/reset.
  * * **CRITICAL (Returns true):**
- * These errors indicate a bug in the firmware logic, memory corruption, 
+ * These errors indicate a bug in the firmware logic, memory corruption,
  * or a misconfiguration that runtime logic cannot fix.
  * - MC_ERROR_INVALID_ARGS:  Programmer error (e.g., passing NULL).
  * - MC_ERROR_NO_MEM:        Heap exhaustion or buffer under-provisioning.
  * - MC_ERROR_NOT_SUPPORTED: Invalid system configuration.
  * * **RECOVERABLE (Returns false):**
- * These errors are environmental or transient. The system should 
+ * These errors are environmental or transient. The system should
  * log the warning and retry the operation.
- * - MC_OK:                  Success is never critical.
- * - MC_ERROR:               Generic runtime failure.
- * - MC_ERROR_BUSY:          Resource contention (wait and retry).
- * - MC_ERROR_TIMEOUT:       Timing glitch (watchdog kick or retry).
- * - MC_ERROR_NO_RESPONSE:   Hardware disconnected or sleeping.
- * * @param status The status code to check.
- * @return true if the error is CRITICAL (System should Assert/Reset).
- * @return false if the error is RECOVERABLE (System should Retry).
+ * - MC_OK:                Success is never critical.
+ * - MC_ERROR:             Generic runtime failure.
+ * - MC_ERROR_BUSY:        Resource contention (wait and retry).
+ * - MC_ERROR_TIMEOUT:     Timing glitch (watchdog kick or retry).
+ * - MC_ERROR_NO_RESPONSE: Hardware disconnected or sleeping.
+ * - MC_ERROR_RESOURCE:    Resource limit reached (retry with less data).
  */
 bool mc_status_is_critical(mc_status_t status);
 
 /**
  * @brief Converts status code to string for logging.
  */
-const char* mc_status_to_string(mc_status_t status);
+const char *mc_status_to_string(mc_status_t status);
 
 #endif /* MC_STATUS_H_ */

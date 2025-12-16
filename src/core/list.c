@@ -1,11 +1,11 @@
 #include "mc/list.h"
 #include "mc/common.h"
 
-#define CHECK_LIST(list)                      \
-    do                                        \
-    {                                         \
-        MC_ASSERT(list != NULL);              \
-        MC_ASSERT(list->is_initialized == 1); \
+#define CHECK_LIST(list)                                   \
+    do                                                     \
+    {                                                      \
+        MC_ASSERT(list != NULL);                           \
+        MC_ASSERT(list->is_initialized == MC_INITIALIZED); \
     } while (0)
 
 #define CHECK_NODE(node)         \
@@ -19,7 +19,7 @@ void mc_list_init(mc_list_t *list)
     list->head = NULL;
     list->tail = NULL;
     list->count = 0;
-    list->is_initialized = 1;
+    list->is_initialized = MC_INITIALIZED;
 }
 
 void mc_list_append(mc_list_t *list, mc_node_t *node)

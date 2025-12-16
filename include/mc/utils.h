@@ -27,6 +27,9 @@
 #define MC_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 #endif
 
+// Magic number to define whether something is initialized or not
+#define MC_INITIALIZED 0x23
+
 void mc_assert_handler(const char *expr, const char *file, int line);
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)

@@ -2,11 +2,11 @@
 #include "mc/common.h"
 #include <stdio.h>
 
-#define CHECK_IO(io)                        \
-    do                                      \
-    {                                       \
-        MC_ASSERT(io != NULL);              \
-        MC_ASSERT(io->is_initialized == 1); \
+#define CHECK_IO(io)                                     \
+    do                                                   \
+    {                                                    \
+        MC_ASSERT(io != NULL);                           \
+        MC_ASSERT(io->is_initialized == MC_INITIALIZED); \
     } while (0)
 
 // Helper: convert mc_io_status_t to mc_status_t
@@ -60,7 +60,7 @@ void mc_io_init(mc_io_t *io, const mc_io_driver_t *driver,
     io->rx_index = 0;
     io->tx_buffer = tx_buffer;
     io->tx_buffer_len = tx_len;
-    io->is_initialized = 1;
+    io->is_initialized = MC_INITIALIZED;
 
     mc_event_init(&io->rx_event);
 }
@@ -160,7 +160,7 @@ mc_status_t mc_io_update(mc_io_t *io)
 
 uint8_t mc_io_get_status(mc_io_t *io)
 {
-    if (!io || io->is_initialized != 1)
+    if (!io || io->is_initialized != MC_INITIALIZED)
     {
         return MC_IO_STATUS_ERROR;
     }

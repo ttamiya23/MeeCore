@@ -8,8 +8,6 @@
 #include "mock_utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
-// --- 1. MOCK HARDWARE ---
-
 #define MOCK_RX_SIZE 256
 #define MOCK_TX_SIZE 256
 
@@ -94,7 +92,7 @@ void push_string(const char *str)
     }
 }
 
-void setup()
+void setUp()
 {
     // Reset Hardware
     hw.input_head = 0;
@@ -117,8 +115,6 @@ void setup()
 
 void test_read_should_fire_event()
 {
-    setup();
-
     push_string("Hello\n");
     mc_status_t res = mc_io_update(&io);
 
@@ -137,8 +133,6 @@ void test_read_should_fire_event()
 
 void test_read_should_handle_multiple_delimiters()
 {
-    setup();
-
     // Send "CMD1\r" (Mac Style) then "CMD2\r\n" (Windows Style)
     push_string("CMD1\r\r\n");
 
@@ -155,8 +149,6 @@ void test_read_should_handle_multiple_delimiters()
 
 void test_read_long_message_should_set_overflow()
 {
-    setup();
-
     // Buffer is 32 bytes. We send 40 chars + newline.
     // "1234567890123456789012345678901234567890\n"
     push_string("1234567890123456789012345678901234567890\n");
@@ -190,8 +182,6 @@ void test_read_long_message_should_set_overflow()
 
 void test_read_should_handle_fragmentation()
 {
-    setup();
-
     // Send partial packet
     push_string("Hel");
     mc_status_t res = mc_io_update(&io);
@@ -210,8 +200,6 @@ void test_read_should_handle_fragmentation()
 
 void test_write_sends_bytes()
 {
-    setup();
-
     char msg[] = {'a', 'd', '-', 0, 3};
     mc_io_write(&io, msg, 5);
 
@@ -220,8 +208,6 @@ void test_write_sends_bytes()
 
 void test_printf_success()
 {
-    setup();
-
     mc_io_printf(&io, "Val: %d", 42);
 
     TEST_ASSERT_EQUAL_STRING("Val: 42", hw.output_data);
@@ -229,8 +215,6 @@ void test_printf_success()
 
 void test_io_status_gets_coverted_to_generic_status()
 {
-    setup();
-
     // Simulate a hardware fault. Update should return error too.
     hw.status = MC_IO_STATUS_ERROR;
     TEST_ASSERT_EQUAL_INT8(MC_ERROR, mc_io_update(&io));
@@ -268,5 +252,6 @@ void test_update_should_assert_if_io_is_null(void)
 void test_update_should_assert_if_io_not_initialized(void)
 {
     mc_io_t new_io;
+
     TEST_ASSERT_DEATH(mc_io_update(&new_io));
 }

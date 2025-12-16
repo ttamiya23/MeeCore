@@ -10,8 +10,6 @@ extern "C"
 #include <stdbool.h>
 #include <stddef.h> // For offsetof
 
-#define MC_LIST_INIT_DEFAULT {.head = NULL, .tail = NULL, .count = 0, .is_initialized = 1}
-
 /** Macro to get the parent struct from the node pointer
  *  Example:
  * * @code
@@ -58,7 +56,7 @@ extern "C"
         uint8_t is_initialized;
     } mc_list_t;
 
-    /* Initialize empty list. Same as doing `mc_list_t list = MC_LIST_INIT_DEFAULT;` */
+    /* Initialize empty list. */
     void mc_list_init(mc_list_t *list);
 
     /* Add a node to the end of the list. */

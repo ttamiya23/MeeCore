@@ -21,26 +21,6 @@ typedef enum
 } mc_status_t;
 
 /**
- * Checks if an error is severe enough to warrant a system halt/reset.
- * * **CRITICAL (Returns true):**
- * These errors indicate a bug in the firmware logic, memory corruption,
- * or a misconfiguration that runtime logic cannot fix.
- * - MC_ERROR_INVALID_ARGS:  Programmer error (e.g., passing NULL).
- * - MC_ERROR_NO_MEM:        Heap exhaustion or buffer under-provisioning.
- * - MC_ERROR_NOT_SUPPORTED: Invalid system configuration.
- * * **RECOVERABLE (Returns false):**
- * These errors are environmental or transient. The system should
- * log the warning and retry the operation.
- * - MC_OK:                Success is never critical.
- * - MC_ERROR:             Generic runtime failure.
- * - MC_ERROR_BUSY:        Resource contention (wait and retry).
- * - MC_ERROR_TIMEOUT:     Timing glitch (watchdog kick or retry).
- * - MC_ERROR_NO_RESPONSE: Hardware disconnected or sleeping.
- * - MC_ERROR_RESOURCE:    Resource limit reached (retry with less data).
- */
-bool mc_status_is_critical(mc_status_t status);
-
-/**
  * @brief Converts status code to string for logging.
  */
 const char *mc_status_to_string(mc_status_t status);

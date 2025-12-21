@@ -16,8 +16,9 @@ static mc_status_t convert_status(mc_sys_status_t status)
     case MC_SYS_OK:
         return MC_OK;
     case MC_SYS_ERR:
-    case MC_SYS_ERR_HW_ERROR:
         return MC_ERROR;
+    case MC_SYS_ERR_HW_ERROR:
+        return MC_ERROR_HARDWARE_FAULT;
     case MC_SYS_ERR_INVALID_MEMBER:
     case MC_SYS_ERR_INVALID_ARGS:
         return MC_ERROR_INVALID_ARGS;

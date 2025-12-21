@@ -36,7 +36,7 @@ void add_to_num_and_unregister(void *context, void *arg)
     mc_event_unregister(data->event, data->callback);
 }
 
-void test_event_trigger_should_invoke_callbacks(void)
+void test_event_trigger_invokes_callbacks(void)
 {
     mc_event_t event;
     mc_callback_t callback;
@@ -56,7 +56,7 @@ void test_event_trigger_should_invoke_callbacks(void)
     TEST_ASSERT_EQUAL_INT(8, data.num);
 }
 
-void test_unregister_during_event_trigger_should_be_safe(void)
+void test_unregister_during_event_trigger_succeeds(void)
 {
     mc_event_t event;
     mc_callback_t callback_1;
@@ -93,7 +93,7 @@ void test_unregister_during_event_trigger_should_be_safe(void)
     TEST_ASSERT_EQUAL_INT(4, data_2.num);
 }
 
-void test_should_assert_if_event_is_null(void)
+void test_assert_death_if_event_is_null(void)
 {
     mc_callback_t callback;
     my_data_t data;
@@ -108,7 +108,7 @@ void test_should_assert_if_event_is_null(void)
     TEST_ASSERT_DEATH(mc_event_trigger(NULL, &increment));
 }
 
-void test_should_assert_if_callback_is_null(void)
+void test_assert_death_if_callback_is_null(void)
 {
     mc_event_t event;
     my_data_t data;
@@ -121,7 +121,7 @@ void test_should_assert_if_callback_is_null(void)
     TEST_ASSERT_DEATH(mc_event_unregister(&event, NULL));
 }
 
-void test_should_assert_if_event_not_initialized(void)
+void test_assert_death_if_event_not_initialized(void)
 {
     mc_event_t event;
     mc_callback_t callback;
@@ -136,7 +136,7 @@ void test_should_assert_if_event_not_initialized(void)
     TEST_ASSERT_DEATH(mc_event_trigger(&event, &increment));
 }
 
-void test_should_assert_if_callback_not_initialized(void)
+void test_assert_death_if_callback_not_initialized(void)
 {
     mc_event_t event;
     mc_callback_t callback;

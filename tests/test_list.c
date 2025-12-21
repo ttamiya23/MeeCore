@@ -9,7 +9,7 @@ typedef struct
     mc_node_t node; // The intrusive link
 } my_data_t;
 
-void test_list_init_should_zero_out_list(void)
+void test_init_zeros_out_list(void)
 {
     mc_list_t list;
     mc_list_init(&list);
@@ -18,7 +18,7 @@ void test_list_init_should_zero_out_list(void)
     TEST_ASSERT_EQUAL_UINT32(0, mc_list_count(&list));
 }
 
-void test_list_append_should_add_to_end(void)
+void test_append_adds_to_end(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -44,7 +44,7 @@ void test_list_append_should_add_to_end(void)
     TEST_ASSERT_EQUAL_PTR(&item1.node, item2.node.prev); // 2 <- 1
 }
 
-void test_list_prepend_should_add_to_front(void)
+void test_prepend_adds_to_front(void)
 {
     mc_list_t list;
     mc_list_init(&list);
@@ -69,7 +69,7 @@ void test_list_prepend_should_add_to_front(void)
     TEST_ASSERT_EQUAL_PTR(&item2.node, item1.node.prev); // 1 <- 2
 }
 
-void test_list_remove_should_handle_success(void)
+void test_remove_handle_succeeds(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -108,7 +108,7 @@ void test_list_remove_should_handle_success(void)
     TEST_ASSERT_EQUAL_UINT32(0, mc_list_count(&list));
 }
 
-void test_list_remove_should_handle_detatched_node(void)
+void test_remove_handles_detatched_node(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -128,7 +128,7 @@ void test_list_remove_should_handle_detatched_node(void)
     TEST_ASSERT_EQUAL_PTR(&item2.node, list.tail);
 }
 
-void test_macro_entry_should_recover_parent_struct(void)
+void test_macro_entry_recovers_parent_struct(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -146,7 +146,7 @@ void test_macro_entry_should_recover_parent_struct(void)
     TEST_ASSERT_EQUAL_INT(10, recovered_item->id);
 }
 
-void test_macro_entry_should_iterate_list(void)
+void test_macro_entry_iterates_list(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -167,7 +167,7 @@ void test_macro_entry_should_iterate_list(void)
     }
 }
 
-void test_macro_entry_should_iterate_list_safely(void)
+void test_macro_entry_iterates_list_safely(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -198,7 +198,7 @@ void test_macro_entry_should_iterate_list_safely(void)
     TEST_ASSERT_EQUAL_PTR(&item3.node, mc_list_peek_tail(&list));
 }
 
-void test_peek_should_return_null_when_empty(void)
+void test_peek_returns_null_if_empty(void)
 {
     mc_list_t list;
     mc_list_init(&list);
@@ -207,7 +207,7 @@ void test_peek_should_return_null_when_empty(void)
     TEST_ASSERT_NULL(mc_list_peek_tail(&list));
 }
 
-void test_peek_should_return_nodes_without_removing(void)
+void test_peek_returns_nodes_without_removing(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -226,7 +226,7 @@ void test_peek_should_return_nodes_without_removing(void)
     TEST_ASSERT_EQUAL_UINT32(2, mc_list_count(&list));
 }
 
-void test_pop_head_should_return_null_when_empty(void)
+void test_pop_head_returns_null_if_empty(void)
 {
     mc_list_t list;
     mc_list_init(&list);
@@ -237,7 +237,7 @@ void test_pop_head_should_return_null_when_empty(void)
     TEST_ASSERT_EQUAL_UINT32(0, mc_list_count(&list));
 }
 
-void test_pop_head_should_remove_first_item(void)
+void test_pop_head_removes_first_item(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -267,7 +267,7 @@ void test_pop_head_should_remove_first_item(void)
     TEST_ASSERT_EQUAL_UINT32(0, mc_list_count(&list));
 }
 
-void test_pop_tail_should_remove_first_item(void)
+void test_pop_tail_removes_first_item(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -297,7 +297,7 @@ void test_pop_tail_should_remove_first_item(void)
     TEST_ASSERT_EQUAL_UINT32(0, mc_list_count(&list));
 }
 
-void test_iteration_should_walk_list(void)
+void test_iteration_walks_list(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};
@@ -336,7 +336,7 @@ void test_iteration_should_walk_list(void)
     TEST_ASSERT_NULL(mc_list_prev(curr));
 }
 
-void test_append_should_assert_if_list_is_null(void)
+void test_append_assert_death_if_list_is_null(void)
 {
     my_data_t item1 = {.id = 10};
 
@@ -344,7 +344,7 @@ void test_append_should_assert_if_list_is_null(void)
     TEST_ASSERT_DEATH(mc_list_append(NULL, &item1.node));
 }
 
-void test_append_should_assert_if_list_not_initialized(void)
+void test_append_assert_death_if_list_not_initialized(void)
 {
     mc_list_t list;
     my_data_t item1 = {.id = 10};

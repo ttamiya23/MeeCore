@@ -113,7 +113,7 @@ void setUp()
     mc_io_register_rx_callback(&io, &cb_handle);
 }
 
-void test_read_should_fire_event()
+void test_read_fires_event()
 {
     push_string("Hello\n");
     mc_status_t res = mc_io_update(&io);
@@ -131,7 +131,7 @@ void test_read_should_fire_event()
     TEST_ASSERT_EQUAL_STRING("Good Bye", cb.data);
 }
 
-void test_read_should_handle_multiple_delimiters()
+void test_read_handles_multiple_delimiters()
 {
     // Send "CMD1\r" (Mac Style) then "CMD2\r\n" (Windows Style)
     push_string("CMD1\r\r\n");
@@ -147,7 +147,7 @@ void test_read_should_handle_multiple_delimiters()
     TEST_ASSERT_EQUAL_INT(1, cb.event_fired_count);
 }
 
-void test_read_long_message_should_set_overflow()
+void test_read_long_message_sets_overflow()
 {
     // Buffer is 32 bytes. We send 40 chars + newline.
     // "1234567890123456789012345678901234567890\n"
@@ -180,7 +180,7 @@ void test_read_long_message_should_set_overflow()
     TEST_ASSERT_EQUAL_STRING("Hello", cb.data);
 }
 
-void test_read_should_handle_fragmentation()
+void test_read_handles_fragmentation()
 {
     // Send partial packet
     push_string("Hel");
@@ -244,12 +244,12 @@ void test_io_status_gets_coverted_to_generic_status()
     TEST_ASSERT_EQUAL_INT8(MC_OK, mc_io_update(&io));
 }
 
-void test_update_should_assert_if_io_is_null(void)
+void test_assert_death_if_io_is_null(void)
 {
     TEST_ASSERT_DEATH(mc_io_update(NULL));
 }
 
-void test_update_should_assert_if_io_not_initialized(void)
+void test_assert_death_if_io_not_initialized(void)
 {
     mc_io_t new_io;
 

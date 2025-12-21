@@ -73,45 +73,10 @@ void test_invoke_succeeds()
 void test_error_gets_propogated()
 {
     // Invoking f1 should trigger errors
-    mc_status_t ret;
-    mc_sys_status_t sys_status;
     int32_t args[1];
-
-    args[0] = MC_SYS_OK;
-    ret = mc_sys_invoke(&sys, 1, args, 1);
-    sys_status = mc_sys_get_status(&sys);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(MC_SYS_OK, sys_status);
-
-    args[0] = MC_SYS_ERR;
-    ret = mc_sys_invoke(&sys, 1, args, 1);
-    sys_status = mc_sys_get_status(&sys);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR, ret);
-    TEST_ASSERT_EQUAL_INT32(MC_SYS_ERR, sys_status);
-
-    args[0] = MC_SYS_ERR_HW_ERROR;
-    ret = mc_sys_invoke(&sys, 1, args, 1);
-    sys_status = mc_sys_get_status(&sys);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_HARDWARE_FAULT, ret);
-    TEST_ASSERT_EQUAL_INT32(MC_SYS_ERR_HW_ERROR, sys_status);
-
-    args[0] = MC_SYS_ERR_INVALID_MEMBER;
-    ret = mc_sys_invoke(&sys, 1, args, 1);
-    sys_status = mc_sys_get_status(&sys);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
-    TEST_ASSERT_EQUAL_INT32(MC_SYS_ERR_INVALID_MEMBER, sys_status);
-
-    args[0] = MC_SYS_ERR_INVALID_ARGS;
-    ret = mc_sys_invoke(&sys, 1, args, 1);
-    sys_status = mc_sys_get_status(&sys);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
-    TEST_ASSERT_EQUAL_INT32(MC_SYS_ERR_INVALID_ARGS, sys_status);
-
-    args[0] = MC_SYS_ERR_NOT_IMPL;
-    ret = mc_sys_invoke(&sys, 1, args, 1);
-    sys_status = mc_sys_get_status(&sys);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_NOT_SUPPORTED, ret);
-    TEST_ASSERT_EQUAL_INT32(MC_SYS_ERR_NOT_IMPL, sys_status);
+    args[0] = MC_ERROR_BUSY;
+    mc_status_t ret = mc_sys_invoke(&sys, 1, args, 1);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_BUSY, ret);
 }
 
 void test_invalid_id_returns_error()
@@ -142,10 +107,8 @@ void test_unimplemented_methods_return_not_supported()
         .get_function_count = NULL,
         .get_input_count = NULL,
         .get_output_count = NULL};
-    mc_system_state_t null_sys_state;
     mc_system_t null_sys = {
         .driver = &null_sys_driver,
-        .state = &null_sys_state,
         .ctx = NULL};
 
     mc_sys_init(&null_sys);
@@ -183,16 +146,9 @@ void test_assert_death_if_null_pointer(void)
     TEST_ASSERT_DEATH(mc_sys_get_output_count(NULL));
 }
 
-void test_assert_death_if_uninitialized(void)
+void test_get_counts_succeeds()
 {
-    mc_system_t new_sys;
-    int32_t val;
-    int32_t args[1];
-    TEST_ASSERT_DEATH(mc_sys_invoke(&new_sys, 0, args, 1));
-    TEST_ASSERT_DEATH(mc_sys_write_input(&new_sys, 0, 1));
-    TEST_ASSERT_DEATH(mc_sys_read_input(&new_sys, 0, &val));
-    TEST_ASSERT_DEATH(mc_sys_read_output(&new_sys, 0, &val));
-    TEST_ASSERT_DEATH(mc_sys_get_function_count(&new_sys));
-    TEST_ASSERT_DEATH(mc_sys_get_input_count(&new_sys));
-    TEST_ASSERT_DEATH(mc_sys_get_output_count(&new_sys));
+    TEST_ASSERT_EQUAL_INT32(2, mc_sys_get_function_count(&sys));
+    TEST_ASSERT_EQUAL_INT32(2, mc_sys_get_input_count(&sys));
+    TEST_ASSERT_EQUAL_INT32(1, mc_sys_get_output_count(&sys));
 }

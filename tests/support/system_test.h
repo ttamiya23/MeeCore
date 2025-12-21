@@ -21,9 +21,9 @@ extern const mc_system_driver_t test_sys_driver;
 // Functions. Exposing them just for documentation purposes.
 
 // Increment y by 1.
-mc_sys_status_t increment_y(test_sys_ctx_t *data);
+mc_status_t increment_y(test_sys_ctx_t *data);
 
 // Just returns error.
-mc_sys_status_t returns_error(test_sys_ctx_t *data, int32_t error);
+mc_status_t returns_error(test_sys_ctx_t *data, int32_t error);
 
 #endif // SYSTEM_TEST_H_

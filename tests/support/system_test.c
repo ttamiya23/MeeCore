@@ -2,13 +2,13 @@
 #include "system_test.h"
 #include "mc/system/core.h"
 
-mc_sys_status_t test_sys_increment_y(test_sys_ctx_t *data)
+mc_status_t test_sys_increment_y(test_sys_ctx_t *data)
 {
     (data->y[0])++;
-    return MC_SYS_OK;
+    return MC_OK;
 }
 
-mc_sys_status_t test_sys_returns_error(test_sys_ctx_t *data, int32_t error)
+mc_status_t test_sys_returns_error(test_sys_ctx_t *data, int32_t error)
 {
     return error;
 }
@@ -20,8 +20,8 @@ void test_sys_init(void *ctx)
     memset(data->y, 0, TEST_SYS_Y_COUNT);
 }
 
-mc_sys_status_t test_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
-                                uint8_t arg_count)
+mc_status_t test_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
+                            uint8_t arg_count)
 {
     switch (func_id)
     {
@@ -34,25 +34,25 @@ mc_sys_status_t test_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
     }
 }
 
-mc_sys_status_t test_sys_write_input(void *ctx, uint8_t x_id, int32_t val)
+mc_status_t test_sys_write_input(void *ctx, uint8_t x_id, int32_t val)
 {
     test_sys_ctx_t *data = (test_sys_ctx_t *)ctx;
     data->x[x_id] = val;
-    return MC_SYS_OK;
+    return MC_OK;
 }
 
-mc_sys_status_t test_sys_read_input(void *ctx, uint8_t x_id, int32_t *val)
+mc_status_t test_sys_read_input(void *ctx, uint8_t x_id, int32_t *val)
 {
     test_sys_ctx_t *data = (test_sys_ctx_t *)ctx;
     *val = data->x[x_id];
-    return MC_SYS_OK;
+    return MC_OK;
 }
 
-mc_sys_status_t test_sys_read_output(void *ctx, uint8_t y_id, int32_t *val)
+mc_status_t test_sys_read_output(void *ctx, uint8_t y_id, int32_t *val)
 {
     test_sys_ctx_t *data = (test_sys_ctx_t *)ctx;
     *val = data->y[y_id];
-    return MC_SYS_OK;
+    return MC_OK;
 }
 
 uint8_t test_sys_get_function_count(void *ctx)

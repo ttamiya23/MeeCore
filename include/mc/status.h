@@ -29,4 +29,14 @@ typedef enum
  */
 const char *mc_status_to_string(mc_status_t status);
 
+#define MC_RETURN_IF_ERROR(x)   \
+    do                          \
+    {                           \
+        mc_status_t _err = (x); \
+        if (_err != MC_OK)      \
+        {                       \
+            return _err;        \
+        }                       \
+    } while (0)
+
 #endif /* MC_STATUS_H_ */

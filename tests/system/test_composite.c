@@ -81,3 +81,10 @@ void test_invoke_succeeds()
     TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
     TEST_ASSERT_EQUAL_INT32(1, ctx.test_2.y[0]);
 }
+
+void test_get_counts_succeeds()
+{
+    TEST_ASSERT_EQUAL_INT32(4, mc_sys_get_function_count(&sys));
+    TEST_ASSERT_EQUAL_INT32(4, mc_sys_get_input_count(&sys));
+    TEST_ASSERT_EQUAL_INT32(2, mc_sys_get_output_count(&sys));
+}

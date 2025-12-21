@@ -1,46 +1,12 @@
 #include "unity.h"
-#include "mc/device/digital.h"
 #include "mc/common.h"
+#include "mc/device/digital.h"
+#include "digital_driver_test.h"
 #include "mock_utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
-// Test struct for this test.
-typedef struct
-{
-    bool state;
-    uint8_t is_initialized;
-    mc_status_t error;
-} my_digital_ctx_t;
-
-void init(void *ctx)
-{
-    my_digital_ctx_t *digital_ctx = (my_digital_ctx_t *)ctx;
-    digital_ctx->is_initialized = MC_INITIALIZED;
-    digital_ctx->state = false;
-    digital_ctx->error = MC_OK;
-}
-
-mc_status_t set_state(void *ctx, bool state)
-{
-    my_digital_ctx_t *digital_ctx = (my_digital_ctx_t *)ctx;
-    digital_ctx->state = state;
-    return digital_ctx->error;
-}
-
-mc_status_t get_state(void *ctx, bool *state)
-{
-    my_digital_ctx_t *digital_ctx = (my_digital_ctx_t *)ctx;
-    *state = digital_ctx->state;
-    return digital_ctx->error;
-}
-
-const mc_digital_driver_t test_digital_driver = {
-    .init = init,
-    .set_state = set_state,
-    .get_state = get_state};
-
 // Globals
-my_digital_ctx_t ctx;
+test_digital_ctx_t ctx;
 MC_DEFINE_DIGITAL(dev, test_digital_driver, ctx);
 
 void setUp()

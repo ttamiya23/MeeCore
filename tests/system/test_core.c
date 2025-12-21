@@ -92,7 +92,7 @@ void test_error_gets_propogated()
     args[0] = MC_SYS_ERR_HW_ERROR;
     ret = mc_sys_invoke(&sys, 1, args, 1);
     sys_status = mc_sys_get_status(&sys);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR, ret);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_HARDWARE_FAULT, ret);
     TEST_ASSERT_EQUAL_INT32(MC_SYS_ERR_HW_ERROR, sys_status);
 
     args[0] = MC_SYS_ERR_INVALID_MEMBER;

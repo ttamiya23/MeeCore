@@ -19,6 +19,9 @@
     - include/**
   :support:
     - tests/support
+    # TODO: uncomment once all src files are compilable
+    # - src/**
+    - src/core/system/**
 
 :defines:
   :test:

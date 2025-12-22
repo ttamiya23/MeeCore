@@ -10,10 +10,12 @@ extern "C"
 
 // Macro for defining a system. Users should always use this.
 #define MC_DEFINE_SYSTEM(NAME, DRIVER, CTX) \
+    mc_system_state_t NAME##_state = {0};   \
+                                            \
     const mc_system_t NAME = {              \
         .driver = &DRIVER,                  \
         .ctx = (void *)(&CTX),              \
-    };
+        .state = &NAME##_state};
 
     /* System driver struct. */
     typedef struct mc_system_driver_t
@@ -40,11 +42,18 @@ extern "C"
         uint8_t (*get_output_count)(void *ctx);
     } mc_system_driver_t;
 
+    /* System state. */
+    typedef struct mc_system_state_t
+    {
+        uint8_t is_initialized;
+    } mc_system_state_t;
+
     /* System struct. */
     typedef struct mc_system_t
     {
         const mc_system_driver_t *driver;
         void *ctx;
+        mc_system_state_t *state;
     } mc_system_t;
 
     /* Initialize system. */

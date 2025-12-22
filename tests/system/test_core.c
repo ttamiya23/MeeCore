@@ -107,9 +107,11 @@ void test_unimplemented_methods_return_not_supported()
         .get_function_count = NULL,
         .get_input_count = NULL,
         .get_output_count = NULL};
+    mc_system_state_t state;
     mc_system_t null_sys = {
         .driver = &null_sys_driver,
-        .ctx = NULL};
+        .ctx = NULL,
+        .state = &state};
 
     mc_sys_init(&null_sys);
 
@@ -144,6 +146,21 @@ void test_assert_death_if_null_pointer(void)
     TEST_ASSERT_DEATH(mc_sys_get_function_count(NULL));
     TEST_ASSERT_DEATH(mc_sys_get_input_count(NULL));
     TEST_ASSERT_DEATH(mc_sys_get_output_count(NULL));
+}
+
+void test_assert_death_if_uninitialized(void)
+{
+    // Force uninitialized state
+    sys.state->is_initialized = 0;
+    int32_t val;
+    int32_t args[1];
+    TEST_ASSERT_DEATH(mc_sys_invoke(&sys, 0, args, 1));
+    TEST_ASSERT_DEATH(mc_sys_write_input(&sys, 0, 1));
+    TEST_ASSERT_DEATH(mc_sys_read_input(&sys, 0, &val));
+    TEST_ASSERT_DEATH(mc_sys_read_output(&sys, 0, &val));
+    TEST_ASSERT_DEATH(mc_sys_get_function_count(&sys));
+    TEST_ASSERT_DEATH(mc_sys_get_input_count(&sys));
+    TEST_ASSERT_DEATH(mc_sys_get_output_count(&sys));
 }
 
 void test_get_counts_succeeds()

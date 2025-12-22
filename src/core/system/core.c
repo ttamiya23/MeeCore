@@ -1,21 +1,30 @@
 #include "mc/system/core.h"
 #include "mc/common.h"
 
+#define CHECK_SYSTEM(sys)                                        \
+    do                                                           \
+    {                                                            \
+        MC_ASSERT(sys != NULL);                                  \
+        MC_ASSERT(sys->state->is_initialized == MC_INITIALIZED); \
+    } while (0)
+
 void mc_sys_init(const mc_system_t *sys)
 {
     MC_ASSERT(sys != NULL);
     MC_ASSERT(sys->driver != NULL);
+    MC_ASSERT(sys->state != NULL);
 
     if (sys->driver->init)
     {
         sys->driver->init(sys->ctx);
     }
+    sys->state->is_initialized = MC_INITIALIZED;
 }
 
 mc_status_t mc_sys_invoke(const mc_system_t *sys, uint8_t func_id,
                           int32_t *args, uint8_t arg_count)
 {
-    MC_ASSERT(sys != NULL);
+    CHECK_SYSTEM(sys);
 
     // Only assert if we actually expect arguments
     if (arg_count > 0)
@@ -36,7 +45,7 @@ mc_status_t mc_sys_invoke(const mc_system_t *sys, uint8_t func_id,
 mc_status_t mc_sys_write_input(const mc_system_t *sys, uint8_t x_id,
                                int32_t val)
 {
-    MC_ASSERT(sys != NULL);
+    CHECK_SYSTEM(sys);
 
     if (!sys->driver->write_input || !sys->driver->get_input_count)
     {
@@ -52,7 +61,7 @@ mc_status_t mc_sys_write_input(const mc_system_t *sys, uint8_t x_id,
 mc_status_t mc_sys_read_input(const mc_system_t *sys, uint8_t x_id,
                               int32_t *val)
 {
-    MC_ASSERT(sys != NULL);
+    CHECK_SYSTEM(sys);
     MC_ASSERT(val != NULL);
     *val = 0;
 
@@ -70,7 +79,7 @@ mc_status_t mc_sys_read_input(const mc_system_t *sys, uint8_t x_id,
 mc_status_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id,
                                int32_t *val)
 {
-    MC_ASSERT(sys != NULL);
+    CHECK_SYSTEM(sys);
     MC_ASSERT(val != NULL);
     *val = 0;
 
@@ -87,7 +96,7 @@ mc_status_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id,
 
 uint8_t mc_sys_get_function_count(const mc_system_t *sys)
 {
-    MC_ASSERT(sys != NULL);
+    CHECK_SYSTEM(sys);
 
     if (!sys->driver->get_function_count)
     {
@@ -98,7 +107,7 @@ uint8_t mc_sys_get_function_count(const mc_system_t *sys)
 
 uint8_t mc_sys_get_input_count(const mc_system_t *sys)
 {
-    MC_ASSERT(sys != NULL);
+    CHECK_SYSTEM(sys);
 
     if (!sys->driver->get_input_count)
     {
@@ -109,7 +118,7 @@ uint8_t mc_sys_get_input_count(const mc_system_t *sys)
 
 uint8_t mc_sys_get_output_count(const mc_system_t *sys)
 {
-    MC_ASSERT(sys != NULL);
+    CHECK_SYSTEM(sys);
 
     if (!sys->driver->get_output_count)
     {

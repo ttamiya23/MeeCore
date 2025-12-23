@@ -13,6 +13,9 @@ typedef struct
 {
     int32_t x[TEST_SYS_X_COUNT];
     int32_t y[TEST_SYS_Y_COUNT];
+    char *increment_y_name;
+    char *x0_name;
+    char *y0_name;
 } test_sys_ctx_t;
 
 // Test system driver. Look at system_test.c for more details.

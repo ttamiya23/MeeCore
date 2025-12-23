@@ -1,4 +1,5 @@
 #include "mc/system/modules/digital.h"
+#include <string.h>
 
 #define DIGITAL_SYS_X_COUNT 1
 #define DIGITAL_SYS_Y_COUNT 1
@@ -43,6 +44,37 @@ mc_status_t digital_sys_read_output(void *ctx, uint8_t y_id, int32_t *val)
     return mc_digital_get(digital_ctx->device, (bool *)val);
 }
 
+bool digital_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info)
+{
+    if (strcmp(cmd, "turnOn") == 0)
+    {
+        info->type = MC_CMD_TYPE_INPUT;
+        info->id = 0;
+        info->has_preset = true;
+        info->preset_val = 1;
+        return true;
+    }
+
+    if (strcmp(cmd, "turnOff") == 0)
+    {
+        info->type = MC_CMD_TYPE_INPUT;
+        info->id = 0;
+        info->has_preset = true;
+        info->preset_val = 0;
+        return true;
+    }
+
+    if (strcmp(cmd, "toggle") == 0)
+    {
+        info->type = MC_CMD_TYPE_FUNC;
+        info->id = 0;
+        info->has_preset = false;
+        return true;
+    }
+
+    return false;
+}
+
 uint8_t digital_sys_get_function_count(void *ctx)
 {
     return DIGITAL_SYS_F_COUNT;
@@ -64,6 +96,7 @@ const mc_system_driver_t mc_digital_sys_driver = {
     .write_input = digital_sys_write_input,
     .read_input = digital_sys_read_input,
     .read_output = digital_sys_read_output,
+    .parse_command = digital_parse_command,
     .get_function_count = digital_sys_get_function_count,
     .get_input_count = digital_sys_get_input_count,
     .get_output_count = digital_sys_get_output_count};

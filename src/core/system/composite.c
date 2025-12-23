@@ -174,6 +174,57 @@ mc_status_t mc_composite_invoke(void *ctx, const mc_composite_driver_t *driver,
     return MC_ERROR_INVALID_ARGS;
 }
 
+bool mc_composite_parse_command(void *ctx, const mc_composite_driver_t *driver,
+                                const char *cmd, mc_sys_cmd_info_t *info)
+{
+    CHECK_COMPOSITE(ctx, driver);
+
+    uint8_t f_offset = 0;
+    uint8_t x_offset = 0;
+    uint8_t y_offset = 0;
+    for (uint8_t i = 0; i < driver->count; i++)
+    {
+        const mc_system_driver_t *child_drv = driver->systems[i];
+        void *child_ctx = get_child_ctx(ctx, driver, i);
+
+        // Try parse with child system. If success, increment ID by offset and
+        // return.
+        if (child_drv->parse_command &&
+            child_drv->parse_command(child_ctx, cmd, info))
+        {
+            if (info->type == MC_CMD_TYPE_FUNC)
+            {
+                info->id += f_offset;
+            }
+            else if (info->type == MC_CMD_TYPE_INPUT)
+            {
+                info->id += x_offset;
+            }
+            else
+            {
+                info->id += y_offset;
+            }
+            return true;
+        }
+
+        // Increment offsets
+        if (child_drv->get_function_count)
+        {
+            f_offset += child_drv->get_function_count(child_ctx);
+        }
+        if (child_drv->get_input_count)
+        {
+            x_offset += child_drv->get_input_count(child_ctx);
+        }
+        if (child_drv->get_output_count)
+        {
+            y_offset += child_drv->get_output_count(child_ctx);
+        }
+    }
+
+    return false;
+}
+
 // --- Counting Functions ---
 uint8_t mc_composite_get_input_count(void *ctx,
                                      const mc_composite_driver_t *driver)

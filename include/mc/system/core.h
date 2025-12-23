@@ -17,6 +17,24 @@ extern "C"
         .ctx = (void *)(&CTX),              \
         .state = &NAME##_state};
 
+    // Enum of different command types
+    typedef enum mc_sys_cmd_type_t
+    {
+        MC_CMD_TYPE_UNKNOWN = 0,
+        MC_CMD_TYPE_INPUT,
+        MC_CMD_TYPE_OUTPUT,
+        MC_CMD_TYPE_FUNC
+    } mc_sys_cmd_type_t;
+
+    // System command struct
+    typedef struct mc_sys_cmd_info_t
+    {
+        mc_sys_cmd_type_t type;
+        uint8_t id;
+        bool has_preset;    // If true, use the value below.
+        int32_t preset_val; // e.g. 1 (for turnOn)
+    } mc_sys_cmd_info_t;
+
     /* System driver struct. */
     typedef struct mc_system_driver_t
     {
@@ -35,6 +53,10 @@ extern "C"
 
         // Read output value.
         mc_status_t (*read_output)(void *ctx, uint8_t y_id, int32_t *val);
+
+        // Parse a custom string command (e.g. "turnOn")
+        bool (*parse_command)(void *ctx, const char *cmd,
+                              mc_sys_cmd_info_t *info);
 
         // Member counts
         uint8_t (*get_function_count)(void *ctx);

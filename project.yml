@@ -3,6 +3,7 @@
   :use_exceptions: FALSE
   :use_test_preprocessor: :tests
   :use_auxiliary_dependencies: TRUE
+  :use_backtrace: :gdb
   :build_root: build
   :release_build: TRUE
   :test_file_prefix: test_
@@ -19,9 +20,7 @@
     - include/**
   :support:
     - tests/support
-    # TODO: uncomment once all src files are compilable
-    # - src/**
-    - src/core/system/**
+    - src/**
 
 :defines:
   :test:

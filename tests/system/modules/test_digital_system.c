@@ -3,7 +3,7 @@
 #include "mc/system/modules/digital.h"
 #include "mc/device/digital.h"
 #include "digital_driver_test.h"
-#include "mock_utils.h" // Needed for assert_helper.h
+#include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals. We will mock mc_digital functions.

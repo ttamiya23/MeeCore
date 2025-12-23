@@ -3,7 +3,7 @@
 #include "mc/system/composite.h"
 #include "system_test.h"
 #include "system_composite.h"
-#include "mock_utils.h" // Needed for assert_helper.h
+#include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals

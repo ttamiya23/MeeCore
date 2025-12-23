@@ -1,7 +1,7 @@
 #include "unity.h"
 #include "mc/system/core.h"
 #include "system_test.h"
-#include "mock_utils.h" // Needed for assert_helper.h
+#include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals

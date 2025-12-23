@@ -1,7 +1,7 @@
 #include "unity.h"
 #include "mc/event.h"
 #include "mc/list.h"
-#include "mock_utils.h" // Needed for assert_helper.h
+#include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Test struct for this test.

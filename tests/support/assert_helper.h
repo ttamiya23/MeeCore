@@ -2,13 +2,9 @@
 #define ASSERT_HELPER_H_
 
 #include "CException.h"
-#include "mock_utils.h"
 
 // Define a consistent error code for our throws
 #define ASSERTION_ERROR_CODE 1
-
-// Prototype for the stub
-void stub_assert_throw_exception(const char *expr, const char *file, int line, int num_calls);
 
 /**
  * @brief Macro to verify that a function call triggers an assertion.
@@ -18,8 +14,6 @@ void stub_assert_throw_exception(const char *expr, const char *file, int line, i
     do                                                                  \
     {                                                                   \
         CEXCEPTION_T e;                                                 \
-        /* Configure the mock to throw instead of return */             \
-        mc_assert_handler_Stub(stub_assert_throw_exception);            \
         Try                                                             \
         {                                                               \
             code_under_test;                                            \

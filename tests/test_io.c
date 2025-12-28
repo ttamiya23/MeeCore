@@ -6,7 +6,7 @@
 #include "mc/io.h"
 #include "mc/event.h"
 #include "mc/list.h"
-#include "fake_io.h"
+#include "fakes/fake_io.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 

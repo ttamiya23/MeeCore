@@ -1,8 +1,8 @@
 #include "unity.h"
 #include "mc/system/core.h"
 #include "mc/system/composite.h"
-#include "system/fake_system.h"
-#include "system/fake_composite.h"
+#include "fakes/system/fake_system.h"
+#include "fakes/system/fake_composite.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 

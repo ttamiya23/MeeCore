@@ -2,7 +2,7 @@
 #include "mc/system/core.h"
 #include "mc/system/modules/digital.h"
 #include "mc/device/digital.h"
-#include "device/fake_digital_driver.h"
+#include "fakes/device/fake_digital_driver.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 

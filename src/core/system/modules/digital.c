@@ -10,7 +10,7 @@ void digital_sys_init(void *ctx)
     mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
     digital_ctx->target_state = false;
 
-    mc_result_t current_state = mc_digital_get(digital_ctx->device);
+    mc_result_t current_state = mc_digital_get_state(digital_ctx->device);
     if (current_state.ok)
     {
         digital_ctx->target_state = current_state.value;
@@ -23,7 +23,7 @@ mc_status_t digital_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
     mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
 
     // Set target state to !current_state
-    MC_ASSIGN_OR_RETURN(current_state, mc_digital_get(digital_ctx->device));
+    MC_ASSIGN_OR_RETURN(current_state, mc_digital_get_state(digital_ctx->device));
     digital_ctx->target_state = !current_state;
 
     return mc_digital_toggle(digital_ctx->device);
@@ -33,7 +33,7 @@ mc_status_t digital_sys_write_input(void *ctx, uint8_t x_id, int32_t val)
 {
     mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
     digital_ctx->target_state = val;
-    return mc_digital_set(digital_ctx->device, val);
+    return mc_digital_set_state(digital_ctx->device, val);
 }
 
 mc_result_t digital_sys_read_input(void *ctx, uint8_t x_id)
@@ -45,7 +45,7 @@ mc_result_t digital_sys_read_input(void *ctx, uint8_t x_id)
 mc_result_t digital_sys_read_output(void *ctx, uint8_t y_id)
 {
     mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
-    return mc_digital_get(digital_ctx->device);
+    return mc_digital_get_state(digital_ctx->device);
 }
 
 bool digital_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info)

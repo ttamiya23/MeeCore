@@ -1,5 +1,4 @@
-#ifndef MC_STATUS_H_
-#define MC_STATUS_H_
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -51,6 +50,12 @@ static inline mc_result_t MC_ERR_VAL(mc_status_t err)
     return res;
 }
 
+// Helper for converting mc_stauts_t to mc_result_t. If ok, value is 0.
+static inline mc_result_t MC_STATUS_TO_RESULT(mc_status_t status)
+{
+    return status == MC_OK ? MC_OK_VAL(0) : MC_ERR_VAL(status);
+}
+
 /* Converts status code to string for logging. */
 const char *mc_status_to_string(mc_status_t status);
 
@@ -75,5 +80,3 @@ const char *mc_status_to_string(mc_status_t status);
         }                                  \
         (out_var) = _res.value;            \
     } while (0)
-
-#endif /* MC_STATUS_H_ */

@@ -1,5 +1,4 @@
-#ifndef ASSERT_HELPER_H_
-#define ASSERT_HELPER_H_
+#pragma once
 
 #include "CException.h"
 
@@ -26,5 +25,3 @@
             TEST_ASSERT_EQUAL(ASSERTION_ERROR_CODE, e);                 \
         }                                                               \
     } while (0)
-
-#endif // ASSERT_HELPER_H_

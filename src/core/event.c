@@ -1,7 +1,5 @@
 #include "mc/event.h"
-#include "mc/list.h"
-#include "mc/common.h"
-#include "assert.h"
+#include "mc/utils.h"
 
 void mc_event_init(mc_event_t *event)
 {

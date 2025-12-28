@@ -1,12 +1,11 @@
-#ifndef MC_SYSTEM_CORE_H_
-#define MC_SYSTEM_CORE_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include "mc/common.h"
+#include "mc/status.h"
 
 // Macro for defining a system. Users should always use this.
 #define MC_DEFINE_SYSTEM(NAME, DRIVER, CTX) \
@@ -107,5 +106,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MC_SYSTEM_CORE_H_ */

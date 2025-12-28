@@ -1,5 +1,4 @@
-#ifndef FAKE_IO_H_
-#define FAKE_IO_H_
+#pragma once
 
 #include "mc/io.h"
 
@@ -25,5 +24,3 @@ extern const mc_io_driver_t fake_io_driver;
 
 // Initialize IO using fake IO ctx
 void fake_io_init(mc_io_t *io, fake_io_ctx_t *ctx);
-
-#endif // FAKE_IO_H_

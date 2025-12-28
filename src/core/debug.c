@@ -1,6 +1,6 @@
 #include <stdarg.h>
-
 #include "mc/debug.h"
+#include "mc/utils.h"
 
 static mc_io_t *debug_io = NULL;
 static mc_log_level_t current_level = MC_LOG_LEVEL_TRACE;

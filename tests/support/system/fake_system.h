@@ -1,5 +1,4 @@
-#ifndef SYSTEM_FAKE_SYSTEM_H_
-#define SYSTEM_FAKE_SYSTEM_H_
+#pragma once
 
 #include <stdint.h>
 #include "mc/system/core.h"
@@ -28,5 +27,3 @@ mc_status_t increment_y(fake_sys_ctx_t *data);
 
 // Just returns error.
 mc_status_t returns_error(fake_sys_ctx_t *data, int32_t error);
-
-#endif // SYSTEM_FAKE_SYSTEM_H_

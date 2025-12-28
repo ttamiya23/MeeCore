@@ -1,4 +1,5 @@
 #include "mc/system/composite.h"
+#include "mc/utils.h"
 
 #define CHECK_COMPOSITE(ctx, driver) \
     do                               \

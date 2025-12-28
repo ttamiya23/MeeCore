@@ -1,4 +1,5 @@
 #include "device/fake_digital_driver.h"
+#include "mc/utils.h"
 
 void fake_digital_driver_init(void *ctx)
 {

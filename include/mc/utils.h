@@ -1,5 +1,4 @@
-#ifndef MC_UTILS_H_
-#define MC_UTILS_H_
+#pragma once
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -39,5 +38,3 @@ void mc_assert_handler(const char *expr, const char *file, int line);
     {                                                     \
         mc_assert_handler(#expr, __FILENAME__, __LINE__); \
     }
-
-#endif /* MC_UTILS_H_ */

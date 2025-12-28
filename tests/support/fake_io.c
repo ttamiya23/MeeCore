@@ -1,4 +1,5 @@
 #include "fake_io.h"
+#include <string.h>
 
 // RX buffer used for fake IO
 static char fake_rx[FAKE_RX_SIZE];

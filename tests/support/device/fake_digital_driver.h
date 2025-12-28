@@ -1,5 +1,4 @@
-#ifndef DEVICE_FAKE_DIGITAL_DRIVER_H_
-#define DEVICE_FAKE_DIGITAL_DRIVER_H_
+#pragma once
 
 #include <stdint.h>
 #include "mc/device/digital.h"
@@ -13,5 +12,3 @@ typedef struct fake_digital_ctx_t
 } fake_digital_ctx_t;
 
 extern const mc_digital_driver_t fake_digital_driver;
-
-#endif // DEVICE_FAKE_DIGITAL_DRIVER_H_

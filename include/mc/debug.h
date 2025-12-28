@@ -1,12 +1,11 @@
-#ifndef MC_DEBUG_H_
-#define MC_DEBUG_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include "mc/common.h"
+#include "mc/status.h"
 #include "mc/io.h"
 
 #ifndef MC_DEBUG_LOG_LEVEL
@@ -89,5 +88,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MC_DEBUG_H_ */

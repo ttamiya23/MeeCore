@@ -1,5 +1,4 @@
-#ifndef MC_SYSTEM_COMPOSITE_H
-#define MC_SYSTEM_COMPOSITE_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -151,5 +150,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MC_SYSTEM_COMPOSITE_H */

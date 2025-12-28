@@ -1,5 +1,4 @@
-#ifndef MC_LIST_H_
-#define MC_LIST_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -94,5 +93,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MC_LIST_H_ */

@@ -1,5 +1,6 @@
 #include "mc/system/core.h"
-#include "mc/common.h"
+#include "mc/status.h"
+#include "mc/utils.h"
 
 #define CHECK_SYSTEM(sys)                                        \
     do                                                           \

@@ -1,5 +1,4 @@
-#ifndef SYSTEM_COMPOSITE_H_
-#define SYSTEM_COMPOSITE_H_
+#pragma once
 
 #include "mc/system/composite.h"
 #include "system/fake_system.h"
@@ -13,5 +12,3 @@ typedef struct
 
 // Composite system combining two test_systems
 extern const mc_system_driver_t fake_composite_sys_driver;
-
-#endif // SYSTEM_COMPOSITE_H_

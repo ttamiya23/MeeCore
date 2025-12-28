@@ -1,5 +1,4 @@
-#ifndef MC_IO_H_
-#define MC_IO_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -9,7 +8,7 @@ extern "C"
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "mc/common.h"
+#include "mc/status.h"
 #include "mc/event.h"
 
     /* Status bits for IO state. */
@@ -86,5 +85,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MC_IO_H_ */

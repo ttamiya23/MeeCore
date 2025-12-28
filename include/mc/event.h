@@ -1,5 +1,4 @@
-#ifndef MC_EVENT_H_
-#define MC_EVENT_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -47,5 +46,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MC_EVENT_H_ */

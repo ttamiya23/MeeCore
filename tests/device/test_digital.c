@@ -1,5 +1,4 @@
 #include "unity.h"
-#include "mc/common.h"
 #include "mc/device/digital.h"
 #include "device/fake_digital_driver.h"
 #include "utils.h" // Needed for assert_helper.h

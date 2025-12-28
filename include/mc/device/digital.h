@@ -1,12 +1,12 @@
-#ifndef MC_DEVICE_DIGITAL_H_
-#define MC_DEVICE_DIGITAL_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include "mc/common.h"
+#include "mc/status.h"
+#include "mc/utils.h"
 #include <stdbool.h>
 
 #define MC_DEFINE_DIGITAL(NAME, DRIVER, CTX) \
@@ -75,5 +75,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif // MC_DEVICE_DIGITAL_H_

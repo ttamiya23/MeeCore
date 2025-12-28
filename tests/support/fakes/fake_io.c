@@ -15,8 +15,9 @@ static bool fake_io_write(void *ctx, char c)
     {
         h->output_data[h->output_index++] = c;
         h->output_data[h->output_index] = '\0'; // Keep null terminated for easy printing
+        return true;
     }
-    return true;
+    return false;
 }
 
 // Driver: Read (Reads from input buffer)
@@ -53,4 +54,12 @@ void fake_io_init(mc_io_t *io, fake_io_ctx_t *ctx)
     memset(fake_tx, 0, FAKE_TX_SIZE);
     mc_io_init(io, &fake_io_driver, ctx, fake_rx, FAKE_RX_SIZE, fake_tx,
                FAKE_TX_SIZE);
+}
+
+void fake_io_push_string(fake_io_ctx_t *ctx, const char *str)
+{
+    while (*str)
+    {
+        ctx->input_data[ctx->input_head++] = *str++;
+    }
 }

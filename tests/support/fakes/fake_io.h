@@ -24,3 +24,6 @@ extern const mc_io_driver_t fake_io_driver;
 
 // Initialize IO using fake IO ctx
 void fake_io_init(mc_io_t *io, fake_io_ctx_t *ctx);
+
+// Push string to input data.
+void fake_io_push_string(fake_io_ctx_t *ctx, const char *str);

@@ -31,15 +31,6 @@ mc_io_t io;
 my_callback cb;
 mc_callback_t cb_handle;
 
-// Helper: Push string to Mock RX FIFO
-void push_string(const char *str)
-{
-    while (*str)
-    {
-        ctx.input_data[ctx.input_head++] = *str++;
-    }
-}
-
 void setUp()
 {
     // Reset Core
@@ -54,7 +45,7 @@ void setUp()
 
 void test_read_fires_event()
 {
-    push_string("Hello\n");
+    fake_io_push_string(&ctx, "Hello\n");
     mc_status_t res = mc_io_update(&io);
 
     TEST_ASSERT_EQUAL_INT8(MC_OK, res);
@@ -62,7 +53,7 @@ void test_read_fires_event()
     TEST_ASSERT_EQUAL_STRING("Hello", cb.data);
 
     // Next message should trigger another event.
-    push_string("Good Bye\n");
+    fake_io_push_string(&ctx, "Good Bye\n");
     res = mc_io_update(&io);
 
     TEST_ASSERT_EQUAL_INT8(MC_OK, res);
@@ -73,7 +64,7 @@ void test_read_fires_event()
 void test_read_handles_multiple_delimiters()
 {
     // Send "CMD1\r" (Mac Style) then "CMD2\r\n" (Windows Style)
-    push_string("CMD1\r\r\n");
+    fake_io_push_string(&ctx, "CMD1\r\r\n");
 
     mc_io_update(&io);
     TEST_ASSERT_EQUAL_INT(1, cb.event_fired_count);
@@ -97,7 +88,7 @@ void test_read_long_message_sets_overflow()
 
     // Buffer is 32 bytes. We send 40 chars + newline.
     // "1234567890123456789012345678901234567890\n"
-    push_string("1234567890123456789012345678901234567890\n");
+    fake_io_push_string(&ctx, "1234567890123456789012345678901234567890\n");
 
     mc_status_t res = mc_io_update(&io);
     TEST_ASSERT_EQUAL_INT8(MC_ERROR_NO_RESOURCE, res);
@@ -108,7 +99,7 @@ void test_read_long_message_sets_overflow()
     TEST_ASSERT_EQUAL_STRING_LEN("1234567890123456789012345678901", cb.data, 31);
 
     // Next long message should keep overflow status.
-    push_string("Supercalifragilisticexpialidocious\n");
+    fake_io_push_string(&ctx, "Supercalifragilisticexpialidocious\n");
 
     res = mc_io_update(&io);
     TEST_ASSERT_EQUAL_INT8(MC_ERROR_NO_RESOURCE, res);
@@ -117,7 +108,7 @@ void test_read_long_message_sets_overflow()
     TEST_ASSERT_EQUAL_STRING_LEN("Supercalifragilisticexpialidoci", cb.data, 31);
 
     // Next short message should reset overflow.
-    push_string("Hello\n");
+    fake_io_push_string(&ctx, "Hello\n");
 
     res = mc_io_update(&io);
     TEST_ASSERT_EQUAL_INT8(MC_OK, res);
@@ -129,14 +120,14 @@ void test_read_long_message_sets_overflow()
 void test_read_handles_fragmentation()
 {
     // Send partial packet
-    push_string("Hel");
+    fake_io_push_string(&ctx, "Hel");
     mc_status_t res = mc_io_update(&io);
 
     TEST_ASSERT_EQUAL_INT8(MC_OK, res);
     TEST_ASSERT_EQUAL_INT(0, cb.event_fired_count);
 
     // Send rest of packet
-    push_string("lo\n");
+    fake_io_push_string(&ctx, "lo\n");
     res = mc_io_update(&io);
 
     TEST_ASSERT_EQUAL_INT8(MC_OK, res);
@@ -186,7 +177,7 @@ void test_io_status_gets_coverted_to_generic_status()
     TEST_ASSERT_EQUAL_INT8(MC_ERROR_NO_RESOURCE, mc_io_update(&io));
 
     // Receiving newline character should fix overflow status.
-    push_string("a\n");
+    fake_io_push_string(&ctx, "a\n");
     TEST_ASSERT_EQUAL_INT8(MC_OK, mc_io_update(&io));
 }
 

@@ -5,46 +5,17 @@
 #include "mc/io.h"
 #include "mc/event.h"
 #include "mc/list.h"
+#include "fake_io.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals helpers.
 mc_io_t io;
-char debug_output[1024];
-int index = 0;
-char tx_buffer[256];
-char rx_buffer[1];
-
-bool mock_write(void *ctx, char c)
-{
-    if (index < 1023)
-    {
-        debug_output[index++] = c;
-        debug_output[index] = '\0';
-    }
-    return true;
-}
-
-bool mock_read(void *ctx, char *c)
-{
-    return true;
-}
-
-uint8_t mock_get_status(void *ctx)
-{
-    return MC_IO_STATUS_OK;
-}
-
-const mc_io_driver_t mock_driver = {
-    .write_char = mock_write,
-    .read_char = mock_read,
-    .get_status = mock_get_status};
+fake_io_ctx_t ctx;
 
 void setUp()
 {
-    memset(debug_output, 0, sizeof(debug_output));
-    index = 0;
-    mc_io_init(&io, &mock_driver, NULL, rx_buffer, 1, tx_buffer, sizeof(tx_buffer));
+    fake_io_init(&io, &ctx);
     mc_debug_init(&io);
     mc_debug_set_level(MC_LOG_LEVEL_DEBUG);
 }
@@ -56,15 +27,15 @@ void test_log_filters_lower_level_messages()
 
     // Log an INFO message (Should be ignored)
     MC_LOG_INFORMATION("This should be invisible");
-    TEST_ASSERT_EQUAL_STRING("", debug_output);
+    TEST_ASSERT_EQUAL_STRING("", ctx.output_data);
 
     // Log a WARN message (Should appear)
     MC_LOG_WARNING("This is a warning %d", 99);
-    char *res = strstr(debug_output, "[WRN]");
+    char *res = strstr(ctx.output_data, "[WRN]");
     TEST_ASSERT_NOT_NULL(res);
-    res = strstr(debug_output, "test_debug.c");
+    res = strstr(ctx.output_data, "test_debug.c");
     TEST_ASSERT_NOT_NULL(res);
-    res = strstr(debug_output, "This is a warning 99");
+    res = strstr(ctx.output_data, "This is a warning 99");
     TEST_ASSERT_NOT_NULL(res);
 }
 
@@ -79,7 +50,7 @@ void test_log_macros_expand_correctly()
     MC_LOG_DEBUG("Test Debug");
     MC_LOG_TRACE("Test Trace");
 
-    TEST_ASSERT(strlen(debug_output) > 0);
+    TEST_ASSERT(strlen(ctx.output_data) > 0);
 }
 
 void test_log_does_nothing_if_io_not_initialized()
@@ -95,5 +66,5 @@ void test_log_does_nothing_if_io_not_initialized()
     MC_LOG_DEBUG("Test Debug");
     MC_LOG_TRACE("Test Trace");
 
-    TEST_ASSERT_EQUAL_INT(0, strlen(debug_output));
+    TEST_ASSERT_EQUAL_INT(0, strlen(ctx.output_data));
 }

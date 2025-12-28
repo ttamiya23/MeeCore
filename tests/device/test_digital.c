@@ -1,13 +1,13 @@
 #include "unity.h"
 #include "mc/common.h"
 #include "mc/device/digital.h"
-#include "digital_driver_test.h"
+#include "device/fake_digital_driver.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals
-test_digital_ctx_t ctx;
-MC_DEFINE_DIGITAL(dev, test_digital_driver, ctx);
+fake_digital_ctx_t ctx;
+MC_DEFINE_DIGITAL(dev, fake_digital_driver, ctx);
 
 void setUp()
 {

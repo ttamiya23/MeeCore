@@ -19,7 +19,7 @@
   :include:
     - include/**
   :support:
-    - tests/support
+    - tests/support/**
     - src/**
 
 :defines:

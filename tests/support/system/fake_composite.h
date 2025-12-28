@@ -2,16 +2,16 @@
 #define SYSTEM_COMPOSITE_H_
 
 #include "mc/system/composite.h"
-#include "system_test.h"
+#include "system/fake_system.h"
 
 // Composite system context.
 typedef struct
 {
-    test_sys_ctx_t test_1;
-    test_sys_ctx_t test_2;
-} composite_sys_ctx_t;
+    fake_sys_ctx_t sys1;
+    fake_sys_ctx_t sys2;
+} fake_composite_ctx_t;
 
 // Composite system combining two test_systems
-extern const mc_system_driver_t composite_sys_driver;
+extern const mc_system_driver_t fake_composite_sys_driver;
 
 #endif // SYSTEM_COMPOSITE_H_

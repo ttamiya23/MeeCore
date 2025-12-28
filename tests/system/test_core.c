@@ -1,12 +1,12 @@
 #include "unity.h"
 #include "mc/system/core.h"
-#include "system_test.h"
+#include "system/fake_system.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals
-test_sys_ctx_t ctx;
-MC_DEFINE_SYSTEM(sys, test_sys_driver, ctx);
+fake_sys_ctx_t ctx;
+MC_DEFINE_SYSTEM(sys, fake_sys_driver, ctx);
 
 void setUp()
 {

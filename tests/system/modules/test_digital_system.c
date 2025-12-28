@@ -2,13 +2,13 @@
 #include "mc/system/core.h"
 #include "mc/system/modules/digital.h"
 #include "mc/device/digital.h"
-#include "digital_driver_test.h"
+#include "device/fake_digital_driver.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals. We will mock mc_digital functions.
-test_digital_ctx_t dev_ctx;
-MC_DEFINE_DIGITAL(dev, test_digital_driver, dev_ctx);
+fake_digital_ctx_t dev_ctx;
+MC_DEFINE_DIGITAL(dev, fake_digital_driver, dev_ctx);
 MC_DEFINE_DIGITAL_SYS_CTX(ctx, dev);
 MC_DEFINE_SYSTEM(sys, mc_digital_sys_driver, ctx);
 

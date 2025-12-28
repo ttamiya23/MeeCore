@@ -46,16 +46,15 @@ void test_read_input_gets_target_state()
     // Set conflicting target state and actual state
     ctx.target_state = true;
     dev_ctx.state = false;
-    int32_t value;
-    mc_status_t ret = mc_sys_read_input(&sys, 0, &value);
-    TEST_ASSERT_EQUAL(MC_OK, ret);
-    TEST_ASSERT_TRUE(value);
+    mc_result_t res = mc_sys_read_input(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_TRUE(res.value);
 
     ctx.target_state = false;
     dev_ctx.state = true;
-    ret = mc_sys_read_input(&sys, 0, &value);
-    TEST_ASSERT_EQUAL(MC_OK, ret);
-    TEST_ASSERT_FALSE(value);
+    res = mc_sys_read_input(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_FALSE(res.value);
 }
 
 void test_read_output_gets_actual_state()
@@ -63,16 +62,15 @@ void test_read_output_gets_actual_state()
     // Set conflicting target state and actual state
     ctx.target_state = true;
     dev_ctx.state = false;
-    int32_t value;
-    mc_status_t ret = mc_sys_read_output(&sys, 0, &value);
-    TEST_ASSERT_EQUAL(MC_OK, ret);
-    TEST_ASSERT_FALSE(value);
+    mc_result_t res = mc_sys_read_output(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_FALSE(res.value);
 
     ctx.target_state = false;
     dev_ctx.state = true;
-    ret = mc_sys_read_output(&sys, 0, &value);
-    TEST_ASSERT_EQUAL(MC_OK, ret);
-    TEST_ASSERT_TRUE(value);
+    res = mc_sys_read_output(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_TRUE(res.value);
 }
 
 void test_invoke_function_toggles_state()

@@ -41,14 +41,14 @@ void test_get_state_succeeds()
 {
     bool state;
     ctx.state = true;
-    mc_status_t ret = mc_digital_get(&dev, &state);
-    TEST_ASSERT_EQUAL(MC_OK, ret);
-    TEST_ASSERT_TRUE(state);
+    mc_result_t res = mc_digital_get(&dev);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_TRUE(res.value);
 
     ctx.state = false;
-    ret = mc_digital_get(&dev, &state);
-    TEST_ASSERT_EQUAL(MC_OK, ret);
-    TEST_ASSERT_FALSE(state);
+    res = mc_digital_get(&dev);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_FALSE(res.value);
 }
 
 void test_toggle_succeeds()
@@ -70,9 +70,10 @@ void test_error_status_gets_propagated()
     mc_status_t ret = mc_digital_set(&dev, true);
     TEST_ASSERT_EQUAL(error, ret);
 
-    bool status = false;
-    ret = mc_digital_get(&dev, &status);
-    TEST_ASSERT_EQUAL(error, ret);
+    mc_result_t res;
+    res = mc_digital_get(&dev);
+    TEST_ASSERT_FALSE(res.ok);
+    TEST_ASSERT_EQUAL(error, res.error);
 
     ret = mc_digital_toggle(&dev);
     TEST_ASSERT_EQUAL(error, ret);
@@ -93,9 +94,9 @@ void test_unimplemented_methods_return_not_supported()
     mc_status_t ret = mc_digital_set(&null_dev, true);
     TEST_ASSERT_EQUAL(MC_ERROR_NOT_SUPPORTED, ret);
 
-    bool state = false;
-    ret = mc_digital_get(&null_dev, &state);
-    TEST_ASSERT_EQUAL(MC_ERROR_NOT_SUPPORTED, ret);
+    mc_result_t res = mc_digital_get(&null_dev);
+    TEST_ASSERT_FALSE(res.ok);
+    TEST_ASSERT_EQUAL(MC_ERROR_NOT_SUPPORTED, res.error);
 
     ret = mc_digital_toggle(&null_dev);
     TEST_ASSERT_EQUAL(MC_ERROR_NOT_SUPPORTED, ret);
@@ -110,10 +111,8 @@ void test_assert_death_if_null_pointer(void)
     TEST_ASSERT_DEATH(mc_digital_set(NULL, true));
     TEST_ASSERT_DEATH(mc_digital_set(&null_dev, true));
 
-    bool state = false;
-    TEST_ASSERT_DEATH(mc_digital_get(NULL, &state));
-    TEST_ASSERT_DEATH(mc_digital_get(&null_dev, &state));
-    TEST_ASSERT_DEATH(mc_digital_get(&dev, NULL));
+    TEST_ASSERT_DEATH(mc_digital_get(NULL));
+    TEST_ASSERT_DEATH(mc_digital_get(&null_dev));
 
     TEST_ASSERT_DEATH(mc_digital_toggle(NULL));
     TEST_ASSERT_DEATH(mc_digital_toggle(&null_dev));

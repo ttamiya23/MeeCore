@@ -4,9 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/**
- * @brief Standard Status Codes for MeeCore
- */
+/* Standard Status Codes for MeeCore */
 typedef enum
 {
     MC_OK = 0,                     // Success (Always 0)
@@ -24,9 +22,36 @@ typedef enum
     MC_ERROR_WRITE_PROTECTED = -12 // Flash/EEPROM is locked
 } mc_status_t;
 
-/**
- * @brief Converts status code to string for logging.
- */
+/* Struct containing value or error */
+typedef struct mc_result_t
+{
+    bool ok;
+    union
+    {
+        int32_t value;
+        mc_status_t error;
+    };
+} mc_result_t;
+
+// Helper for setting mc_result_t with value
+static inline mc_result_t MC_OK_VAL(int32_t val)
+{
+    mc_result_t res;
+    res.ok = true;
+    res.value = val;
+    return res;
+}
+
+// Helper for setting mc_result_t with error
+static inline mc_result_t MC_ERR_VAL(mc_status_t err)
+{
+    mc_result_t res;
+    res.ok = false;
+    res.error = err;
+    return res;
+}
+
+/* Converts status code to string for logging. */
 const char *mc_status_to_string(mc_status_t status);
 
 #define MC_RETURN_IF_ERROR(x)   \
@@ -37,6 +62,18 @@ const char *mc_status_to_string(mc_status_t status);
         {                       \
             return _err;        \
         }                       \
+    } while (0)
+
+#define MC_ASSIGN_OR_RETURN(out_var, expr) \
+    int32_t out_var;                       \
+    do                                     \
+    {                                      \
+        mc_result_t _res = (expr);         \
+        if (!_res.ok)                      \
+        {                                  \
+            return _res.error;             \
+        }                                  \
+        (out_var) = _res.value;            \
     } while (0)
 
 #endif /* MC_STATUS_H_ */

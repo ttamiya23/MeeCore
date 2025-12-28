@@ -41,30 +41,28 @@ void test_write_input_succeeds()
 
 void test_read_input_succeeds()
 {
-    int32_t val;
     ctx.test_1.x[0] = 4;
     ctx.test_2.x[0] = 7;
-    mc_status_t ret = mc_sys_read_input(&sys, 0, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(4, val);
+    mc_result_t res = mc_sys_read_input(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(4, res.value);
 
-    ret = mc_sys_read_input(&sys, 2, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(7, val);
+    res = mc_sys_read_input(&sys, 2);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(7, res.value);
 }
 
 void test_read_output_succeeds()
 {
-    int32_t val;
     ctx.test_1.y[0] = 5;
     ctx.test_2.y[0] = 2;
-    mc_status_t ret = mc_sys_read_output(&sys, 0, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(5, val);
+    mc_result_t res = mc_sys_read_output(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(5, res.value);
 
-    ret = mc_sys_read_output(&sys, 1, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(2, val);
+    res = mc_sys_read_output(&sys, 1);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(2, res.value);
 }
 
 void test_invoke_succeeds()

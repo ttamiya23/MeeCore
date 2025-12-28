@@ -28,17 +28,11 @@ extern "C"
         void *ctx, const mc_composite_driver_t *driver, uint8_t x_id,
         int32_t val);
 
-    mc_status_t mc_composite_write_input(
-        void *ctx, const mc_composite_driver_t *driver, uint8_t x_id,
-        int32_t val);
+    mc_result_t mc_composite_read_input(
+        void *ctx, const mc_composite_driver_t *driver, uint8_t x_id);
 
-    mc_status_t mc_composite_read_input(
-        void *ctx, const mc_composite_driver_t *driver, uint8_t x_id,
-        int32_t *val);
-
-    mc_status_t mc_composite_read_output(
-        void *ctx, const mc_composite_driver_t *driver, uint8_t y_id,
-        int32_t *val);
+    mc_result_t mc_composite_read_output(
+        void *ctx, const mc_composite_driver_t *driver, uint8_t y_id);
 
     bool mc_composite_parse_command(
         void *ctx, const mc_composite_driver_t *driver, const char *cmd,
@@ -113,13 +107,13 @@ extern "C"
     {                                                                                     \
         return mc_composite_write_input(ctx, &NAME##_driver, id, val);                    \
     }                                                                                     \
-    static mc_status_t NAME##_read_input(void *ctx, uint8_t id, int32_t *val)             \
+    static mc_result_t NAME##_read_input(void *ctx, uint8_t id)                           \
     {                                                                                     \
-        return mc_composite_read_input(ctx, &NAME##_driver, id, val);                     \
+        return mc_composite_read_input(ctx, &NAME##_driver, id);                          \
     }                                                                                     \
-    static mc_status_t NAME##_read_output(void *ctx, uint8_t id, int32_t *val)            \
+    static mc_result_t NAME##_read_output(void *ctx, uint8_t id)                          \
     {                                                                                     \
-        return mc_composite_read_output(ctx, &NAME##_driver, id, val);                    \
+        return mc_composite_read_output(ctx, &NAME##_driver, id);                         \
     }                                                                                     \
     static mc_status_t NAME##_invoke(void *ctx, uint8_t id, int32_t *args, uint8_t c)     \
     {                                                                                     \

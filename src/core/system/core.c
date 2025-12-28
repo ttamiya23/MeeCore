@@ -58,40 +58,34 @@ mc_status_t mc_sys_write_input(const mc_system_t *sys, uint8_t x_id,
     return sys->driver->write_input(sys->ctx, x_id, val);
 }
 
-mc_status_t mc_sys_read_input(const mc_system_t *sys, uint8_t x_id,
-                              int32_t *val)
+mc_result_t mc_sys_read_input(const mc_system_t *sys, uint8_t x_id)
 {
     CHECK_SYSTEM(sys);
-    MC_ASSERT(val != NULL);
-    *val = 0;
 
     if (!sys->driver->read_input || !sys->driver->get_input_count)
     {
-        return MC_ERROR_NOT_SUPPORTED;
+        return MC_ERR_VAL(MC_ERROR_NOT_SUPPORTED);
     }
     if (x_id >= mc_sys_get_input_count(sys))
     {
-        return MC_ERROR_INVALID_ARGS;
+        return MC_ERR_VAL(MC_ERROR_INVALID_ARGS);
     }
-    return sys->driver->read_input(sys->ctx, x_id, val);
+    return sys->driver->read_input(sys->ctx, x_id);
 }
 
-mc_status_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id,
-                               int32_t *val)
+mc_result_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id)
 {
     CHECK_SYSTEM(sys);
-    MC_ASSERT(val != NULL);
-    *val = 0;
 
     if (!sys->driver->read_output || !sys->driver->get_output_count)
     {
-        return MC_ERROR_NOT_SUPPORTED;
+        return MC_ERR_VAL(MC_ERROR_NOT_SUPPORTED);
     }
     if (y_id >= mc_sys_get_output_count(sys))
     {
-        return MC_ERROR_INVALID_ARGS;
+        return MC_ERR_VAL(MC_ERROR_INVALID_ARGS);
     }
-    return sys->driver->read_output(sys->ctx, y_id, val);
+    return sys->driver->read_output(sys->ctx, y_id);
 }
 
 uint8_t mc_sys_get_function_count(const mc_system_t *sys)

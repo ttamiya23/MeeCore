@@ -73,9 +73,9 @@ mc_status_t mc_composite_write_input(void *ctx,
     return MC_ERROR_INVALID_ARGS; // ID exceeded total inputs
 }
 
-mc_status_t mc_composite_read_input(void *ctx,
+mc_result_t mc_composite_read_input(void *ctx,
                                     const mc_composite_driver_t *driver,
-                                    uint8_t id, int32_t *val)
+                                    uint8_t id)
 {
     CHECK_COMPOSITE(ctx, driver);
 
@@ -94,22 +94,22 @@ mc_status_t mc_composite_read_input(void *ctx,
         {
             if (child_drv->read_input)
             {
-                return child_drv->read_input(child_ctx, id, val);
+                return child_drv->read_input(child_ctx, id);
             }
             else
             {
-                return MC_ERROR_NOT_SUPPORTED;
+                return MC_ERR_VAL(MC_ERROR_NOT_SUPPORTED);
             }
         }
         id -= local_count;
     }
 
-    return MC_ERROR_INVALID_ARGS;
+    return MC_ERR_VAL(MC_ERROR_INVALID_ARGS);
 }
 
-mc_status_t mc_composite_read_output(void *ctx,
+mc_result_t mc_composite_read_output(void *ctx,
                                      const mc_composite_driver_t *driver,
-                                     uint8_t id, int32_t *val)
+                                     uint8_t id)
 {
     CHECK_COMPOSITE(ctx, driver);
 
@@ -128,17 +128,17 @@ mc_status_t mc_composite_read_output(void *ctx,
         {
             if (child_drv->read_output)
             {
-                return child_drv->read_output(child_ctx, id, val);
+                return child_drv->read_output(child_ctx, id);
             }
             else
             {
-                return MC_ERROR_NOT_SUPPORTED;
+                return MC_ERR_VAL(MC_ERROR_NOT_SUPPORTED);
             }
         }
         id -= local_count;
     }
 
-    return MC_ERROR_INVALID_ARGS;
+    return MC_ERR_VAL(MC_ERROR_INVALID_ARGS);
 }
 
 mc_status_t mc_composite_invoke(void *ctx, const mc_composite_driver_t *driver,

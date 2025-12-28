@@ -42,18 +42,16 @@ mc_status_t test_sys_write_input(void *ctx, uint8_t x_id, int32_t val)
     return MC_OK;
 }
 
-mc_status_t test_sys_read_input(void *ctx, uint8_t x_id, int32_t *val)
+mc_result_t test_sys_read_input(void *ctx, uint8_t x_id)
 {
     test_sys_ctx_t *data = (test_sys_ctx_t *)ctx;
-    *val = data->x[x_id];
-    return MC_OK;
+    return MC_OK_VAL(data->x[x_id]);
 }
 
-mc_status_t test_sys_read_output(void *ctx, uint8_t y_id, int32_t *val)
+mc_result_t test_sys_read_output(void *ctx, uint8_t y_id)
 {
     test_sys_ctx_t *data = (test_sys_ctx_t *)ctx;
-    *val = data->y[y_id];
-    return MC_OK;
+    return MC_OK_VAL(data->y[y_id]);
 }
 
 bool test_sys_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info)

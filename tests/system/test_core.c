@@ -37,25 +37,23 @@ void test_write_input_succeeds()
 
 void test_read_input_succeeds()
 {
-    int32_t val;
     ctx.x[0] = 4;
     ctx.x[1] = 7;
-    mc_status_t ret = mc_sys_read_input(&sys, 0, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(4, val);
+    mc_result_t res = mc_sys_read_input(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(4, res.value);
 
-    ret = mc_sys_read_input(&sys, 1, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(7, val);
+    res = mc_sys_read_input(&sys, 1);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(7, res.value);
 }
 
 void test_read_output_succeeds()
 {
-    int32_t val;
     ctx.y[0] = 5;
-    mc_status_t ret = mc_sys_read_output(&sys, 0, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
-    TEST_ASSERT_EQUAL_INT32(5, val);
+    mc_result_t res = mc_sys_read_output(&sys, 0);
+    TEST_ASSERT_TRUE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(5, res.value);
 }
 
 void test_invoke_succeeds()
@@ -84,13 +82,13 @@ void test_invalid_id_returns_error()
     mc_status_t ret = mc_sys_write_input(&sys, 3, 3);
     TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
 
-    int32_t val;
+    mc_result_t res = mc_sys_read_input(&sys, 7);
+    TEST_ASSERT_FALSE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, res.error);
 
-    ret = mc_sys_read_input(&sys, 7, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
-
-    ret = mc_sys_read_output(&sys, 2, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
+    res = mc_sys_read_output(&sys, 2);
+    TEST_ASSERT_FALSE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, res.error);
 
     ret = mc_sys_invoke(&sys, 7, NULL, 0);
     TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
@@ -115,17 +113,18 @@ void test_unimplemented_methods_return_not_supported()
 
     mc_sys_init(&null_sys);
 
-    int32_t val;
     mc_status_t ret = mc_sys_invoke(&null_sys, 0, NULL, 0);
     TEST_ASSERT_EQUAL_INT32(MC_ERROR_NOT_SUPPORTED, ret);
     ret = mc_sys_write_input(&null_sys, 0, 0);
     TEST_ASSERT_EQUAL_INT32(MC_ERROR_NOT_SUPPORTED, ret);
-    ret = mc_sys_read_input(&null_sys, 0, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_NOT_SUPPORTED, ret);
-    ret = mc_sys_read_output(&null_sys, 0, &val);
-    TEST_ASSERT_EQUAL_INT32(MC_ERROR_NOT_SUPPORTED, ret);
+    mc_result_t res = mc_sys_read_input(&null_sys, 0);
+    TEST_ASSERT_FALSE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_NOT_SUPPORTED, res.error);
+    res = mc_sys_read_output(&null_sys, 0);
+    TEST_ASSERT_FALSE(res.ok);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_NOT_SUPPORTED, res.error);
 
-    val = mc_sys_get_function_count(&null_sys);
+    uint8_t val = mc_sys_get_function_count(&null_sys);
     TEST_ASSERT_EQUAL_INT32(0, val);
     val = mc_sys_get_input_count(&null_sys);
     TEST_ASSERT_EQUAL_INT32(0, val);
@@ -139,10 +138,8 @@ void test_assert_death_if_null_pointer(void)
     int32_t args[1];
     TEST_ASSERT_DEATH(mc_sys_invoke(NULL, 0, args, 1));
     TEST_ASSERT_DEATH(mc_sys_write_input(NULL, 0, 1));
-    TEST_ASSERT_DEATH(mc_sys_read_input(NULL, 0, &val));
-    TEST_ASSERT_DEATH(mc_sys_read_input(&sys, 0, NULL));
-    TEST_ASSERT_DEATH(mc_sys_read_output(NULL, 0, &val));
-    TEST_ASSERT_DEATH(mc_sys_read_output(&sys, 0, NULL));
+    TEST_ASSERT_DEATH(mc_sys_read_input(NULL, 0));
+    TEST_ASSERT_DEATH(mc_sys_read_output(NULL, 0));
     TEST_ASSERT_DEATH(mc_sys_get_function_count(NULL));
     TEST_ASSERT_DEATH(mc_sys_get_input_count(NULL));
     TEST_ASSERT_DEATH(mc_sys_get_output_count(NULL));
@@ -156,8 +153,8 @@ void test_assert_death_if_uninitialized(void)
     int32_t args[1];
     TEST_ASSERT_DEATH(mc_sys_invoke(&sys, 0, args, 1));
     TEST_ASSERT_DEATH(mc_sys_write_input(&sys, 0, 1));
-    TEST_ASSERT_DEATH(mc_sys_read_input(&sys, 0, &val));
-    TEST_ASSERT_DEATH(mc_sys_read_output(&sys, 0, &val));
+    TEST_ASSERT_DEATH(mc_sys_read_input(&sys, 0));
+    TEST_ASSERT_DEATH(mc_sys_read_output(&sys, 0));
     TEST_ASSERT_DEATH(mc_sys_get_function_count(&sys));
     TEST_ASSERT_DEATH(mc_sys_get_input_count(&sys));
     TEST_ASSERT_DEATH(mc_sys_get_output_count(&sys));

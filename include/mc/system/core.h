@@ -49,10 +49,10 @@ extern "C"
         mc_status_t (*write_input)(void *ctx, uint8_t x_id, int32_t val);
 
         // Read input value.
-        mc_status_t (*read_input)(void *ctx, uint8_t x_id, int32_t *val);
+        mc_result_t (*read_input)(void *ctx, uint8_t x_id);
 
         // Read output value.
-        mc_status_t (*read_output)(void *ctx, uint8_t y_id, int32_t *val);
+        mc_result_t (*read_output)(void *ctx, uint8_t y_id);
 
         // Parse a custom string command (e.g. "turnOn")
         bool (*parse_command)(void *ctx, const char *cmd,
@@ -90,12 +90,10 @@ extern "C"
                                    int32_t val);
 
     /* Read an input. */
-    mc_status_t mc_sys_read_input(const mc_system_t *sys, uint8_t x_id,
-                                  int32_t *val);
+    mc_result_t mc_sys_read_input(const mc_system_t *sys, uint8_t x_id);
 
     /* Read an output. */
-    mc_status_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id,
-                                   int32_t *val);
+    mc_result_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id);
 
     /* Get function count */
     uint8_t mc_sys_get_function_count(const mc_system_t *sys);

@@ -19,7 +19,7 @@ extern "C"
     {
         void (*init)(void *ctx);
         mc_status_t (*set_state)(void *ctx, bool state);
-        mc_status_t (*get_state)(void *ctx, bool *state);
+        mc_result_t (*get_state)(void *ctx);
 
     } mc_digital_driver_t;
 
@@ -54,24 +54,21 @@ extern "C"
     }
 
     // Get current state.
-    static inline mc_status_t mc_digital_get(const mc_digital_t *dev,
-                                             bool *state)
+    static inline mc_result_t mc_digital_get(const mc_digital_t *dev)
     {
         MC_ASSERT(dev != NULL);
         MC_ASSERT(dev->driver != NULL);
-        MC_ASSERT(state != NULL);
         if (dev->driver->get_state)
         {
-            return dev->driver->get_state(dev->ctx, state);
+            return dev->driver->get_state(dev->ctx);
         }
-        return MC_ERROR_NOT_SUPPORTED;
+        return MC_ERR_VAL(MC_ERROR_NOT_SUPPORTED);
     }
 
     // Toggle based on current state.
     static inline mc_status_t mc_digital_toggle(const mc_digital_t *dev)
     {
-        bool current = false;
-        MC_RETURN_IF_ERROR(mc_digital_get(dev, &current));
+        MC_ASSIGN_OR_RETURN(current, mc_digital_get(dev));
         return mc_digital_set(dev, !current);
     }
 

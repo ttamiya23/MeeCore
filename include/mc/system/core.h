@@ -28,6 +28,7 @@ extern "C"
     // System command struct
     typedef struct mc_sys_cmd_info_t
     {
+        char *alias;
         mc_sys_cmd_type_t type;
         uint8_t id;
         bool has_preset;    // If true, use the value below.
@@ -53,14 +54,14 @@ extern "C"
         // Read output value.
         mc_result_t (*read_output)(void *ctx, uint8_t y_id);
 
-        // Parse a custom string command (e.g. "turnOn")
-        bool (*parse_command)(void *ctx, const char *cmd, uint8_t cmd_len,
-                              mc_sys_cmd_info_t *info);
+        // Get alias command info.
+        bool (*get_alias)(void *ctx, uint8_t id, mc_sys_cmd_info_t *info);
 
         // Member counts
         uint8_t (*get_function_count)(void *ctx);
         uint8_t (*get_input_count)(void *ctx);
         uint8_t (*get_output_count)(void *ctx);
+        uint8_t (*get_alias_count)(void *ctx);
     } mc_system_driver_t;
 
     /* System state. */

@@ -104,9 +104,38 @@ void test_invoke_function_toggles_state()
     TEST_ASSERT_TRUE(dev_ctx.state);
 }
 
+void test_get_alias_succeeds()
+{
+    mc_sys_cmd_info_t cmd;
+
+    TEST_ASSERT_TRUE(sys.driver->get_alias(&ctx, 0, &cmd));
+    TEST_ASSERT_EQUAL_STRING("turnOn", cmd.alias);
+    TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
+    TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
+    TEST_ASSERT_TRUE(cmd.has_preset);
+    TEST_ASSERT_EQUAL_INT32(1, cmd.preset_val);
+
+    TEST_ASSERT_TRUE(sys.driver->get_alias(&ctx, 1, &cmd));
+    TEST_ASSERT_EQUAL_STRING("turnOff", cmd.alias);
+    TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
+    TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
+    TEST_ASSERT_TRUE(cmd.has_preset);
+    TEST_ASSERT_EQUAL_INT32(0, cmd.preset_val);
+
+    TEST_ASSERT_TRUE(sys.driver->get_alias(&ctx, 2, &cmd));
+    TEST_ASSERT_EQUAL_STRING("toggle", cmd.alias);
+    TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_FUNC, cmd.type);
+    TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be f0
+    TEST_ASSERT_FALSE(cmd.has_preset);
+
+    // Invalid ID should fail
+    TEST_ASSERT_FALSE(sys.driver->get_alias(&ctx, 3, &cmd));
+}
+
 void test_get_member_count_succeeds()
 {
     TEST_ASSERT_EQUAL(1, mc_sys_get_function_count(&sys));
     TEST_ASSERT_EQUAL(1, mc_sys_get_input_count(&sys));
     TEST_ASSERT_EQUAL(1, mc_sys_get_output_count(&sys));
+    TEST_ASSERT_EQUAL(3, sys.driver->get_alias_count(&sys));
 }

@@ -6,6 +6,7 @@
 #define FAKE_SYS_X_COUNT 2
 #define FAKE_SYS_Y_COUNT 1
 #define FAKE_SYS_F_COUNT 2
+#define FAKE_SYS_ALIAS_COUNT 4
 
 #define DEFAULT_FAKE_INCREMENT_Y_NAME "incrementY"
 #define DEFAULT_FAKE_X0_NAME "input"

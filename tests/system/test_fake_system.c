@@ -81,43 +81,43 @@ void test_get_counts_succeeds()
     TEST_ASSERT_EQUAL_INT32(2, fake_sys_driver.get_function_count(&ctx));
     TEST_ASSERT_EQUAL_INT32(2, fake_sys_driver.get_input_count(&ctx));
     TEST_ASSERT_EQUAL_INT32(1, fake_sys_driver.get_output_count(&ctx));
+    TEST_ASSERT_EQUAL_INT32(4, fake_sys_driver.get_alias_count(&ctx));
 }
 
-void test_parse_command_succeeds()
+void test_get_alias_succeeds()
 {
     mc_sys_cmd_info_t cmd;
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, DEFAULT_FAKE_INCREMENT_Y_NAME,
-        strlen(DEFAULT_FAKE_INCREMENT_Y_NAME), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 0, &cmd));
+    TEST_ASSERT_EQUAL_STRING(DEFAULT_FAKE_INCREMENT_Y_NAME, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_FUNC, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be f0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, DEFAULT_FAKE_X0_NAME, strlen(DEFAULT_FAKE_X0_NAME), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 1, &cmd));
+    TEST_ASSERT_EQUAL_STRING(DEFAULT_FAKE_X0_NAME, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, DEFAULT_FAKE_Y0_NAME, strlen(DEFAULT_FAKE_Y0_NAME), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 2, &cmd));
+    TEST_ASSERT_EQUAL_STRING(DEFAULT_FAKE_Y0_NAME, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_OUTPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be y0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, DEFAULT_FAKE_RESET_NAME, strlen(DEFAULT_FAKE_RESET_NAME), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 3, &cmd));
+    TEST_ASSERT_EQUAL_STRING(DEFAULT_FAKE_RESET_NAME, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_TRUE(cmd.has_preset);
     TEST_ASSERT_EQUAL_INT32(0, cmd.preset_val);
 
-    // Invalid name should fail
-    TEST_ASSERT_FALSE(fake_sys_driver.parse_command(&ctx, "blah", 4, &cmd));
+    // Invalid ID should fail
+    TEST_ASSERT_FALSE(fake_sys_driver.get_alias(&ctx, 4, &cmd));
 }
 
-void test_parse_command_with_custom_name_succeeds()
+void test_get_alias_with_custom_name_succeeds()
 {
     mc_sys_cmd_info_t cmd;
 
@@ -129,33 +129,28 @@ void test_parse_command_with_custom_name_succeeds()
     ctx.x0_name = new_x0_name;
     ctx.y0_name = new_y0_name;
     ctx.reset_name = new_reset_name;
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, new_increment_y_name,
-        strlen(new_increment_y_name), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 0, &cmd));
+    TEST_ASSERT_EQUAL_STRING(new_increment_y_name, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_FUNC, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be f0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, new_x0_name, strlen(new_x0_name), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 1, &cmd));
+    TEST_ASSERT_EQUAL_STRING(new_x0_name, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, new_y0_name, strlen(new_y0_name), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 2, &cmd));
+    TEST_ASSERT_EQUAL_STRING(new_y0_name, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_OUTPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be y0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(
-        &ctx, new_reset_name, strlen(new_reset_name), &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.get_alias(&ctx, 3, &cmd));
+    TEST_ASSERT_EQUAL_STRING(new_reset_name, cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_TRUE(cmd.has_preset);
     TEST_ASSERT_EQUAL_INT32(0, cmd.preset_val);
-
-    // Old name should fail
-    TEST_ASSERT_FALSE(fake_sys_driver.parse_command(
-        &ctx, DEFAULT_FAKE_Y0_NAME, strlen(DEFAULT_FAKE_Y0_NAME), &cmd));
 }

@@ -175,39 +175,50 @@ mc_status_t mc_composite_invoke(void *ctx, const mc_composite_driver_t *driver,
     return MC_ERROR_INVALID_ARGS;
 }
 
-bool mc_composite_parse_command(void *ctx, const mc_composite_driver_t *driver,
-                                const char *cmd, uint8_t cmd_len,
-                                mc_sys_cmd_info_t *info)
+bool mc_composite_get_alias(void *ctx, const mc_composite_driver_t *driver,
+                            uint8_t id, mc_sys_cmd_info_t *info)
 {
     CHECK_COMPOSITE(ctx, driver);
-
     uint8_t f_offset = 0;
     uint8_t x_offset = 0;
     uint8_t y_offset = 0;
+
     for (uint8_t i = 0; i < driver->count; i++)
     {
         const mc_system_driver_t *child_drv = driver->systems[i];
         void *child_ctx = get_child_ctx(ctx, driver, i);
 
-        // Try parse with child system. If success, increment ID by offset and
-        // return.
-        if (child_drv->parse_command &&
-            child_drv->parse_command(child_ctx, cmd, cmd_len, info))
+        uint8_t local_count = 0;
+        if (child_drv->get_alias_count)
         {
-            if (info->type == MC_CMD_TYPE_FUNC)
+            local_count = child_drv->get_alias_count(child_ctx);
+        }
+
+        if (id < local_count)
+        {
+            if (child_drv->get_alias)
             {
-                info->id += f_offset;
-            }
-            else if (info->type == MC_CMD_TYPE_INPUT)
-            {
-                info->id += x_offset;
+                bool success = child_drv->get_alias(child_ctx, id, info);
+                if (info->type == MC_CMD_TYPE_FUNC)
+                {
+                    info->id += f_offset;
+                }
+                else if (info->type == MC_CMD_TYPE_INPUT)
+                {
+                    info->id += x_offset;
+                }
+                else
+                {
+                    info->id += y_offset;
+                }
+                return success;
             }
             else
             {
-                info->id += y_offset;
+                return false;
             }
-            return true;
         }
+        id -= local_count;
 
         // Increment offsets
         if (child_drv->get_function_count)
@@ -274,6 +285,23 @@ uint8_t mc_composite_get_function_count(void *ctx,
         if (d && d->get_function_count)
         {
             total += d->get_function_count(get_child_ctx(ctx, driver, i));
+        }
+    }
+    return total;
+}
+
+uint8_t mc_composite_get_alias_count(void *ctx,
+                                     const mc_composite_driver_t *driver)
+{
+    CHECK_COMPOSITE(ctx, driver);
+
+    uint8_t total = 0;
+    for (uint8_t i = 0; i < driver->count; i++)
+    {
+        const mc_system_driver_t *d = driver->systems[i];
+        if (d && d->get_alias_count)
+        {
+            total += d->get_alias_count(get_child_ctx(ctx, driver, i));
         }
     }
     return total;

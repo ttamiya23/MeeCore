@@ -33,9 +33,9 @@ extern "C"
     mc_result_t mc_composite_read_output(
         void *ctx, const mc_composite_driver_t *driver, uint8_t y_id);
 
-    bool mc_composite_parse_command(
-        void *ctx, const mc_composite_driver_t *driver, const char *cmd,
-        uint8_t cmd_len, mc_sys_cmd_info_t *info);
+    bool mc_composite_get_alias(
+        void *ctx, const mc_composite_driver_t *driver, uint8_t id,
+        mc_sys_cmd_info_t *info);
 
     uint8_t mc_composite_get_function_count(
         void *ctx, const mc_composite_driver_t *driver);
@@ -44,6 +44,9 @@ extern "C"
         void *ctx, const mc_composite_driver_t *driver);
 
     uint8_t mc_composite_get_output_count(
+        void *ctx, const mc_composite_driver_t *driver);
+
+    uint8_t mc_composite_get_alias_count(
         void *ctx, const mc_composite_driver_t *driver);
 
 // --- [Internal] Argument Mapping Helpers ---
@@ -118,10 +121,10 @@ extern "C"
     {                                                                                 \
         return mc_composite_invoke(ctx, &NAME##_driver, id, args, c);                 \
     }                                                                                 \
-    static bool NAME##_parse_command(void *ctx, const char *cmd, uint8_t cmd_len,     \
-                                     mc_sys_cmd_info_t *info)                         \
+    static bool NAME##_get_alias(void *ctx, uint8_t id,                               \
+                                 mc_sys_cmd_info_t *info)                             \
     {                                                                                 \
-        return mc_composite_parse_command(ctx, &NAME##_driver, cmd, cmd_len, info);   \
+        return mc_composite_get_alias(ctx, &NAME##_driver, id, info);                 \
     }                                                                                 \
     static uint8_t NAME##_get_input_count(void *ctx)                                  \
     {                                                                                 \
@@ -135,6 +138,10 @@ extern "C"
     {                                                                                 \
         return mc_composite_get_function_count(ctx, &NAME##_driver);                  \
     }                                                                                 \
+    static uint8_t NAME##_get_alias_count(void *ctx)                                  \
+    {                                                                                 \
+        return mc_composite_get_alias_count(ctx, &NAME##_driver);                     \
+    }                                                                                 \
                                                                                       \
     /* 6. Define The Driver (Flash) */                                                \
     const mc_system_driver_t NAME = {                                                 \
@@ -143,10 +150,11 @@ extern "C"
         .read_input = NAME##_read_input,                                              \
         .read_output = NAME##_read_output,                                            \
         .invoke = NAME##_invoke,                                                      \
-        .parse_command = NAME##_parse_command,                                        \
+        .get_alias = NAME##_get_alias,                                                \
         .get_input_count = NAME##_get_input_count,                                    \
         .get_output_count = NAME##_get_output_count,                                  \
-        .get_function_count = NAME##_get_function_count};
+        .get_function_count = NAME##_get_function_count,                              \
+        .get_alias_count = NAME##_get_alias_count};
 
 #ifdef __cplusplus
 }

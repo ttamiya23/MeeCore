@@ -119,6 +119,29 @@ static int find_system_index_by_name(mc_system_console_t *console,
     return -1;
 }
 
+// Helper: Find command by alias
+static bool find_command_by_alias(mc_system_t *sys, const char *name,
+                                  size_t len, mc_sys_cmd_info_t *cmd)
+{
+    if (!sys->driver->get_alias)
+    {
+        return false;
+    }
+    uint8_t count = sys->driver->get_alias_count(sys->ctx);
+    for (int i = 0; i < count; i++)
+    {
+        sys->driver->get_alias(sys->ctx, i, cmd);
+        const char *entry_name = cmd->alias;
+        // Check for exact length match to avoid prefix collisions
+        if (entry_name && strncmp(entry_name, name, len) == 0 &&
+            entry_name[len] == '\0')
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Helper: simply prints value if OK, "E[code]" if error.
 static mc_status_t send_result(mc_system_console_t *console, mc_result_t result)
 {
@@ -277,11 +300,7 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
     bool found_custom = false;
 
     // A. Check Driver Custom Commands ("turnOn", "pwm")
-    if (sys->driver->parse_command)
-    {
-        found_custom = sys->driver->parse_command(sys->ctx, token, token_len,
-                                                  &cmd_info);
-    }
+    found_custom = find_command_by_alias(sys, token, token_len, &cmd_info);
 
     // B. If not custom, fallback to standard "x0", "y1", "f2"
     if (!found_custom && !parse_member_token(token, &cmd_info))

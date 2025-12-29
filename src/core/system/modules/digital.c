@@ -4,9 +4,10 @@
 #define DIGITAL_SYS_X_COUNT 1
 #define DIGITAL_SYS_Y_COUNT 1
 #define DIGITAL_SYS_F_COUNT 1
+#define DIGITAL_SYS_ALIAS_COUNT 3
 #define DIGITAL_TURN_ON_CMD "turnOn"
 #define DIGITAL_TURN_OFF_CMD "turnOff"
-#define DIGITAL_TOGGLE_CMD "turnOff"
+#define DIGITAL_TOGGLE_CMD "toggle"
 
 void digital_sys_init(void *ctx)
 {
@@ -51,39 +52,33 @@ mc_result_t digital_sys_read_output(void *ctx, uint8_t y_id)
     return mc_digital_get_state(digital_ctx->device);
 }
 
-bool digital_parse_command(void *ctx, const char *cmd, uint8_t cmd_len,
-                           mc_sys_cmd_info_t *info)
+bool digital_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
 {
-    if (strlen(DIGITAL_TURN_ON_CMD) == cmd_len &&
-        strncmp(cmd, DIGITAL_TURN_ON_CMD, cmd_len) == 0)
+    switch (id)
     {
+    case 0:
+        info->alias = DIGITAL_TURN_ON_CMD;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 1;
         return true;
-    }
-
-    if (strlen(DIGITAL_TURN_OFF_CMD) == cmd_len &&
-        strncmp(cmd, DIGITAL_TURN_OFF_CMD, cmd_len) == 0)
-    {
+    case 1:
+        info->alias = DIGITAL_TURN_OFF_CMD;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 0;
         return true;
-    }
-
-    if (strlen(DIGITAL_TOGGLE_CMD) == cmd_len &&
-        strncmp(cmd, DIGITAL_TOGGLE_CMD, cmd_len) == 0)
-    {
+    case 2:
+        info->alias = DIGITAL_TOGGLE_CMD;
         info->type = MC_CMD_TYPE_FUNC;
         info->id = 0;
         info->has_preset = false;
         return true;
+    default:
+        return false;
     }
-
-    return false;
 }
 
 uint8_t digital_sys_get_function_count(void *ctx)
@@ -101,13 +96,19 @@ uint8_t digital_sys_get_output_count(void *ctx)
     return DIGITAL_SYS_Y_COUNT;
 }
 
+uint8_t digital_sys_get_alias_count(void *ctx)
+{
+    return DIGITAL_SYS_ALIAS_COUNT;
+}
+
 const mc_system_driver_t mc_digital_sys_driver = {
     .init = digital_sys_init,
     .invoke = digital_sys_invoke,
     .write_input = digital_sys_write_input,
     .read_input = digital_sys_read_input,
     .read_output = digital_sys_read_output,
-    .parse_command = digital_parse_command,
+    .get_alias = digital_sys_get_alias,
     .get_function_count = digital_sys_get_function_count,
     .get_input_count = digital_sys_get_input_count,
-    .get_output_count = digital_sys_get_output_count};
+    .get_output_count = digital_sys_get_output_count,
+    .get_alias_count = digital_sys_get_alias_count};

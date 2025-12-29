@@ -58,41 +58,39 @@ mc_result_t fake_sys_read_output(void *ctx, uint8_t y_id)
     return MC_OK_VAL(data->y[y_id]);
 }
 
-bool fake_sys_parse_command(void *ctx, const char *cmd, uint8_t cmd_len,
-                            mc_sys_cmd_info_t *info)
+bool fake_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
 {
     fake_sys_ctx_t *data = (fake_sys_ctx_t *)ctx;
-    if (strncmp(cmd, data->increment_y_name, cmd_len) == 0)
+    switch (id)
     {
+    case 0:
+        info->alias = data->increment_y_name;
         info->type = MC_CMD_TYPE_FUNC;
         info->id = 0;
         info->has_preset = false;
         return true;
-    }
-    else if (strncmp(cmd, data->x0_name, cmd_len) == 0)
-    {
+    case 1:
+        info->alias = data->x0_name;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = false;
         return true;
-    }
-    else if (strncmp(cmd, data->y0_name, cmd_len) == 0)
-    {
+    case 2:
+        info->alias = data->y0_name;
         info->type = MC_CMD_TYPE_OUTPUT;
         info->id = 0;
         info->has_preset = false;
         return true;
-    }
-    else if (strncmp(cmd, data->reset_name, cmd_len) == 0)
-    {
+    case 3:
+        info->alias = data->reset_name;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 0;
         return true;
+    default:
+        return false;
     }
-
-    return false;
 }
 
 uint8_t fake_sys_get_function_count(void *ctx)
@@ -110,13 +108,19 @@ uint8_t fake_sys_get_output_count(void *ctx)
     return FAKE_SYS_Y_COUNT;
 }
 
+uint8_t fake_sys_get_alias_count(void *ctx)
+{
+    return FAKE_SYS_ALIAS_COUNT;
+}
+
 const mc_system_driver_t fake_sys_driver = {
     .init = fake_sys_init,
     .invoke = fake_sys_invoke,
     .write_input = fake_sys_write_input,
     .read_input = fake_sys_read_input,
     .read_output = fake_sys_read_output,
-    .parse_command = fake_sys_parse_command,
+    .get_alias = fake_sys_get_alias,
     .get_function_count = fake_sys_get_function_count,
     .get_input_count = fake_sys_get_input_count,
-    .get_output_count = fake_sys_get_output_count};
+    .get_output_count = fake_sys_get_output_count,
+    .get_alias_count = fake_sys_get_alias_count};

@@ -221,6 +221,12 @@ void test_invalid_alias_returns_error()
         io_ctx.output_data);
 }
 
+void test_clear_command_clears_terminal()
+{
+    send_command("clear");
+    TEST_ASSERT_EQUAL_STRING("\x1B[2J\x1B[H", io_ctx.output_data);
+}
+
 void test_dump_succeeds()
 {
     sys_ctx1.x[0] = 0;

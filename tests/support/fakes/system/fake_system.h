@@ -7,6 +7,11 @@
 #define FAKE_SYS_Y_COUNT 1
 #define FAKE_SYS_F_COUNT 2
 
+#define DEFAULT_FAKE_INCREMENT_Y_NAME "incrementY"
+#define DEFAULT_FAKE_X0_NAME "input"
+#define DEFAULT_FAKE_Y0_NAME "output"
+#define DEFAULT_FAKE_RESET_NAME "reset"
+
 // Fake system context.
 typedef struct fake_sys_ctx_t
 {
@@ -15,6 +20,7 @@ typedef struct fake_sys_ctx_t
     char *increment_y_name;
     char *x0_name;
     char *y0_name;
+    char *reset_name;
 } fake_sys_ctx_t;
 
 // Fake system driver. Look at fake_system.c for more details.

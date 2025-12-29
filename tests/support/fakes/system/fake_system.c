@@ -19,6 +19,10 @@ void fake_sys_init(void *ctx)
     fake_sys_ctx_t *data = (fake_sys_ctx_t *)ctx;
     memset(data->x, 0, FAKE_SYS_X_COUNT);
     memset(data->y, 0, FAKE_SYS_Y_COUNT);
+    data->increment_y_name = DEFAULT_FAKE_INCREMENT_Y_NAME;
+    data->x0_name = DEFAULT_FAKE_X0_NAME;
+    data->y0_name = DEFAULT_FAKE_Y0_NAME;
+    data->reset_name = DEFAULT_FAKE_RESET_NAME;
 }
 
 mc_status_t fake_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
@@ -77,6 +81,14 @@ bool fake_sys_parse_command(void *ctx, const char *cmd, uint8_t cmd_len,
         info->type = MC_CMD_TYPE_OUTPUT;
         info->id = 0;
         info->has_preset = false;
+        return true;
+    }
+    else if (strncmp(cmd, data->reset_name, cmd_len) == 0)
+    {
+        info->type = MC_CMD_TYPE_INPUT;
+        info->id = 0;
+        info->has_preset = true;
+        info->preset_val = 0;
         return true;
     }
 

@@ -54,7 +54,7 @@ extern "C"
         mc_result_t (*read_output)(void *ctx, uint8_t y_id);
 
         // Parse a custom string command (e.g. "turnOn")
-        bool (*parse_command)(void *ctx, const char *cmd,
+        bool (*parse_command)(void *ctx, const char *cmd, uint8_t cmd_len,
                               mc_sys_cmd_info_t *info);
 
         // Member counts

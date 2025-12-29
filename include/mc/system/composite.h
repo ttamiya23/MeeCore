@@ -35,7 +35,7 @@ extern "C"
 
     bool mc_composite_parse_command(
         void *ctx, const mc_composite_driver_t *driver, const char *cmd,
-        mc_sys_cmd_info_t *info);
+        uint8_t cmd_len, mc_sys_cmd_info_t *info);
 
     uint8_t mc_composite_get_function_count(
         void *ctx, const mc_composite_driver_t *driver);
@@ -77,74 +77,75 @@ extern "C"
 
 // --- THE MAIN MACRO ---
 // Usage: MC_DEFINE_COMPOSITE(blinker_driver, blinker_ctx_t, MC_NODE(pwm, &pwm_drv), ...)
-#define MC_DEFINE_COMPOSITE_DRIVER(NAME, CTX_TYPE_ARG, ...)                               \
-    /* 1. Define Internal Context Type for Offset Calculation */                          \
-    typedef CTX_TYPE_ARG NAME##_CTX_TYPE;                                                 \
-    typedef CTX_TYPE_ARG CTX_TYPE; /* Shadow for macros */                                \
-                                                                                          \
-    /* 2. Generate Systems Array (Flash) */                                               \
-    static const mc_system_driver_t *const NAME##_systems[] = {                           \
-        MC_MAP(MC_EXTRACT_DRIVER, __VA_ARGS__)};                                          \
-                                                                                          \
-    /* 3. Generate Offsets Array (Flash) */                                               \
-    static const size_t NAME##_offsets[] = {                                              \
-        MC_MAP(MC_EXTRACT_OFFSET, __VA_ARGS__)};                                          \
-                                                                                          \
-    /* 4. Generate Driver (Flash) */                                                      \
-    static const mc_composite_driver_t NAME##_driver = {                                  \
-        .count = sizeof(NAME##_systems) / sizeof(NAME##_systems[0]),                      \
-        .systems = NAME##_systems,                                                        \
-        .ctx_offsets = NAME##_offsets};                                                   \
-                                                                                          \
-    /* 5. Generate Trampoline Functions (Flash) */                                        \
-    /* These inject the driver pointer into the generic impl functions */                 \
-    static void NAME##_init(void *ctx)                                                    \
-    {                                                                                     \
-        mc_composite_init(ctx, &NAME##_driver);                                           \
-    }                                                                                     \
-    static mc_status_t NAME##_write_input(void *ctx, uint8_t id, int32_t val)             \
-    {                                                                                     \
-        return mc_composite_write_input(ctx, &NAME##_driver, id, val);                    \
-    }                                                                                     \
-    static mc_result_t NAME##_read_input(void *ctx, uint8_t id)                           \
-    {                                                                                     \
-        return mc_composite_read_input(ctx, &NAME##_driver, id);                          \
-    }                                                                                     \
-    static mc_result_t NAME##_read_output(void *ctx, uint8_t id)                          \
-    {                                                                                     \
-        return mc_composite_read_output(ctx, &NAME##_driver, id);                         \
-    }                                                                                     \
-    static mc_status_t NAME##_invoke(void *ctx, uint8_t id, int32_t *args, uint8_t c)     \
-    {                                                                                     \
-        return mc_composite_invoke(ctx, &NAME##_driver, id, args, c);                     \
-    }                                                                                     \
-    static bool NAME##_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info) \
-    {                                                                                     \
-        return mc_composite_parse_command(ctx, &NAME##_driver, cmd, info);                \
-    }                                                                                     \
-    static uint8_t NAME##_get_input_count(void *ctx)                                      \
-    {                                                                                     \
-        return mc_composite_get_input_count(ctx, &NAME##_driver);                         \
-    }                                                                                     \
-    static uint8_t NAME##_get_output_count(void *ctx)                                     \
-    {                                                                                     \
-        return mc_composite_get_output_count(ctx, &NAME##_driver);                        \
-    }                                                                                     \
-    static uint8_t NAME##_get_function_count(void *ctx)                                   \
-    {                                                                                     \
-        return mc_composite_get_function_count(ctx, &NAME##_driver);                      \
-    }                                                                                     \
-                                                                                          \
-    /* 6. Define The Driver (Flash) */                                                    \
-    const mc_system_driver_t NAME = {                                                     \
-        .init = NAME##_init,                                                              \
-        .write_input = NAME##_write_input,                                                \
-        .read_input = NAME##_read_input,                                                  \
-        .read_output = NAME##_read_output,                                                \
-        .invoke = NAME##_invoke,                                                          \
-        .parse_command = NAME##_parse_command,                                            \
-        .get_input_count = NAME##_get_input_count,                                        \
-        .get_output_count = NAME##_get_output_count,                                      \
+#define MC_DEFINE_COMPOSITE_DRIVER(NAME, CTX_TYPE_ARG, ...)                           \
+    /* 1. Define Internal Context Type for Offset Calculation */                      \
+    typedef CTX_TYPE_ARG NAME##_CTX_TYPE;                                             \
+    typedef CTX_TYPE_ARG CTX_TYPE; /* Shadow for macros */                            \
+                                                                                      \
+    /* 2. Generate Systems Array (Flash) */                                           \
+    static const mc_system_driver_t *const NAME##_systems[] = {                       \
+        MC_MAP(MC_EXTRACT_DRIVER, __VA_ARGS__)};                                      \
+                                                                                      \
+    /* 3. Generate Offsets Array (Flash) */                                           \
+    static const size_t NAME##_offsets[] = {                                          \
+        MC_MAP(MC_EXTRACT_OFFSET, __VA_ARGS__)};                                      \
+                                                                                      \
+    /* 4. Generate Driver (Flash) */                                                  \
+    static const mc_composite_driver_t NAME##_driver = {                              \
+        .count = sizeof(NAME##_systems) / sizeof(NAME##_systems[0]),                  \
+        .systems = NAME##_systems,                                                    \
+        .ctx_offsets = NAME##_offsets};                                               \
+                                                                                      \
+    /* 5. Generate Trampoline Functions (Flash) */                                    \
+    /* These inject the driver pointer into the generic impl functions */             \
+    static void NAME##_init(void *ctx)                                                \
+    {                                                                                 \
+        mc_composite_init(ctx, &NAME##_driver);                                       \
+    }                                                                                 \
+    static mc_status_t NAME##_write_input(void *ctx, uint8_t id, int32_t val)         \
+    {                                                                                 \
+        return mc_composite_write_input(ctx, &NAME##_driver, id, val);                \
+    }                                                                                 \
+    static mc_result_t NAME##_read_input(void *ctx, uint8_t id)                       \
+    {                                                                                 \
+        return mc_composite_read_input(ctx, &NAME##_driver, id);                      \
+    }                                                                                 \
+    static mc_result_t NAME##_read_output(void *ctx, uint8_t id)                      \
+    {                                                                                 \
+        return mc_composite_read_output(ctx, &NAME##_driver, id);                     \
+    }                                                                                 \
+    static mc_status_t NAME##_invoke(void *ctx, uint8_t id, int32_t *args, uint8_t c) \
+    {                                                                                 \
+        return mc_composite_invoke(ctx, &NAME##_driver, id, args, c);                 \
+    }                                                                                 \
+    static bool NAME##_parse_command(void *ctx, const char *cmd, uint8_t cmd_len,     \
+                                     mc_sys_cmd_info_t *info)                         \
+    {                                                                                 \
+        return mc_composite_parse_command(ctx, &NAME##_driver, cmd, cmd_len, info);   \
+    }                                                                                 \
+    static uint8_t NAME##_get_input_count(void *ctx)                                  \
+    {                                                                                 \
+        return mc_composite_get_input_count(ctx, &NAME##_driver);                     \
+    }                                                                                 \
+    static uint8_t NAME##_get_output_count(void *ctx)                                 \
+    {                                                                                 \
+        return mc_composite_get_output_count(ctx, &NAME##_driver);                    \
+    }                                                                                 \
+    static uint8_t NAME##_get_function_count(void *ctx)                               \
+    {                                                                                 \
+        return mc_composite_get_function_count(ctx, &NAME##_driver);                  \
+    }                                                                                 \
+                                                                                      \
+    /* 6. Define The Driver (Flash) */                                                \
+    const mc_system_driver_t NAME = {                                                 \
+        .init = NAME##_init,                                                          \
+        .write_input = NAME##_write_input,                                            \
+        .read_input = NAME##_read_input,                                              \
+        .read_output = NAME##_read_output,                                            \
+        .invoke = NAME##_invoke,                                                      \
+        .parse_command = NAME##_parse_command,                                        \
+        .get_input_count = NAME##_get_input_count,                                    \
+        .get_output_count = NAME##_get_output_count,                                  \
         .get_function_count = NAME##_get_function_count};
 
 #ifdef __cplusplus

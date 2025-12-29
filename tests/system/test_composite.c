@@ -97,32 +97,32 @@ void test_parse_command_succeeds()
     ctx.sys1.y0_name = "output0";
     ctx.sys2.y0_name = "output1";
 
-    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "incrementY0", &cmd));
+    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "incrementY0", 11, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_FUNC, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be f0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "incrementY1", &cmd));
+    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "incrementY1", 11, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_FUNC, cmd.type);
     TEST_ASSERT_EQUAL_INT32(2, cmd.id); // Should be f2
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "input0", &cmd));
+    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "input0", 6, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "input1", &cmd));
+    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "input1", 6, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(2, cmd.id); // Should be x2
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "output0", &cmd));
+    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "output0", 7, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_OUTPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be y0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "output1", &cmd));
+    TEST_ASSERT_TRUE(sys.driver->parse_command(&ctx, "output1", 7, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_OUTPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(1, cmd.id); // Should be y1
     TEST_ASSERT_FALSE(cmd.has_preset);

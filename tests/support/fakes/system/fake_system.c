@@ -54,24 +54,25 @@ mc_result_t fake_sys_read_output(void *ctx, uint8_t y_id)
     return MC_OK_VAL(data->y[y_id]);
 }
 
-bool fake_sys_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info)
+bool fake_sys_parse_command(void *ctx, const char *cmd, uint8_t cmd_len,
+                            mc_sys_cmd_info_t *info)
 {
     fake_sys_ctx_t *data = (fake_sys_ctx_t *)ctx;
-    if (strcmp(cmd, data->increment_y_name) == 0)
+    if (strncmp(cmd, data->increment_y_name, cmd_len) == 0)
     {
         info->type = MC_CMD_TYPE_FUNC;
         info->id = 0;
         info->has_preset = false;
         return true;
     }
-    else if (strcmp(cmd, data->x0_name) == 0)
+    else if (strncmp(cmd, data->x0_name, cmd_len) == 0)
     {
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = false;
         return true;
     }
-    else if (strcmp(cmd, data->y0_name) == 0)
+    else if (strncmp(cmd, data->y0_name, cmd_len) == 0)
     {
         info->type = MC_CMD_TYPE_OUTPUT;
         info->id = 0;

@@ -90,21 +90,22 @@ void test_parse_command_succeeds()
     ctx.x0_name = "input";
     ctx.y0_name = "output";
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(&ctx, "incrementY", &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(&ctx, "incrementY", 10,
+                                                   &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_FUNC, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be f0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(&ctx, "input", &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(&ctx, "input", 5, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
-    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(&ctx, "output", &cmd));
+    TEST_ASSERT_TRUE(fake_sys_driver.parse_command(&ctx, "output", 6, &cmd));
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_OUTPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be y0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
     // Invalid name should fail
-    TEST_ASSERT_FALSE(fake_sys_driver.parse_command(&ctx, "blah", &cmd));
+    TEST_ASSERT_FALSE(fake_sys_driver.parse_command(&ctx, "blah", 4, &cmd));
 }

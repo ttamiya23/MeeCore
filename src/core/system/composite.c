@@ -176,7 +176,8 @@ mc_status_t mc_composite_invoke(void *ctx, const mc_composite_driver_t *driver,
 }
 
 bool mc_composite_parse_command(void *ctx, const mc_composite_driver_t *driver,
-                                const char *cmd, mc_sys_cmd_info_t *info)
+                                const char *cmd, uint8_t cmd_len,
+                                mc_sys_cmd_info_t *info)
 {
     CHECK_COMPOSITE(ctx, driver);
 
@@ -191,7 +192,7 @@ bool mc_composite_parse_command(void *ctx, const mc_composite_driver_t *driver,
         // Try parse with child system. If success, increment ID by offset and
         // return.
         if (child_drv->parse_command &&
-            child_drv->parse_command(child_ctx, cmd, info))
+            child_drv->parse_command(child_ctx, cmd, cmd_len, info))
         {
             if (info->type == MC_CMD_TYPE_FUNC)
             {

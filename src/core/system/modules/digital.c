@@ -4,6 +4,9 @@
 #define DIGITAL_SYS_X_COUNT 1
 #define DIGITAL_SYS_Y_COUNT 1
 #define DIGITAL_SYS_F_COUNT 1
+#define DIGITAL_TURN_ON_CMD "turnOn"
+#define DIGITAL_TURN_OFF_CMD "turnOff"
+#define DIGITAL_TOGGLE_CMD "turnOff"
 
 void digital_sys_init(void *ctx)
 {
@@ -48,9 +51,11 @@ mc_result_t digital_sys_read_output(void *ctx, uint8_t y_id)
     return mc_digital_get_state(digital_ctx->device);
 }
 
-bool digital_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info)
+bool digital_parse_command(void *ctx, const char *cmd, uint8_t cmd_len,
+                           mc_sys_cmd_info_t *info)
 {
-    if (strcmp(cmd, "turnOn") == 0)
+    if (strlen(DIGITAL_TURN_ON_CMD) == cmd_len &&
+        strncmp(cmd, DIGITAL_TURN_ON_CMD, cmd_len) == 0)
     {
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
@@ -59,7 +64,8 @@ bool digital_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info)
         return true;
     }
 
-    if (strcmp(cmd, "turnOff") == 0)
+    if (strlen(DIGITAL_TURN_OFF_CMD) == cmd_len &&
+        strncmp(cmd, DIGITAL_TURN_OFF_CMD, cmd_len) == 0)
     {
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
@@ -68,7 +74,8 @@ bool digital_parse_command(void *ctx, const char *cmd, mc_sys_cmd_info_t *info)
         return true;
     }
 
-    if (strcmp(cmd, "toggle") == 0)
+    if (strlen(DIGITAL_TOGGLE_CMD) == cmd_len &&
+        strncmp(cmd, DIGITAL_TOGGLE_CMD, cmd_len) == 0)
     {
         info->type = MC_CMD_TYPE_FUNC;
         info->id = 0;

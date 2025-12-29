@@ -10,13 +10,14 @@ extern "C"
 #include "mc/io.h"
 
 // Macro for cleaner definitions
-#define MC_SYS_ENTRY(NAME, SYS) {.name = NAME, .system = &SYS_PTR}
+#define MC_SYS_ENTRY(ID, SYS, NAME) {.id = ID, .system = &SYS, .name = NAME}
 
     // Struct for each system.
     typedef struct mc_system_entry_t
     {
-        const char *name;
+        const uint8_t id;
         const mc_system_t *system;
+        const char *name;
     } mc_system_entry_t;
 
     typedef struct mc_system_console_t
@@ -31,23 +32,31 @@ extern "C"
 
         // Argument buffer used to parse function arguments.
         int32_t *args_buffer;
-        uint8_t max_args_count;
+        uint8_t args_count;
 
         // Max header count when dumping
-        uint8_t max_header_count;
+        uint8_t header_count;
+
+        uint8_t is_initialized;
     } mc_system_console_t;
 
     /* Initialize the console and attach it to an IO stream. */
-    void mc_system_console_init(mc_system_console_t *console, mc_io_t *io,
-                                const mc_system_entry_t *system_list,
-                                uint8_t sys_count, int32_t *args_buffer,
-                                uint8_t max_args_count,
-                                uint8_t max_header_count);
+    void mc_sys_console_init(mc_system_console_t *console, mc_io_t *io,
+                             const mc_system_entry_t *system_list,
+                             uint8_t sys_count);
 
     /* Dump system info */
-    mc_status_t mc_system_console_dump(mc_system_console_t *console,
-                                       const mc_system_entry_t *systems,
-                                       uint8_t sys_count);
+    mc_status_t mc_sys_console_dump(mc_system_console_t *console,
+                                    const mc_system_entry_t *systems,
+                                    uint8_t sys_count);
+
+    /* Set max header count */
+    void mc_sys_console_set_header_count(mc_system_console_t *console,
+                                         uint8_t count);
+
+    /* Set args buffer */
+    void mc_sys_console_set_args_buffer(mc_system_console_t *console,
+                                        int32_t *args_buffer, uint8_t args_len);
 
 #ifdef __cplusplus
 }

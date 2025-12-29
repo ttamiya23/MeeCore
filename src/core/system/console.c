@@ -9,6 +9,7 @@
 // Helper defines.
 #define STX "\x02"
 #define ETX "\x03"
+#define SYS_CONSOLE_HELP_CHAR '?'
 
 // Defaults
 #define SYS_CONSOLE_DEFAULT_HEADER_COUNT 5
@@ -230,6 +231,83 @@ static mc_status_t send_system_dump(
     return MC_OK;
 }
 
+// Helper: send alias info of system
+mc_status_t send_sys_help(mc_system_console_t *console, const char *cmd_echo,
+                          mc_system_entry_t sys)
+{
+    // Format should be like:
+    // <STX>
+    // s0?
+    // led [s0]
+    // - targetState [x0]
+    // - state [y0]
+    // - turnOn [x0 = 1]
+    // - turnOff [x0 = 0]
+    // - toggle [f0]
+    // - targetPwm [x1]
+    // - pwm [y1]
+    // <ETX>
+    MC_RETURN_IF_ERROR(mc_io_write(console->io, STX, 1));
+    MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+
+    // Echo the command, if it exists (trimmed)
+    uint8_t len = get_cmd_length(cmd_echo);
+    if (len)
+    {
+        MC_RETURN_IF_ERROR(mc_io_write(console->io, cmd_echo, len));
+        MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+    }
+    if (sys.name)
+    {
+        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "%s ", sys.name));
+    }
+    MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[s%d]\n", sys.id));
+
+    uint8_t count = 0;
+    if (sys.system->driver->get_alias_count)
+    {
+        count = sys.system->driver->get_alias_count(sys.system->ctx);
+    }
+
+    mc_sys_cmd_info_t cmd;
+    for (uint8_t i = 0; i < count; i++)
+    {
+        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "- "));
+        sys.system->driver->get_alias(sys.system->ctx, i, &cmd);
+        // Print alias
+        if (cmd.alias)
+        {
+            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "%s ", cmd.alias));
+        }
+
+        // Print command type and ID
+        if (cmd.type == MC_CMD_TYPE_FUNC)
+        {
+            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[f%d", cmd.id));
+        }
+        else if (cmd.type == MC_CMD_TYPE_INPUT)
+        {
+            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[x%d", cmd.id));
+        }
+        else
+        {
+            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[y%d", cmd.id));
+        }
+
+        // Print preset value
+        if (cmd.has_preset)
+        {
+            MC_RETURN_IF_ERROR(mc_io_printf(console->io, " = %d",
+                                            cmd.preset_val));
+        }
+        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "]\n"));
+    }
+
+    // End Frame
+    MC_RETURN_IF_ERROR(mc_io_write(console->io, ETX, 1));
+    return MC_OK;
+}
+
 // Helper: main method for processing command
 mc_status_t process_command(mc_system_console_t *console, const char *cmd)
 {
@@ -243,6 +321,13 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
     if (strncmp(token, "clear", 5) == 0)
     {
         return mc_io_printf(console->io, "\x1B[2J\x1B[H");
+    }
+
+    // Special corner case: if ? comes right after before system token
+    bool is_help = (*token == SYS_CONSOLE_HELP_CHAR);
+    if (is_help)
+    {
+        token++;
     }
 
     // --- STEP 1: Parse System (Token 1) ---
@@ -281,7 +366,11 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
     }
     const mc_system_t *sys = console->systems[sys_index].system;
 
-    // Execute Dump if requested
+    // Execute help or dump if requested
+    if (is_help)
+    {
+        return send_sys_help(console, cmd_start, console->systems[sys_index]);
+    }
     if (is_dump)
     {
         return send_system_dump(console, cmd_start, &console->systems[sys_index],

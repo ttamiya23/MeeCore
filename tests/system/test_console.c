@@ -227,6 +227,21 @@ void test_clear_command_clears_terminal()
     TEST_ASSERT_EQUAL_STRING("\x1B[2J\x1B[H", io_ctx.output_data);
 }
 
+void test_help_command_prints_help()
+{
+    send_command("?s1");
+    TEST_ASSERT_EQUAL_STRING(
+        "\x02\n"
+        "?s1\n"
+        "fake1 [s1]\n"
+        "- incrementY [f0]\n"
+        "- input [x0]\n"
+        "- output [y0]\n"
+        "- reset [x0 = 0]\n"
+        "\x03",
+        io_ctx.output_data);
+}
+
 void test_dump_succeeds()
 {
     sys_ctx1.x[0] = 0;

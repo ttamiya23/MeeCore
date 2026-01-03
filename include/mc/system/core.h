@@ -8,12 +8,12 @@ extern "C"
 #include "mc/status.h"
 
 // Macro for defining a system. Users should always use this.
-#define MC_DEFINE_SYSTEM(NAME, DRIVER, CTX) \
-    mc_system_state_t NAME##_state = {0};   \
-                                            \
-    const mc_system_t NAME = {              \
-        .driver = &DRIVER,                  \
-        .ctx = (void *)(&CTX),              \
+#define MC_DEFINE_SYSTEM(NAME, DRIVER, CTX)      \
+    static mc_system_state_t NAME##_state = {0}; \
+                                                 \
+    const mc_system_t NAME = {                   \
+        .driver = &DRIVER,                       \
+        .ctx = (void *)(&CTX),                   \
         .state = &NAME##_state};
 
     // Enum of different command types

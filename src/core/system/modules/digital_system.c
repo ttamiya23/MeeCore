@@ -1,10 +1,14 @@
-#include "mc/system/modules/digital.h"
+#include "mc/system/modules/digital_system.h"
 #include <string.h>
 
 #define DIGITAL_SYS_X_COUNT 1
 #define DIGITAL_SYS_Y_COUNT 1
 #define DIGITAL_SYS_F_COUNT 1
 #define DIGITAL_SYS_ALIAS_COUNT 3
+#define DIGITAL_SYS_READ_ONLY_X_COUNT 0
+#define DIGITAL_SYS_READ_ONLY_Y_COUNT 1
+#define DIGITAL_SYS_READ_ONLY_F_COUNT 0
+#define DIGITAL_SYS_READ_ONLY_ALIAS_COUNT 0
 #define DIGITAL_TURN_ON_CMD "turnOn"
 #define DIGITAL_TURN_OFF_CMD "turnOff"
 #define DIGITAL_TOGGLE_CMD "toggle"
@@ -12,13 +16,8 @@
 void digital_sys_init(void *ctx)
 {
     mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
-    digital_ctx->target_state = false;
-
     mc_result_t current_state = mc_digital_get_state(digital_ctx->device);
-    if (current_state.ok)
-    {
-        digital_ctx->target_state = current_state.value;
-    }
+    digital_ctx->target_state = current_state.ok ? current_state.value : false;
 }
 
 mc_status_t digital_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
@@ -83,22 +82,34 @@ bool digital_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
 
 uint8_t digital_sys_get_function_count(void *ctx)
 {
-    return DIGITAL_SYS_F_COUNT;
+    mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
+    return digital_ctx->device->config->is_read_only
+               ? DIGITAL_SYS_READ_ONLY_F_COUNT
+               : DIGITAL_SYS_F_COUNT;
 }
 
 uint8_t digital_sys_get_input_count(void *ctx)
 {
-    return DIGITAL_SYS_X_COUNT;
+    mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
+    return digital_ctx->device->config->is_read_only
+               ? DIGITAL_SYS_READ_ONLY_X_COUNT
+               : DIGITAL_SYS_X_COUNT;
 }
 
 uint8_t digital_sys_get_output_count(void *ctx)
 {
-    return DIGITAL_SYS_Y_COUNT;
+    mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
+    return digital_ctx->device->config->is_read_only
+               ? DIGITAL_SYS_READ_ONLY_Y_COUNT
+               : DIGITAL_SYS_Y_COUNT;
 }
 
 uint8_t digital_sys_get_alias_count(void *ctx)
 {
-    return DIGITAL_SYS_ALIAS_COUNT;
+    mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
+    return digital_ctx->device->config->is_read_only
+               ? DIGITAL_SYS_READ_ONLY_ALIAS_COUNT
+               : DIGITAL_SYS_ALIAS_COUNT;
 }
 
 const mc_system_driver_t mc_digital_sys_driver = {

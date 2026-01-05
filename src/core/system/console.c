@@ -124,14 +124,15 @@ static int find_system_index_by_name(mc_system_console_t *console,
 static bool find_command_by_alias(mc_system_t *sys, const char *name,
                                   size_t len, mc_sys_cmd_info_t *cmd)
 {
-    if (!sys->driver->get_alias)
-    {
-        return false;
-    }
-    uint8_t count = sys->driver->get_alias_count(sys->ctx);
+    uint8_t count = mc_sys_get_alias_count(sys);
     for (int i = 0; i < count; i++)
     {
-        sys->driver->get_alias(sys->ctx, i, cmd);
+        mc_status_t ret = mc_sys_get_alias(sys, i, cmd);
+        if (ret != MC_OK)
+        {
+            continue;
+        }
+
         const char *entry_name = cmd->alias;
         // Check for exact length match to avoid prefix collisions
         if (entry_name && strncmp(entry_name, name, len) == 0 &&

@@ -175,8 +175,9 @@ mc_status_t mc_composite_invoke(void *ctx, const mc_composite_driver_t *driver,
     return MC_ERROR_INVALID_ARGS;
 }
 
-bool mc_composite_get_alias(void *ctx, const mc_composite_driver_t *driver,
-                            uint8_t id, mc_sys_cmd_info_t *info)
+mc_status_t mc_composite_get_alias(
+    void *ctx, const mc_composite_driver_t *driver, uint8_t id,
+    mc_sys_cmd_info_t *info)
 {
     CHECK_COMPOSITE(ctx, driver);
     uint8_t f_offset = 0;
@@ -198,7 +199,7 @@ bool mc_composite_get_alias(void *ctx, const mc_composite_driver_t *driver,
         {
             if (child_drv->get_alias)
             {
-                bool success = child_drv->get_alias(child_ctx, id, info);
+                mc_status_t result = child_drv->get_alias(child_ctx, id, info);
                 if (info->type == MC_CMD_TYPE_FUNC)
                 {
                     info->id += f_offset;
@@ -211,11 +212,11 @@ bool mc_composite_get_alias(void *ctx, const mc_composite_driver_t *driver,
                 {
                     info->id += y_offset;
                 }
-                return success;
+                return result;
             }
             else
             {
-                return false;
+                return MC_ERROR_NOT_SUPPORTED;
             }
         }
         id -= local_count;
@@ -235,7 +236,7 @@ bool mc_composite_get_alias(void *ctx, const mc_composite_driver_t *driver,
         }
     }
 
-    return false;
+    return MC_ERROR_INVALID_ARGS;
 }
 
 // --- Counting Functions ---

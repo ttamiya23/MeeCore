@@ -89,6 +89,23 @@ mc_result_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id)
     return sys->driver->read_output(sys->ctx, y_id);
 }
 
+mc_status_t mc_sys_get_alias(const mc_system_t *sys, uint8_t id,
+                             mc_sys_cmd_info_t *info)
+{
+    CHECK_SYSTEM(sys);
+    MC_ASSERT(info != NULL);
+
+    if (!sys->driver->get_alias || !sys->driver->get_alias_count)
+    {
+        return MC_ERROR_NOT_SUPPORTED;
+    }
+    if (id >= mc_sys_get_alias_count(sys))
+    {
+        return MC_ERROR_INVALID_ARGS;
+    }
+    return sys->driver->get_alias(sys->ctx, id, info);
+}
+
 uint8_t mc_sys_get_function_count(const mc_system_t *sys)
 {
     CHECK_SYSTEM(sys);
@@ -120,4 +137,15 @@ uint8_t mc_sys_get_output_count(const mc_system_t *sys)
         return 0;
     }
     return sys->driver->get_output_count(sys->ctx);
+}
+
+uint8_t mc_sys_get_alias_count(const mc_system_t *sys)
+{
+    CHECK_SYSTEM(sys);
+
+    if (!sys->driver->get_alias_count)
+    {
+        return 0;
+    }
+    return sys->driver->get_alias_count(sys->ctx);
 }

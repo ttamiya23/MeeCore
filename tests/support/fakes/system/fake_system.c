@@ -58,7 +58,7 @@ mc_result_t fake_sys_read_output(void *ctx, uint8_t y_id)
     return MC_OK_VAL(data->y[y_id]);
 }
 
-bool fake_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
+mc_status_t fake_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
 {
     fake_sys_ctx_t *data = (fake_sys_ctx_t *)ctx;
     switch (id)
@@ -68,28 +68,28 @@ bool fake_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
         info->type = MC_CMD_TYPE_FUNC;
         info->id = 0;
         info->has_preset = false;
-        return true;
+        return MC_OK;
     case 1:
         info->alias = data->x0_name;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = false;
-        return true;
+        return MC_OK;
     case 2:
         info->alias = data->y0_name;
         info->type = MC_CMD_TYPE_OUTPUT;
         info->id = 0;
         info->has_preset = false;
-        return true;
+        return MC_OK;
     case 3:
         info->alias = data->reset_name;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 0;
-        return true;
+        return MC_OK;
     default:
-        return false;
+        return MC_ERROR_INVALID_ARGS;
     }
 }
 

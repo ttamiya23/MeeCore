@@ -55,7 +55,7 @@ extern "C"
         mc_result_t (*read_output)(void *ctx, uint8_t y_id);
 
         // Get alias command info.
-        bool (*get_alias)(void *ctx, uint8_t id, mc_sys_cmd_info_t *info);
+        mc_status_t (*get_alias)(void *ctx, uint8_t id, mc_sys_cmd_info_t *info);
 
         // Member counts
         uint8_t (*get_function_count)(void *ctx);
@@ -95,6 +95,10 @@ extern "C"
     /* Read an output. */
     mc_result_t mc_sys_read_output(const mc_system_t *sys, uint8_t y_id);
 
+    /* Get an alias. */
+    mc_status_t mc_sys_get_alias(const mc_system_t *sys, uint8_t id,
+                                 mc_sys_cmd_info_t *info);
+
     /* Get function count */
     uint8_t mc_sys_get_function_count(const mc_system_t *sys);
 
@@ -103,6 +107,9 @@ extern "C"
 
     /* Get output count */
     uint8_t mc_sys_get_output_count(const mc_system_t *sys);
+
+    /* Get alias count */
+    uint8_t mc_sys_get_alias_count(const mc_system_t *sys);
 
 #ifdef __cplusplus
 }

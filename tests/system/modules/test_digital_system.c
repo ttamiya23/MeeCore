@@ -108,29 +108,34 @@ void test_invoke_function_toggles_state()
 void test_get_alias_succeeds()
 {
     mc_sys_cmd_info_t cmd;
+    mc_status_t ret;
 
-    TEST_ASSERT_TRUE(sys.driver->get_alias(ctx, 0, &cmd));
+    ret = mc_sys_get_alias(&sys, 0, &cmd);
+    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
     TEST_ASSERT_EQUAL_STRING("turnOn", cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_TRUE(cmd.has_preset);
     TEST_ASSERT_EQUAL_INT32(1, cmd.preset_val);
 
-    TEST_ASSERT_TRUE(sys.driver->get_alias(ctx, 1, &cmd));
+    ret = mc_sys_get_alias(&sys, 1, &cmd);
+    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
     TEST_ASSERT_EQUAL_STRING("turnOff", cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_INPUT, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be x0
     TEST_ASSERT_TRUE(cmd.has_preset);
     TEST_ASSERT_EQUAL_INT32(0, cmd.preset_val);
 
-    TEST_ASSERT_TRUE(sys.driver->get_alias(ctx, 2, &cmd));
+    ret = mc_sys_get_alias(&sys, 2, &cmd);
+    TEST_ASSERT_EQUAL_INT32(MC_OK, ret);
     TEST_ASSERT_EQUAL_STRING("toggle", cmd.alias);
     TEST_ASSERT_EQUAL_INT32(MC_CMD_TYPE_FUNC, cmd.type);
     TEST_ASSERT_EQUAL_INT32(0, cmd.id); // Should be f0
     TEST_ASSERT_FALSE(cmd.has_preset);
 
     // Invalid ID should fail
-    TEST_ASSERT_FALSE(sys.driver->get_alias(ctx, 3, &cmd));
+    ret = mc_sys_get_alias(&sys, 3, &cmd);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
 }
 
 void test_get_member_count_succeeds()
@@ -138,7 +143,7 @@ void test_get_member_count_succeeds()
     TEST_ASSERT_EQUAL(1, mc_sys_get_function_count(&sys));
     TEST_ASSERT_EQUAL(1, mc_sys_get_input_count(&sys));
     TEST_ASSERT_EQUAL(1, mc_sys_get_output_count(&sys));
-    TEST_ASSERT_EQUAL(3, sys.driver->get_alias_count(ctx));
+    TEST_ASSERT_EQUAL(3, mc_sys_get_alias_count(&sys));
 }
 
 void test_read_only_write_input_fails()
@@ -172,11 +177,19 @@ void test_read_only_invoke_function_fails()
     TEST_ASSERT_EQUAL(MC_ERROR_INVALID_ARGS, ret);
 }
 
+void test_read_only_get_alias_fails()
+{
+    mc_digital_set_read_only(&dev, true);
+    mc_sys_cmd_info_t cmd;
+    mc_status_t ret = mc_sys_get_alias(&sys, 0, &cmd);
+    TEST_ASSERT_EQUAL_INT32(MC_ERROR_INVALID_ARGS, ret);
+}
+
 void test_read_only_get_member_count_succeeds()
 {
     mc_digital_set_read_only(&dev, true);
     TEST_ASSERT_EQUAL(0, mc_sys_get_function_count(&sys));
     TEST_ASSERT_EQUAL(0, mc_sys_get_input_count(&sys));
     TEST_ASSERT_EQUAL(1, mc_sys_get_output_count(&sys));
-    TEST_ASSERT_EQUAL(0, sys.driver->get_alias_count(ctx));
+    TEST_ASSERT_EQUAL(0, mc_sys_get_alias_count(&sys));
 }

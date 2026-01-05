@@ -33,7 +33,7 @@ extern "C"
     mc_result_t mc_composite_read_output(
         void *ctx, const mc_composite_driver_t *driver, uint8_t y_id);
 
-    bool mc_composite_get_alias(
+    mc_status_t mc_composite_get_alias(
         void *ctx, const mc_composite_driver_t *driver, uint8_t id,
         mc_sys_cmd_info_t *info);
 
@@ -121,8 +121,8 @@ extern "C"
     {                                                                                 \
         return mc_composite_invoke(ctx, &NAME##_driver, id, args, c);                 \
     }                                                                                 \
-    static bool NAME##_get_alias(void *ctx, uint8_t id,                               \
-                                 mc_sys_cmd_info_t *info)                             \
+    static mc_status_t NAME##_get_alias(void *ctx, uint8_t id,                        \
+                                        mc_sys_cmd_info_t *info)                      \
     {                                                                                 \
         return mc_composite_get_alias(ctx, &NAME##_driver, id, info);                 \
     }                                                                                 \

@@ -51,7 +51,7 @@ mc_result_t digital_sys_read_output(void *ctx, uint8_t y_id)
     return mc_digital_get_state(digital_ctx->device);
 }
 
-bool digital_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
+mc_status_t digital_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
 {
     switch (id)
     {
@@ -61,22 +61,22 @@ bool digital_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 1;
-        return true;
+        return MC_OK;
     case 1:
         info->alias = DIGITAL_TURN_OFF_CMD;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 0;
-        return true;
+        return MC_OK;
     case 2:
         info->alias = DIGITAL_TOGGLE_CMD;
         info->type = MC_CMD_TYPE_FUNC;
         info->id = 0;
         info->has_preset = false;
-        return true;
+        return MC_OK;
     default:
-        return false;
+        return MC_ERROR_INVALID_ARGS;
     }
 }
 

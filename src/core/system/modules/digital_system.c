@@ -4,14 +4,23 @@
 #define DIGITAL_SYS_X_COUNT 1
 #define DIGITAL_SYS_Y_COUNT 1
 #define DIGITAL_SYS_F_COUNT 1
-#define DIGITAL_SYS_ALIAS_COUNT 3
+#define DIGITAL_SYS_ALIAS_COUNT 5
 #define DIGITAL_SYS_READ_ONLY_X_COUNT 0
 #define DIGITAL_SYS_READ_ONLY_Y_COUNT 1
 #define DIGITAL_SYS_READ_ONLY_F_COUNT 0
-#define DIGITAL_SYS_READ_ONLY_ALIAS_COUNT 0
-#define DIGITAL_TURN_ON_CMD "turnOn"
-#define DIGITAL_TURN_OFF_CMD "turnOff"
-#define DIGITAL_TOGGLE_CMD "toggle"
+#define DIGITAL_SYS_READ_ONLY_ALIAS_COUNT 1
+#define DIGITAL_SYS_STATE_ALIAS "state"
+#define DIGITAL_SYS_TARGET_STATE_ALIAS "targetState"
+#define DIGITAL_SYS_TURN_ON_ALIAS "turnOn"
+#define DIGITAL_SYS_TURN_OFF_ALIAS "turnOff"
+#define DIGITAL_SYS_TOGGLE_ALIAS "toggle"
+
+const mc_digital_system_config_t mc_digital_sys_config = {
+    .state_name = DIGITAL_SYS_STATE_ALIAS,
+    .target_state_name = DIGITAL_SYS_TARGET_STATE_ALIAS,
+    .turn_on_name = DIGITAL_SYS_TURN_ON_ALIAS,
+    .turn_off_name = DIGITAL_SYS_TURN_OFF_ALIAS,
+    .toggle_name = DIGITAL_SYS_TOGGLE_ALIAS};
 
 void digital_sys_init(void *ctx)
 {
@@ -53,24 +62,37 @@ mc_result_t digital_sys_read_output(void *ctx, uint8_t y_id)
 
 mc_status_t digital_sys_get_alias(void *ctx, uint8_t id, mc_sys_cmd_info_t *info)
 {
+    mc_digital_system_ctx_t *digital_ctx = (mc_digital_system_ctx_t *)ctx;
     switch (id)
     {
     case 0:
-        info->alias = DIGITAL_TURN_ON_CMD;
+        info->alias = digital_ctx->config->state_name;
+        info->type = MC_CMD_TYPE_OUTPUT;
+        info->id = 0;
+        info->has_preset = false;
+        return MC_OK;
+    case 1:
+        info->alias = digital_ctx->config->target_state_name;
+        info->type = MC_CMD_TYPE_INPUT;
+        info->id = 0;
+        info->has_preset = false;
+        return MC_OK;
+    case 2:
+        info->alias = digital_ctx->config->turn_on_name;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 1;
         return MC_OK;
-    case 1:
-        info->alias = DIGITAL_TURN_OFF_CMD;
+    case 3:
+        info->alias = digital_ctx->config->turn_off_name;
         info->type = MC_CMD_TYPE_INPUT;
         info->id = 0;
         info->has_preset = true;
         info->preset_val = 0;
         return MC_OK;
-    case 2:
-        info->alias = DIGITAL_TOGGLE_CMD;
+    case 4:
+        info->alias = digital_ctx->config->toggle_name;
         info->type = MC_CMD_TYPE_FUNC;
         info->id = 0;
         info->has_preset = false;

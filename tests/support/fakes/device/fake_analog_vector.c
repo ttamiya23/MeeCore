@@ -25,37 +25,37 @@ void fake_analog_init_z(void *ctx)
 mc_status_t fake_analog_set_x(void *ctx, int32_t value)
 {
     fake_analog_vector_ctx_t *vector_ctx = (fake_analog_vector_ctx_t *)ctx;
-    fake_analog_driver.set_value(&vector_ctx->x, value);
+    return fake_analog_driver.set_value(&vector_ctx->x, value);
 }
 
 mc_status_t fake_analog_set_y(void *ctx, int32_t value)
 {
     fake_analog_vector_ctx_t *vector_ctx = (fake_analog_vector_ctx_t *)ctx;
-    fake_analog_driver.set_value(&vector_ctx->y, value);
+    return fake_analog_driver.set_value(&vector_ctx->y, value);
 }
 
 mc_status_t fake_analog_set_z(void *ctx, int32_t value)
 {
     fake_analog_vector_ctx_t *vector_ctx = (fake_analog_vector_ctx_t *)ctx;
-    fake_analog_driver.set_value(&vector_ctx->z, value);
+    return fake_analog_driver.set_value(&vector_ctx->z, value);
 }
 
 mc_result_t fake_analog_get_x(void *ctx)
 {
     fake_analog_vector_ctx_t *vector_ctx = (fake_analog_vector_ctx_t *)ctx;
-    fake_analog_driver.get_value(&vector_ctx->x);
+    return fake_analog_driver.get_value(&vector_ctx->x);
 }
 
 mc_result_t fake_analog_get_y(void *ctx)
 {
     fake_analog_vector_ctx_t *vector_ctx = (fake_analog_vector_ctx_t *)ctx;
-    fake_analog_driver.get_value(&vector_ctx->y);
+    return fake_analog_driver.get_value(&vector_ctx->y);
 }
 
 mc_result_t fake_analog_get_z(void *ctx)
 {
     fake_analog_vector_ctx_t *vector_ctx = (fake_analog_vector_ctx_t *)ctx;
-    fake_analog_driver.get_value(&vector_ctx->z);
+    return fake_analog_driver.get_value(&vector_ctx->z);
 }
 
 const mc_analog_vector_driver_t fake_analog_vector_driver = {

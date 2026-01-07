@@ -69,7 +69,12 @@ static bool parse_member_token(const char *token, mc_sys_cmd_info_t *info)
     default:
         return false;
     }
-    info->id = (uint8_t)strtol(token + 1, NULL, 10);
+    char *end;
+    info->id = (uint8_t)strtol(token + 1, &end, 10);
+    if (token + 1 == end)
+    {
+        return false;
+    }
     info->has_preset = false;
     return true;
 }
@@ -317,6 +322,7 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
 
     const char *cmd_start = skip_delimiters(cmd);
     const char *token = cmd_start;
+    char *end; // For strtol end pointer checking
 
     // --- CHECK 1: "clear" command ---
     if (strncmp(token, "clear", 5) == 0)
@@ -350,7 +356,12 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
     // Strategy A: "s<ID>"
     if (*token == 's' && isdigit((unsigned char)token[1]))
     {
-        long sys_id = strtol(token + 1, NULL, 10);
+        long sys_id = strtol(token + 1, &end, 10);
+        if (token + 1 == end)
+        {
+            return send_response(console, cmd_start,
+                                 MC_ERR_VAL(MC_ERROR_INVALID_ARGS));
+        }
         sys_index = find_system_index_by_id(console, sys_id);
     }
     // Strategy B: Name Alias
@@ -419,7 +430,13 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
             if (*token != '\0')
             {
                 // "x0 = 1" or "pwm(20)" -> User Write
-                long write_val = strtol(token, NULL, 10);
+                long write_val = strtol(token, &end, 10);
+                if (token == end)
+                {
+                    return send_response(console, cmd_start,
+                                         MC_ERR_VAL(MC_ERROR_INVALID_ARGS));
+                }
+
                 res = MC_STATUS_TO_RESULT(
                     mc_sys_write_input(sys, cmd_info.id, (int32_t)write_val));
             }
@@ -441,11 +458,15 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
         uint8_t argc = 0;
 
         // Parse arguments until string ends
-        char *end;
         while (*token && argc < console->args_count)
         {
             console->args_buffer[argc++] = (int32_t)strtol(token, &end,
                                                            10);
+            if (token == end)
+            {
+                return send_response(console, cmd_start,
+                                     MC_ERR_VAL(MC_ERROR_INVALID_ARGS));
+            }
             token = skip_delimiters(end);
         }
 

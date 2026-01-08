@@ -1,17 +1,17 @@
 #include "unity.h"
-#include "mc/device/analog_vector.h"
+#include "mc/device/analog_vector3.h"
 #include "mc/device/analog.h"
-#include "device/fake_analog_vector.h"
+#include "device/fake_analog_vector3.h"
 #include "device/fake_analog.h"
 #include "utils.h" // Needed for assert_helper.h
 #include "assert_helper.h"
 
 // Globals
-fake_analog_vector_ctx_t ctx;
+fake_analog_vector3_ctx_t ctx;
 fake_analog_ctx_t *ctxs[] = {&ctx.x, &ctx.y, &ctx.z};
-mc_analog_driver_t *drivers[] = {&fake_analog_vector_driver.x,
-                                 &fake_analog_vector_driver.y,
-                                 &fake_analog_vector_driver.z};
+mc_analog_driver_t *drivers[] = {&fake_analog_vector3_driver.x,
+                                 &fake_analog_vector3_driver.y,
+                                 &fake_analog_vector3_driver.z};
 
 void setUp()
 {

@@ -38,3 +38,11 @@ void mc_assert_handler(const char *expr, const char *file, int line);
     {                                                     \
         mc_assert_handler(#expr, __FILENAME__, __LINE__); \
     }
+
+// Struct for vector3
+typedef struct mc_vector3_t
+{
+    int32_t x;
+    int32_t y;
+    int32_t z;
+} mc_vector3_t;

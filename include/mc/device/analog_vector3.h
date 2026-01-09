@@ -6,6 +6,7 @@ extern "C"
 #endif
 
 #include "mc/device/analog.h"
+#include "mc/utils.h"
 #include <stdbool.h>
 
 #define MC_DEFINE_ANALOG_VECTOR3(NAME, DRIVER, CTX)                        \
@@ -35,6 +36,14 @@ extern "C"
     // Initialize the device.
     void mc_analog_vector3_init(const mc_analog_vector3_t *dev,
                                 bool is_read_only);
+
+    // Set vector3.
+    mc_status_t mc_analog_vector3_set_value(const mc_analog_vector3_t *dev,
+                                            mc_vector3_t value);
+
+    // Get vector3.
+    mc_status_t mc_analog_vector3_get_value(const mc_analog_vector3_t *dev,
+                                            mc_vector3_t *value);
 
     // Set read only bit.
     void mc_analog_vector3_set_read_only(const mc_analog_vector3_t *dev,

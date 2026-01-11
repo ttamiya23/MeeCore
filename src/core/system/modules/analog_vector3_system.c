@@ -1,6 +1,6 @@
-#include "system/modules/analog_vector3_system.h"
-#include "system/modules/analog_system.h"
-#include "system/composite.h"
+#include "mc/system/modules/analog_vector3_system.h"
+#include "mc/system/modules/analog_system.h"
+#include "mc/system/composite.h"
 
 #define ANALOG_VECTOR3_SYS_X_VALUE_ALIAS "x"
 #define ANALOG_VECTOR3_SYS_X_TARGET_VALUE_ALIAS "targetX"

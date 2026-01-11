@@ -5,7 +5,7 @@ extern "C"
 {
 #endif
 
-#include "system/modules/analog_system.h"
+#include "mc/system/modules/analog_system.h"
 
 // Macro for defining analog context. Users should always use this.
 #define MC_DEFINE_ANALOG_VECTOR3_SYSTEM_WITH_CONFIG(NAME, CONFIG, DEVICE) \

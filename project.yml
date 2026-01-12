@@ -12,7 +12,7 @@
 :paths:
   :test:
     - +:tests/core/**
-    - -:tests/ports/** # Explicitly ignore ports
+    - -:tests/test_ports/** # Explicitly ignore ports
     - -:tests/core/support
   :source:
     - src/core/**
@@ -21,7 +21,7 @@
     - include/**
   :support:
     - tests/core/support/**
-    - src/**
+    - src/core/**
 
 :defines:
   :test:

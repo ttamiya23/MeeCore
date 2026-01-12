@@ -1,11 +1,6 @@
 #include <Arduino.h>
-#include <arduino_serial_io.h>
+#include "ports/arduino/arduino_serial_io.h"
 #include "mc/io.h"
-
-bool mc_arduino_serial_io_default_is_connected()
-{
-    return (bool)Serial;
-}
 
 uint8_t arduino_serial_io_get_status(void *ctx)
 {
@@ -47,8 +42,10 @@ bool arduino_serial_io_read(void *ctx, char *c)
     return false;
 }
 
-// 4. The Driver Struct
-const mc_io_driver_t mc_arduino_serial_io_driver = {
-    .write_char = arduino_serial_io_write,
-    .read_char = arduino_serial_io_read,
-    .get_status = arduino_serial_io_get_status};
+extern "C"
+{
+    extern const mc_io_driver_t mc_arduino_serial_io_driver = {
+        .write_char = arduino_serial_io_write,
+        .read_char = arduino_serial_io_read,
+        .get_status = arduino_serial_io_get_status};
+}

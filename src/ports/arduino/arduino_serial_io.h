@@ -9,9 +9,14 @@ extern "C"
 
 // Macro for defining analog context. Users should always use this.
 #define MC_DEFINE_DEFAULT_ARDUINO_SERIAL_IO(NAME) \
+    bool NAME##_is_connected()                    \
+    {                                             \
+        return (bool)Serial;                      \
+    }                                             \
+                                                  \
     static mc_arduino_serial_io_ctx_t NAME = {    \
         .stream = &Serial,                        \
-        .is_connected = mc_arduino_serial_io_default_is_connected}
+        .is_connected = NAME##_is_connected}
 
     // Ctx for arduino serial IO driver
     typedef struct mc_arduino_serial_io_ctx_t
@@ -22,9 +27,6 @@ extern "C"
 
     // Driver to Arduino serial IO
     extern const mc_io_driver_t mc_arduino_serial_io_driver;
-
-    // Default is connected function
-    bool mc_arduino_serial_io_default_is_connected();
 
 #ifdef __cplusplus
 }

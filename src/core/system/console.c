@@ -126,7 +126,7 @@ static int find_system_index_by_name(mc_system_console_t *console,
 }
 
 // Helper: Find command by alias
-static bool find_command_by_alias(mc_system_t *sys, const char *name,
+static bool find_command_by_alias(const mc_system_t *sys, const char *name,
                                   size_t len, mc_sys_cmd_info_t *cmd)
 {
     uint8_t count = mc_sys_get_alias_count(sys);
@@ -182,6 +182,7 @@ static mc_status_t send_response(mc_system_console_t *console,
 
     MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
     MC_RETURN_IF_ERROR(mc_io_write(console->io, ETX, 1));
+    return MC_OK;
 }
 
 // Helper: Send System Dump (TSV)

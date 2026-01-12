@@ -2,6 +2,11 @@
 #include <arduino_serial_io.h>
 #include "mc/io.h"
 
+bool mc_arduino_serial_io_default_is_connected()
+{
+    return (bool)Serial;
+}
+
 uint8_t arduino_serial_io_get_status(void *ctx)
 {
     mc_arduino_serial_io_ctx_t *arduino_ctx = (mc_arduino_serial_io_ctx_t *)ctx;

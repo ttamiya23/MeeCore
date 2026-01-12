@@ -1,5 +1,10 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -29,7 +34,7 @@
 // Magic number to define whether something is initialized or not
 #define MC_INITIALIZED 0x23
 
-void mc_assert_handler(const char *expr, const char *file, int line);
+    void mc_assert_handler(const char *expr, const char *file, int line);
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -39,10 +44,14 @@ void mc_assert_handler(const char *expr, const char *file, int line);
         mc_assert_handler(#expr, __FILENAME__, __LINE__); \
     }
 
-// Struct for vector3
-typedef struct mc_vector3_t
-{
-    int32_t x;
-    int32_t y;
-    int32_t z;
-} mc_vector3_t;
+    // Struct for vector3
+    typedef struct mc_vector3_t
+    {
+        int32_t x;
+        int32_t y;
+        int32_t z;
+    } mc_vector3_t;
+
+#ifdef __cplusplus
+}
+#endif

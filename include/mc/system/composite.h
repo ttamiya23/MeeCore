@@ -146,14 +146,14 @@ extern "C"
     /* 6. Define The Driver (Flash) */                                                \
     const mc_system_driver_t NAME = {                                                 \
         .init = NAME##_init,                                                          \
+        .invoke = NAME##_invoke,                                                      \
         .write_input = NAME##_write_input,                                            \
         .read_input = NAME##_read_input,                                              \
         .read_output = NAME##_read_output,                                            \
-        .invoke = NAME##_invoke,                                                      \
         .get_alias = NAME##_get_alias,                                                \
+        .get_function_count = NAME##_get_function_count,                              \
         .get_input_count = NAME##_get_input_count,                                    \
         .get_output_count = NAME##_get_output_count,                                  \
-        .get_function_count = NAME##_get_function_count,                              \
         .get_alias_count = NAME##_get_alias_count};
 
 #ifdef __cplusplus

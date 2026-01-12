@@ -11,7 +11,7 @@ mc_status_t fake_sys_increment_y(fake_sys_ctx_t *data)
 
 mc_status_t fake_sys_returns_error(fake_sys_ctx_t *data, int32_t error)
 {
-    return error;
+    return (mc_status_t)error;
 }
 
 void fake_sys_init(void *ctx)
@@ -20,9 +20,9 @@ void fake_sys_init(void *ctx)
     memset(data->x, 0, FAKE_SYS_X_COUNT);
     memset(data->y, 0, FAKE_SYS_Y_COUNT);
     data->increment_y_name = DEFAULT_FAKE_INCREMENT_Y_NAME;
-    data->x0_name = DEFAULT_FAKE_X0_NAME;
-    data->y0_name = DEFAULT_FAKE_Y0_NAME;
-    data->reset_name = DEFAULT_FAKE_RESET_NAME;
+    data->x0_name = (const char *)DEFAULT_FAKE_X0_NAME;
+    data->y0_name = (const char *)DEFAULT_FAKE_Y0_NAME;
+    data->reset_name = (const char *)DEFAULT_FAKE_RESET_NAME;
 }
 
 mc_status_t fake_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
@@ -31,11 +31,12 @@ mc_status_t fake_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
     switch (func_id)
     {
     case 0:
-        return fake_sys_increment_y(ctx);
+        return fake_sys_increment_y((fake_sys_ctx_t *)ctx);
     case 1:
-        return fake_sys_returns_error(ctx, args[0]);
+        return fake_sys_returns_error((fake_sys_ctx_t *)ctx, args[0]);
     default:
         Throw(-1); // This should never happen
+        return MC_ERROR;
     }
 }
 

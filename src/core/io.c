@@ -28,7 +28,7 @@ static mc_status_t convert_status(uint8_t status)
     {
         return MC_ERROR_NO_RESOURCE;
     }
-    return MC_IO_STATUS_OK;
+    return MC_OK;
 }
 
 // Helper: update status while conserving RX_OVERFLOW bit
@@ -67,7 +67,7 @@ void mc_io_init(mc_io_t *io, const mc_io_driver_t *driver,
 
 mc_status_t mc_io_printf(mc_io_t *io, const char *format, ...)
 {
-    mc_io_status_t ret;
+    mc_status_t ret;
     va_list args;
     va_start(args, format);
     ret = mc_io_vprintf(io, format, args);
@@ -80,7 +80,7 @@ mc_status_t mc_io_vprintf(mc_io_t *io, const char *format, va_list args)
     CHECK_IO(io);
     MC_ASSERT(format != NULL);
 
-    mc_io_status_t ret = MC_OK;
+    mc_status_t ret = MC_OK;
 
     int len = vsnprintf(io->tx_buffer, io->tx_buffer_len, format, args);
     if (len > 0)

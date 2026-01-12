@@ -28,7 +28,7 @@ extern "C"
     // System command struct
     typedef struct mc_sys_cmd_info_t
     {
-        char *alias;
+        const char *alias;
         mc_sys_cmd_type_t type;
         uint8_t id;
         bool has_preset;    // If true, use the value below.

@@ -4,3 +4,4 @@ Main.c
 build
 cmake_build
 .vscode/*
+.pio/*

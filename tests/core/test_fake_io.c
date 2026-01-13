@@ -9,12 +9,11 @@
 
 // Globals for tests
 fake_io_ctx_t ctx;
-mc_io_t io;
 
 void setUp()
 {
     test_assert_init();
-    fake_io_init(&io, &ctx);
+    fake_io_init(&ctx);
 }
 
 void test_init_resets_data()

@@ -26,7 +26,7 @@ static const char *get_level_str(mc_log_level_t level)
 }
 
 // Set the IO stream where logs go (e.g., &console)
-void mc_debug_init(mc_io_t *io)
+void mc_debug_init(const mc_io_t *io)
 {
     debug_io = io;
 }
@@ -41,7 +41,7 @@ mc_status_t _mc_log(mc_log_level_t log_level, const char *file, int line,
                     const char *format, ...)
 {
     mc_status_t ret = MC_ERROR;
-    if (!debug_io || debug_io->is_initialized != MC_INITIALIZED)
+    if (!debug_io || debug_io->state->is_initialized != MC_INITIALIZED)
     {
         return ret;
     }
@@ -53,7 +53,8 @@ mc_status_t _mc_log(mc_log_level_t log_level, const char *file, int line,
     va_start(args, format);
 
     // Eg: "[DBG] debug.c:52 Create example message\r\n"
-    ret = mc_io_printf(debug_io, "%s %s:%d: ", get_level_str(log_level), file, line);
+    ret = mc_io_printf(debug_io, "%s %s:%d: ", get_level_str(log_level), file,
+                       line);
     mc_io_vprintf(debug_io, format, args);
     mc_io_printf(debug_io, "\r\n");
 

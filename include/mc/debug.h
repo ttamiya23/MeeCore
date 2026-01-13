@@ -26,7 +26,7 @@ extern "C"
     } mc_log_level_t;
 
     // Set the IO stream where logs go.
-    void mc_debug_init(mc_io_t *io);
+    void mc_debug_init(const mc_io_t *io);
 
     // Change filter at runtime.
     void mc_debug_set_level(mc_log_level_t level);

@@ -10,7 +10,7 @@
 
 // Globals
 fake_io_ctx_t io_ctx;
-mc_io_t io;
+MC_DEFINE_IO(io, fake_io_driver, io_ctx, 1024, 1024);
 fake_sys_ctx_t sys_ctx0;
 MC_DEFINE_SYSTEM(sys0, fake_sys_driver, sys_ctx0);
 fake_sys_ctx_t sys_ctx1;
@@ -42,7 +42,8 @@ void setUp()
     mc_sys_init(&sys1);
     mc_sys_init(&sys2);
     mc_sys_init(&sys3);
-    fake_io_init(&io, &io_ctx);
+    fake_io_init(&io_ctx);
+    mc_io_init(&io);
     mc_sys_console_init(&console, &io, systems, 4);
 }
 

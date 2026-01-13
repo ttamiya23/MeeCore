@@ -11,6 +11,22 @@ extern "C"
 #include "mc/status.h"
 #include "mc/event.h"
 
+// Macro for defining IO. Users should always use this.
+#define MC_DEFINE_IO(NAME, DRIVER, CTX, RX_LEN, TX_LEN) \
+    static char NAME##_rx_buffer[RX_LEN];               \
+    static char NAME##_tx_buffer[TX_LEN];               \
+    const mc_io_config_t NAME##_config = {              \
+        .rx_buffer = NAME##_rx_buffer,                  \
+        .rx_buffer_len = RX_LEN,                        \
+        .tx_buffer = NAME##_tx_buffer,                  \
+        .tx_buffer_len = TX_LEN};                       \
+    static mc_io_state_t NAME##_state = {0};            \
+    const mc_io_t NAME = {                              \
+        .driver = &DRIVER,                              \
+        .ctx = (void *)(&CTX),                          \
+        .config = &NAME##_config,                       \
+        .state = &NAME##_state};
+
     /* Status bits for IO state. */
     typedef enum mc_io_status_t
     {
@@ -22,22 +38,25 @@ extern "C"
         MC_IO_STATUS_ERROR = 0x10
     } mc_io_status_t;
 
-    /* IO struct. */
-    typedef struct mc_io_t
+    /* IO config. */
+    typedef struct mc_io_config_t
+    {
+        char *rx_buffer;
+        uint16_t rx_buffer_len;
+        char *tx_buffer;
+        uint16_t tx_buffer_len;
+    } mc_io_config_t;
+
+    /* IO state. */
+    typedef struct mc_io_state_t
     {
         // Triggered when a newline ('\n' or '\r') is received.
         // Event data: (char*) pointing to the received null-terminated string.
         mc_event_t rx_event;
         volatile uint8_t status;
-        const struct mc_io_driver_t *driver;
-        void *driver_ctx; // The hardware configuration (e.g., UART handle, GPIO pin)
-        char *rx_buffer;
-        uint16_t rx_buffer_len;
-        char *tx_buffer;
-        uint16_t tx_buffer_len;
         volatile uint16_t rx_index;
         uint8_t is_initialized;
-    } mc_io_t;
+    } mc_io_state_t;
 
     /* IO driver struct. */
     typedef struct mc_io_driver_t
@@ -52,10 +71,17 @@ extern "C"
         uint8_t (*get_status)(void *ctx);
     } mc_io_driver_t;
 
+    /* IO struct. */
+    typedef struct mc_io_t
+    {
+        const mc_io_driver_t *driver;
+        void *ctx; // The hardware configuration (e.g., UART handle, GPIO pin)
+        mc_io_config_t *config;
+        mc_io_state_t *state;
+    } mc_io_t;
+
     /* Initialize IO. */
-    void mc_io_init(mc_io_t *io, const mc_io_driver_t *driver,
-                    void *driver_ctx, char *rx_buffer, uint16_t rx_len,
-                    char *tx_buffer, uint16_t tx_len);
+    void mc_io_init(mc_io_t *io);
 
     /* Write formatted string (printf style). */
     mc_status_t mc_io_printf(mc_io_t *io, const char *format, ...);

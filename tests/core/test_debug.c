@@ -10,13 +10,14 @@
 #include "assert_helper.h"
 
 // Globals helpers.
-mc_io_t io;
 fake_io_ctx_t ctx;
+MC_DEFINE_IO(io, fake_io_driver, ctx, 1024, 1024);
 
 void setUp()
 {
     test_assert_init();
-    fake_io_init(&io, &ctx);
+    fake_io_init(&ctx);
+    mc_io_init(&io);
     mc_debug_init(&io);
     mc_debug_set_level(MC_LOG_LEVEL_DEBUG);
 }
@@ -54,11 +55,9 @@ void test_log_macros_expand_correctly()
     TEST_ASSERT(strlen(ctx.output_data) > 0);
 }
 
-void test_log_does_nothing_if_io_not_initialized()
+void test_log_does_nothing_if_io_null()
 {
-    // Don't initalize IO handle.
-    mc_io_t new_io;
-    mc_debug_init(&new_io);
+    mc_debug_init(NULL);
 
     MC_LOG_CRITICAL("Test Critical");
     MC_LOG_ERROR("Test Error");

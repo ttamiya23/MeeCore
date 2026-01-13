@@ -17,6 +17,14 @@ typedef struct
     char data[32];
 } my_callback;
 
+// Globals for tests
+fake_io_ctx_t ctx;
+mc_callback_t cb_handle;
+my_callback cb;
+
+MC_DEFINE_IO(io, fake_io_driver, ctx, 1024, 1024);
+MC_DEFINE_IO(small_io, fake_io_driver, ctx, 32, 32);
+
 // Callback: Captures the event data and fire count
 void on_line_received(void *ctx, void *data)
 {
@@ -24,12 +32,6 @@ void on_line_received(void *ctx, void *data)
     strncpy(cb->data, (char *)data, sizeof(cb->data));
     cb->event_fired_count++;
 }
-
-// Globals for tests
-fake_io_ctx_t ctx;
-mc_io_t io;
-my_callback cb;
-mc_callback_t cb_handle;
 
 void setUp()
 {
@@ -39,7 +41,9 @@ void setUp()
     memset(cb.data, 0, sizeof(cb.data));
 
     // Init
-    fake_io_init(&io, &ctx);
+    fake_io_init(&ctx);
+    mc_io_init(&io);
+    mc_io_init(&small_io);
     mc_callback_init(&cb_handle, on_line_received, &cb);
     mc_io_register_rx_callback(&io, &cb_handle);
 }
@@ -80,20 +84,15 @@ void test_read_handles_multiple_delimiters()
 
 void test_read_long_message_sets_overflow()
 {
-    // Set tx buffer size to 32.
-    char short_rx_buffer[32], short_tx_buffer[32];
-    mc_io_init(&io, &fake_io_driver, &ctx, short_rx_buffer, 32,
-               short_tx_buffer, 32);
-    mc_callback_init(&cb_handle, on_line_received, &cb);
-    mc_io_register_rx_callback(&io, &cb_handle);
+    mc_io_register_rx_callback(&small_io, &cb_handle);
 
     // Buffer is 32 bytes. We send 40 chars + newline.
     // "1234567890123456789012345678901234567890\n"
     fake_io_push_string(&ctx, "1234567890123456789012345678901234567890\n");
 
-    mc_status_t res = mc_io_update(&io);
+    mc_status_t res = mc_io_update(&small_io);
     TEST_ASSERT_EQUAL_INT8(MC_ERROR_NO_RESOURCE, res);
-    TEST_ASSERT_EQUAL_INT8(MC_IO_STATUS_RX_OVERFLOW, mc_io_get_status(&io));
+    TEST_ASSERT_EQUAL_INT8(MC_IO_STATUS_RX_OVERFLOW, mc_io_get_status(&small_io));
     TEST_ASSERT_EQUAL_INT(1, cb.event_fired_count);
 
     // Check truncation length (Buffer size 32 - 1 for null = 31 chars).
@@ -102,18 +101,18 @@ void test_read_long_message_sets_overflow()
     // Next long message should keep overflow status.
     fake_io_push_string(&ctx, "Supercalifragilisticexpialidocious\n");
 
-    res = mc_io_update(&io);
+    res = mc_io_update(&small_io);
     TEST_ASSERT_EQUAL_INT8(MC_ERROR_NO_RESOURCE, res);
-    TEST_ASSERT_EQUAL_INT8(MC_IO_STATUS_RX_OVERFLOW, mc_io_get_status(&io));
+    TEST_ASSERT_EQUAL_INT8(MC_IO_STATUS_RX_OVERFLOW, mc_io_get_status(&small_io));
     TEST_ASSERT_EQUAL_INT(2, cb.event_fired_count);
     TEST_ASSERT_EQUAL_STRING_LEN("Supercalifragilisticexpialidoci", cb.data, 31);
 
     // Next short message should reset overflow.
     fake_io_push_string(&ctx, "Hello\n");
 
-    res = mc_io_update(&io);
+    res = mc_io_update(&small_io);
     TEST_ASSERT_EQUAL_INT8(MC_OK, res);
-    TEST_ASSERT_EQUAL_INT8(MC_IO_STATUS_OK, mc_io_get_status(&io));
+    TEST_ASSERT_EQUAL_INT8(MC_IO_STATUS_OK, mc_io_get_status(&small_io));
     TEST_ASSERT_EQUAL_INT(3, cb.event_fired_count);
     TEST_ASSERT_EQUAL_STRING("Hello", cb.data);
 }

@@ -38,6 +38,7 @@ static void send_command(const char *cmd)
 
 void setUp()
 {
+    test_assert_init();
     mc_sys_init(&sys1);
     mc_sys_init(&sys2);
     mc_sys_init(&sys3);

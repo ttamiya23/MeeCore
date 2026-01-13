@@ -10,6 +10,7 @@ MC_DEFINE_DIGITAL(dev, fake_digital_driver, ctx);
 
 void setUp()
 {
+    test_assert_init();
     mc_digital_init(&dev, /*is_read_only=*/false);
 }
 

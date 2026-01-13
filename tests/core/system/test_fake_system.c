@@ -9,6 +9,7 @@ fake_sys_ctx_t ctx;
 
 void setUp()
 {
+    test_assert_init();
     fake_sys_driver.init(&ctx);
 }
 

@@ -10,6 +10,7 @@ MC_DEFINE_SYSTEM(sys, fake_sys_driver, ctx);
 
 void setUp()
 {
+    test_assert_init();
     mc_sys_init(&sys);
 }
 

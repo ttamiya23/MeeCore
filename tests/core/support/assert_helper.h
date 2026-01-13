@@ -25,3 +25,6 @@
             TEST_ASSERT_EQUAL(ASSERTION_ERROR_CODE, e);                 \
         }                                                               \
     } while (0)
+
+// Initializes assert with our try/catch function
+void test_assert_init();

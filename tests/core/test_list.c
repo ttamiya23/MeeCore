@@ -9,6 +9,11 @@ typedef struct
     mc_node_t node; // The intrusive link
 } my_data_t;
 
+void setUp()
+{
+    test_assert_init();
+}
+
 void test_init_zeros_out_list(void)
 {
     mc_list_t list;

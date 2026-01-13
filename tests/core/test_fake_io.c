@@ -13,6 +13,7 @@ mc_io_t io;
 
 void setUp()
 {
+    test_assert_init();
     fake_io_init(&io, &ctx);
 }
 

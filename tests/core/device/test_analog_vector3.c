@@ -14,6 +14,7 @@ mc_analog_t *devs[] = {&dev.x, &dev.y, &dev.z};
 
 void setUp()
 {
+    test_assert_init();
     mc_analog_vector3_init(&dev, /*is_read_only=*/false);
 }
 

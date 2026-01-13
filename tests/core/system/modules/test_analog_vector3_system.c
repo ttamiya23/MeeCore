@@ -28,9 +28,11 @@ MC_DEFINE_ANALOG_VECTOR3_SYSTEM_WITH_CONFIG(custom_sys, custom_config, dev);
 
 void setUp()
 {
+    test_assert_init();
     ctx = (mc_analog_vector3_system_ctx_t *)sys.ctx;
     mc_analog_vector3_init(&dev, /*is_read_only=*/false);
     mc_sys_init(&sys);
+    mc_sys_init(&custom_sys);
 }
 
 void test_init_sets_target_value_to_current_value()

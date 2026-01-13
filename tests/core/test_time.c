@@ -9,6 +9,7 @@ fake_time_ctx_t ctx;
 
 void setUp()
 {
+    test_assert_init();
     // Initialize the core with our fake driver before every test
     mc_time_init(&fake_time_driver, &ctx);
 }

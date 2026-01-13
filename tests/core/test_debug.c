@@ -15,6 +15,7 @@ fake_io_ctx_t ctx;
 
 void setUp()
 {
+    test_assert_init();
     fake_io_init(&io, &ctx);
     mc_debug_init(&io);
     mc_debug_set_level(MC_LOG_LEVEL_DEBUG);

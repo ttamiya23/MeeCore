@@ -10,6 +10,7 @@ MC_DEFINE_ANALOG(dev, fake_analog_driver, ctx);
 
 void setUp()
 {
+    test_assert_init();
     mc_analog_init(&dev, /*is_read_only=*/false);
 }
 

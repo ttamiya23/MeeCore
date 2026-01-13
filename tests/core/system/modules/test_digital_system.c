@@ -23,9 +23,11 @@ MC_DEFINE_DIGITAL_SYSTEM_WITH_CONFIG(custom_sys, custom_config, dev);
 
 void setUp()
 {
+    test_assert_init();
     ctx = (mc_digital_system_ctx_t *)sys.ctx;
     mc_digital_init(&dev, /*is_read_only=*/false);
     mc_sys_init(&sys);
+    mc_sys_init(&custom_sys);
 }
 
 void test_init_sets_target_state_to_current_state()

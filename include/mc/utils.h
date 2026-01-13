@@ -31,6 +31,16 @@ extern "C"
 #define MC_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 #endif
 
+    // Callback function when assert fails
+    typedef void (*mc_assert_callback_func_t)(const char *expr,
+                                              const char *file, int line);
+
+    // Set callback method for when assert fails
+    void mc_assert_set_callback(mc_assert_callback_func_t cb);
+
+    // Set override method for when assert fails
+    void mc_assert_set_override(mc_assert_callback_func_t cb);
+
 // Magic number to define whether something is initialized or not
 #define MC_INITIALIZED 0x23
 

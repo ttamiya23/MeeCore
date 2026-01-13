@@ -33,6 +33,7 @@ mc_callback_t cb_handle;
 
 void setUp()
 {
+    test_assert_init();
     // Reset Core
     cb.event_fired_count = 0;
     memset(cb.data, 0, sizeof(cb.data));

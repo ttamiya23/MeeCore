@@ -36,6 +36,11 @@ void add_to_num_and_unregister(void *context, void *arg)
     mc_event_unregister(data->event, data->callback);
 }
 
+void setUp()
+{
+    test_assert_init();
+}
+
 void test_event_trigger_invokes_callbacks(void)
 {
     mc_event_t event;

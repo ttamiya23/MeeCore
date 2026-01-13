@@ -2,7 +2,6 @@
 #include "mc/device/digital.h"
 #include "device/fake_digital.h"
 #include "utils.h" // Needed for assert_helper.h
-#include "assert_helper.h"
 
 // Globals
 fake_digital_ctx_t ctx;

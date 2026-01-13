@@ -2,7 +2,6 @@
 #include "mc/device/analog.h"
 #include "device/fake_analog.h"
 #include "utils.h" // Needed for assert_helper.h
-#include "assert_helper.h"
 
 // Globals
 fake_analog_ctx_t ctx;

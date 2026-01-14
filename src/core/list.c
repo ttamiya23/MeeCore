@@ -1,31 +1,10 @@
 #include "mc/list.h"
 #include "mc/utils.h"
 
-#define CHECK_LIST(list)                                   \
-    do                                                     \
-    {                                                      \
-        MC_ASSERT(list != NULL);                           \
-        MC_ASSERT(list->is_initialized == MC_INITIALIZED); \
-    } while (0)
-
-#define CHECK_NODE(node)         \
-    do                           \
-    {                            \
-        MC_ASSERT(node != NULL); \
-    } while (0)
-
-void mc_list_init(mc_list_t *list)
-{
-    list->head = NULL;
-    list->tail = NULL;
-    list->count = 0;
-    list->is_initialized = MC_INITIALIZED;
-}
-
 void mc_list_append(mc_list_t *list, mc_node_t *node)
 {
-    CHECK_LIST(list);
-    CHECK_NODE(node);
+    MC_ASSERT(list != NULL);
+    MC_ASSERT(node != NULL);
     node->next = NULL;
     node->prev = list->tail;
 
@@ -47,8 +26,8 @@ void mc_list_append(mc_list_t *list, mc_node_t *node)
 
 void mc_list_prepend(mc_list_t *list, mc_node_t *node)
 {
-    CHECK_LIST(list);
-    CHECK_NODE(node);
+    MC_ASSERT(list != NULL);
+    MC_ASSERT(node != NULL);
     node->prev = NULL;
     node->next = list->head;
 
@@ -70,8 +49,8 @@ void mc_list_prepend(mc_list_t *list, mc_node_t *node)
 
 void mc_list_remove(mc_list_t *list, mc_node_t *node)
 {
-    CHECK_LIST(list);
-    CHECK_NODE(node);
+    MC_ASSERT(list != NULL);
+    MC_ASSERT(node != NULL);
     // Safety check: Don't remove if list is empty
     if (list->count == 0)
     {
@@ -123,7 +102,7 @@ void mc_list_remove(mc_list_t *list, mc_node_t *node)
 
 mc_node_t *mc_list_pop_head(mc_list_t *list)
 {
-    CHECK_LIST(list);
+    MC_ASSERT(list != NULL);
     mc_node_t *node = list->head;
     if (node != NULL)
     {
@@ -134,6 +113,7 @@ mc_node_t *mc_list_pop_head(mc_list_t *list)
 
 mc_node_t *mc_list_pop_tail(mc_list_t *list)
 {
+    MC_ASSERT(list != NULL);
     mc_node_t *node = list->tail;
     if (node != NULL)
     {
@@ -144,13 +124,13 @@ mc_node_t *mc_list_pop_tail(mc_list_t *list)
 
 mc_node_t *mc_list_peek_head(mc_list_t *list)
 {
-    CHECK_LIST(list);
+    MC_ASSERT(list != NULL);
     return list->head;
 }
 
 mc_node_t *mc_list_peek_tail(mc_list_t *list)
 {
-    CHECK_LIST(list);
+    MC_ASSERT(list != NULL);
     return list->tail;
 }
 
@@ -174,6 +154,6 @@ mc_node_t *mc_list_prev(mc_node_t *node)
 
 uint32_t mc_list_count(mc_list_t *list)
 {
-    CHECK_LIST(list);
+    MC_ASSERT(list != NULL);
     return list->count;
 }

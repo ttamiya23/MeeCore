@@ -4,7 +4,6 @@
 void mc_event_init(mc_event_t *event)
 {
     MC_ASSERT(event != NULL);
-    mc_list_init(&event->listeners);
 }
 
 void mc_callback_init(mc_callback_t *cb, mc_callback_func_t func, void *context)

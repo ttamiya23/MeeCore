@@ -9,6 +9,9 @@ extern "C"
 #include <stdbool.h>
 #include <stddef.h> // For offsetof
 
+// Macro for defining list. Users should always use this.
+#define MC_DEFINE_LIST(NAME) static mc_list_t NAME = {0}
+
 /** Macro to get the parent struct from the node pointer
  *  Example:
  * * @code
@@ -52,11 +55,7 @@ extern "C"
         mc_node_t *head;
         mc_node_t *tail;
         uint32_t count;
-        uint8_t is_initialized;
     } mc_list_t;
-
-    /* Initialize empty list. */
-    void mc_list_init(mc_list_t *list);
 
     /* Add a node to the end of the list. */
     void mc_list_append(mc_list_t *list, mc_node_t *node);

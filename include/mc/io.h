@@ -76,7 +76,7 @@ extern "C"
     {
         const mc_io_driver_t *driver;
         void *ctx; // The hardware configuration (e.g., UART handle, GPIO pin)
-        mc_io_config_t *config;
+        const mc_io_config_t *config;
         mc_io_state_t *state;
     } mc_io_t;
 

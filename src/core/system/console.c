@@ -482,9 +482,9 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
 static void console_rx_handler(void *ctx, void *data)
 {
     mc_system_console_t *console = (mc_system_console_t *)ctx;
-    const char *cmd_string = (const char *)data;
+    mc_io_event_data_t *event_data = (mc_io_event_data_t *)data;
 
-    process_command(console, cmd_string);
+    process_command(console, event_data->message);
 }
 
 void mc_sys_console_init(mc_system_console_t *console, mc_io_t *io,

@@ -1,26 +1,10 @@
 #include "mc/event.h"
 #include "mc/utils.h"
 
-void mc_event_init(mc_event_t *event)
-{
-    MC_ASSERT(event != NULL);
-}
-
-void mc_callback_init(mc_callback_t *cb, mc_callback_func_t func, void *context)
-{
-    MC_ASSERT(cb != NULL);
-    cb->node.next = NULL;
-    cb->node.prev = NULL;
-    cb->func = func;
-    cb->context = context;
-    cb->is_initialized = MC_INITIALIZED;
-}
-
 void mc_event_register(mc_event_t *event, mc_callback_t *cb)
 {
     MC_ASSERT(event != NULL);
     MC_ASSERT(cb != NULL);
-    MC_ASSERT(cb->is_initialized == MC_INITIALIZED);
     mc_list_append(&event->listeners, &cb->node);
 }
 
@@ -28,7 +12,6 @@ void mc_event_unregister(mc_event_t *event, mc_callback_t *cb)
 {
     MC_ASSERT(event != NULL);
     MC_ASSERT(cb != NULL);
-    MC_ASSERT(cb->is_initialized == MC_INITIALIZED);
     mc_list_remove(&event->listeners, &cb->node);
 }
 
@@ -50,7 +33,7 @@ void mc_event_trigger(mc_event_t *event, void *event_data)
         // Execute
         if (cb->func)
         {
-            cb->func(cb->context, event_data);
+            cb->func(cb->ctx, event_data);
         }
     }
 }

@@ -7,11 +7,20 @@ extern "C"
 
 #include "mc/list.h"
 
+// Macro for defining event and callback. Users should always use this.
+#define MC_DEFINE_EVENT(NAME) static mc_event_t NAME = {0}
+
+#define MC_DEFINE_CALLBACK(NAME, FUNC, CTX) \
+    static mc_callback_t NAME = {           \
+        .node = {0},                        \
+        .func = FUNC,                       \
+        .ctx = &CTX}
+
     /* Callback function: takes in void pointer pointing to context and event data.
-     * context:    User data stored with the subscription (e.g., "MyObject*")
-     * event_data: Ephemeral data passed when the event fires (e.g., "Keycode")
+     * ctx: User data stored with the subscription (e.g., "MyObject*")
+     * e:   Event data passed when the event fires (e.g., "Keycode")
      */
-    typedef void (*mc_callback_func_t)(void *context, void *event_data);
+    typedef void (*mc_callback_func_t)(void *ctx, void *e);
 
     /* Event struct. */
     typedef struct mc_event_t
@@ -24,15 +33,8 @@ extern "C"
     {
         mc_node_t node;
         mc_callback_func_t func;
-        void *context;
-        uint8_t is_initialized;
+        void *ctx;
     } mc_callback_t;
-
-    /* Initialize event. */
-    void mc_event_init(mc_event_t *event);
-
-    /* Initialize callback. */
-    void mc_callback_init(mc_callback_t *cb, mc_callback_func_t func, void *context);
 
     /* Register callback to event. */
     void mc_event_register(mc_event_t *event, mc_callback_t *cb);

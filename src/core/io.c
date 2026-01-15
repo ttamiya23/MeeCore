@@ -44,7 +44,6 @@ void mc_io_init(mc_io_t *io)
     io->state->status = MC_IO_STATUS_OK;
     io->state->rx_index = 0;
     io->state->is_initialized = MC_INITIALIZED;
-    mc_event_init(&io->state->rx_event);
 }
 
 mc_status_t mc_io_printf(mc_io_t *io, const char *format, ...)

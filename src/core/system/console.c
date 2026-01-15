@@ -508,7 +508,6 @@ void mc_sys_console_init(mc_system_console_t *console, mc_io_t *io,
     console->is_initialized = MC_INITIALIZED;
 
     // Register IO Callback
-    mc_callback_init(&console->rx_callback, console_rx_handler, console);
     mc_io_register_rx_callback(io, &console->rx_callback);
 }
 

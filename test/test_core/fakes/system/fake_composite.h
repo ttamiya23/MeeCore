@@ -6,7 +6,7 @@ extern "C"
 #endif
 
 #include "mc/system/composite.h"
-#include "fake_system.h"
+#include "fakes/system/fake_system.h"
 
     // Composite system context.
     typedef struct

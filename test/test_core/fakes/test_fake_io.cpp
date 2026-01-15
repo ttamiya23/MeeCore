@@ -4,7 +4,7 @@
 #include "mc_test.h"
 extern "C"
 {
-#include "fake_io.h"
+#include "fakes/fake_io.h"
 }
 
 namespace

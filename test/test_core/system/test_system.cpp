@@ -4,7 +4,7 @@
 extern "C"
 {
 #include "mc/system/core.h"
-#include "fake_system.h"
+#include "fakes/system/fake_system.h"
 }
 
 namespace

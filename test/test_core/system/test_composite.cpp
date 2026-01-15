@@ -4,8 +4,8 @@ extern "C"
 {
 #include "mc/system/core.h"
 #include "mc/system/composite.h"
-#include "fake_system.h"
-#include "fake_composite.h"
+#include "fakes/system/fake_system.h"
+#include "fakes/system/fake_composite.h"
 }
 
 namespace

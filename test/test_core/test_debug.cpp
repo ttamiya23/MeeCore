@@ -6,7 +6,7 @@ extern "C"
 {
 #include "mc/debug.h"
 #include "mc/io.h"
-#include "fake_io.h"
+#include "fakes/fake_io.h"
 }
 
 namespace

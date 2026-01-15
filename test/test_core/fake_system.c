@@ -1,5 +1,4 @@
-#include "CException.h"
-#include "system/fake_system.h"
+#include "fake_system.h"
 #include "mc/system/core.h"
 #include <string.h>
 
@@ -35,7 +34,7 @@ mc_status_t fake_sys_invoke(void *ctx, uint8_t func_id, int32_t *args,
     case 1:
         return fake_sys_returns_error((fake_sys_ctx_t *)ctx, args[0]);
     default:
-        Throw(-1); // This should never happen
+        // This should never happen
         return MC_ERROR;
     }
 }

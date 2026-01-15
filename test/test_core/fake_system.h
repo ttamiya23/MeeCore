@@ -18,10 +18,10 @@ typedef struct fake_sys_ctx_t
 {
     int32_t x[FAKE_SYS_X_COUNT];
     int32_t y[FAKE_SYS_Y_COUNT];
-    char *increment_y_name;
-    char *x0_name;
-    char *y0_name;
-    char *reset_name;
+    const char *increment_y_name;
+    const char *x0_name;
+    const char *y0_name;
+    const char *reset_name;
 } fake_sys_ctx_t;
 
 // Fake system driver. Look at fake_system.c for more details.

@@ -11,11 +11,6 @@
 #define ETX "\x03"
 #define SYS_CONSOLE_HELP_CHAR '?'
 
-// Defaults
-#define SYS_CONSOLE_DEFAULT_HEADER_COUNT 5
-#define SYS_CONSOLE_DEFAULT_ARGS_COUNT 8
-static int32_t sys_console_args[SYS_CONSOLE_DEFAULT_ARGS_COUNT];
-
 // Helpers: check if char is delimiter
 static bool is_delimiter(char c)
 {
@@ -95,11 +90,12 @@ static uint16_t get_cmd_length(const char *str)
 }
 
 // Helper: Find System index by ID
-static int find_system_index_by_id(mc_system_console_t *console, uint8_t id)
+static int find_system_index_by_id(const mc_system_console_t *console,
+                                   uint8_t id)
 {
-    for (uint8_t i = 0; i < console->system_count; i++)
+    for (uint8_t i = 0; i < console->config->system_count; i++)
     {
-        uint8_t entry_id = console->systems[i].id;
+        uint8_t entry_id = console->config->systems[i].id;
         if (entry_id == id)
         {
             return i;
@@ -109,12 +105,12 @@ static int find_system_index_by_id(mc_system_console_t *console, uint8_t id)
 }
 
 // Helper: Find System ID by Name
-static int find_system_index_by_name(mc_system_console_t *console,
+static int find_system_index_by_name(const mc_system_console_t *console,
                                      const char *name, size_t len)
 {
-    for (int i = 0; i < console->system_count; i++)
+    for (int i = 0; i < console->config->system_count; i++)
     {
-        const char *entry_name = console->systems[i].name;
+        const char *entry_name = console->config->systems[i].name;
         // Check for exact length match to avoid prefix collisions
         if (entry_name && strncmp(entry_name, name, len) == 0 &&
             entry_name[len] == '\0')
@@ -150,7 +146,8 @@ static bool find_command_by_alias(const mc_system_t *sys, const char *name,
 }
 
 // Helper: simply prints value if OK, "E[code]" if error.
-static mc_status_t send_result(mc_system_console_t *console, mc_result_t result)
+static mc_status_t send_result(const mc_system_console_t *console,
+                               mc_result_t result)
 {
     int32_t val = result.ok ? result.value : result.error;
     if (!result.ok)
@@ -163,7 +160,7 @@ static mc_status_t send_result(mc_system_console_t *console, mc_result_t result)
 
 // Helper: Send Standard Response
 // Format: \stx\nCMD\n[E:]VAL\n\etx
-static mc_status_t send_response(mc_system_console_t *console,
+static mc_status_t send_response(const mc_system_console_t *console,
                                  const char *cmd_echo, mc_result_t result)
 {
     MC_RETURN_IF_ERROR(mc_io_write(console->io, STX, 1));
@@ -188,7 +185,7 @@ static mc_status_t send_response(mc_system_console_t *console,
 // Helper: Send System Dump (TSV)
 // Triggered when user types just the system name/ID (e.g. "s0", "led1")
 static mc_status_t send_system_dump(
-    mc_system_console_t *console, const char *cmd_echo,
+    const mc_system_console_t *console, const char *cmd_echo,
     const mc_system_entry_t *systems, uint8_t sys_count)
 {
     MC_RETURN_IF_ERROR(mc_io_write(console->io, STX, 1));
@@ -204,7 +201,7 @@ static mc_status_t send_system_dump(
 
     // Header Row: "sys\t0\t1\t2..."
     MC_RETURN_IF_ERROR(mc_io_printf(console->io, "sys"));
-    for (int i = 0; i < console->header_count; i++)
+    for (int i = 0; i < console->config->header_count; i++)
     {
         MC_RETURN_IF_ERROR(mc_io_printf(console->io, "\t%d", i));
     }
@@ -213,9 +210,9 @@ static mc_status_t send_system_dump(
     // Input/Output Row: "s.x\t100\t200..."
     for (uint8_t sys_i = 0; sys_i < sys_count; sys_i++)
     {
-        mc_system_entry_t sys = systems[sys_i];
+        const mc_system_entry_t sys = systems[sys_i];
         MC_RETURN_IF_ERROR(mc_io_printf(console->io, "s%d.x", sys.id));
-        for (int i = 0; i < console->header_count; i++)
+        for (int i = 0; i < console->config->header_count; i++)
         {
             MC_RETURN_IF_ERROR(mc_io_write(console->io, "\t", 1));
             mc_result_t res = mc_sys_read_input(sys.system, i);
@@ -224,7 +221,7 @@ static mc_status_t send_system_dump(
         MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
 
         MC_RETURN_IF_ERROR(mc_io_printf(console->io, "s%d.y", sys.id));
-        for (int i = 0; i < console->header_count; i++)
+        for (int i = 0; i < console->config->header_count; i++)
         {
             MC_RETURN_IF_ERROR(mc_io_write(console->io, "\t", 1));
             mc_result_t res = mc_sys_read_output(sys.system, i);
@@ -239,8 +236,8 @@ static mc_status_t send_system_dump(
 }
 
 // Helper: send alias info of system
-mc_status_t send_sys_help(mc_system_console_t *console, const char *cmd_echo,
-                          mc_system_entry_t sys)
+mc_status_t send_sys_help(const mc_system_console_t *console, const char *cmd_echo,
+                          const mc_system_entry_t sys)
 {
     // Format should be like:
     // <STX>
@@ -316,7 +313,7 @@ mc_status_t send_sys_help(mc_system_console_t *console, const char *cmd_echo,
 }
 
 // Helper: main method for processing command
-mc_status_t process_command(mc_system_console_t *console, const char *cmd)
+mc_status_t process_command(const mc_system_console_t *console, const char *cmd)
 {
     MC_ASSERT(console != NULL);
     MC_ASSERT(cmd != NULL);
@@ -372,22 +369,23 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
     }
 
     // Validate System
-    if (sys_index < 0 || console->systems[sys_index].system == NULL)
+    if (sys_index < 0 || console->config->systems[sys_index].system == NULL)
     {
         return send_response(console, cmd_start,
                              MC_ERR_VAL(MC_ERROR_INVALID_ARGS));
     }
-    const mc_system_t *sys = console->systems[sys_index].system;
+    const mc_system_t *sys = console->config->systems[sys_index].system;
 
     // Execute help or dump if requested
     if (is_help)
     {
-        return send_sys_help(console, cmd_start, console->systems[sys_index]);
+        return send_sys_help(console, cmd_start,
+                             console->config->systems[sys_index]);
     }
     if (is_dump)
     {
-        return send_system_dump(console, cmd_start, &console->systems[sys_index],
-                                1);
+        return send_system_dump(console, cmd_start,
+                                &console->config->systems[sys_index], 1);
     }
 
     // Move to next token
@@ -459,10 +457,10 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
         uint8_t argc = 0;
 
         // Parse arguments until string ends
-        while (*token && argc < console->args_count)
+        while (*token && argc < console->config->args_count)
         {
-            console->args_buffer[argc++] = (int32_t)strtol(token, &end,
-                                                           10);
+            console->config->args_buffer[argc++] = (int32_t)strtol(token, &end,
+                                                                   10);
             if (token == end)
             {
                 return send_response(console, cmd_start,
@@ -472,7 +470,8 @@ mc_status_t process_command(mc_system_console_t *console, const char *cmd)
         }
 
         res = MC_STATUS_TO_RESULT(mc_sys_invoke(sys, cmd_info.id,
-                                                console->args_buffer, argc));
+                                                console->config->args_buffer,
+                                                argc));
     }
 
     return send_response(console, cmd_start, res);
@@ -487,58 +486,25 @@ static void console_rx_handler(void *ctx, void *data)
     process_command(console, event_data->message);
 }
 
-void mc_sys_console_init(mc_system_console_t *console, mc_io_t *io,
-                         const mc_system_entry_t *system_list,
-                         uint8_t sys_count)
+void mc_sys_console_init(const mc_system_console_t *console)
 {
     MC_ASSERT(console != NULL);
-    MC_ASSERT(io != NULL);
-    MC_ASSERT(system_list != NULL);
-    for (int i = 0; i < sys_count; i++)
-    {
-        MC_ASSERT(system_list[i].system != NULL);
-    }
-
-    console->io = io;
-    console->systems = system_list;
-    console->system_count = sys_count;
-    console->args_buffer = sys_console_args;
-    console->args_count = SYS_CONSOLE_DEFAULT_ARGS_COUNT;
-    console->header_count = SYS_CONSOLE_DEFAULT_HEADER_COUNT;
-    console->is_initialized = MC_INITIALIZED;
+    console->state->is_initialized = MC_INITIALIZED;
 
     // Register IO Callback
-    mc_io_register_rx_callback(io, &console->rx_callback);
+    console->state->rx_callback.ctx = (void *)console;
+    console->state->rx_callback.func = console_rx_handler;
+    mc_io_register_rx_callback(console->io, &console->state->rx_callback);
 }
 
 /* Dump system info */
-mc_status_t mc_sys_console_dump(mc_system_console_t *console,
+mc_status_t mc_sys_console_dump(const mc_system_console_t *console,
                                 const mc_system_entry_t *systems,
                                 uint8_t sys_count)
 {
     MC_ASSERT(console != NULL);
-    MC_ASSERT(console->is_initialized == MC_INITIALIZED);
+    MC_ASSERT(console->state->is_initialized == MC_INITIALIZED);
     MC_ASSERT(systems != NULL);
 
     return send_system_dump(console, NULL, systems, sys_count);
-}
-
-void mc_sys_console_set_header_count(mc_system_console_t *console,
-                                     uint8_t count)
-{
-    MC_ASSERT(console != NULL);
-    MC_ASSERT(console->is_initialized == MC_INITIALIZED);
-
-    console->header_count = count;
-}
-
-void mc_sys_console_set_args_buffer(mc_system_console_t *console,
-                                    int32_t *args_buffer, uint8_t args_len)
-{
-    MC_ASSERT(console != NULL);
-    MC_ASSERT(console->is_initialized == MC_INITIALIZED);
-    MC_ASSERT(args_buffer != NULL);
-
-    console->args_buffer = args_buffer;
-    console->args_count = args_len;
 }

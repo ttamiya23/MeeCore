@@ -44,6 +44,7 @@ void mc_io_init(const mc_io_t *io)
     io->state->status = MC_IO_STATUS_OK;
     io->state->rx_index = 0;
     io->state->is_initialized = MC_INITIALIZED;
+    mc_event_init(&io->state->rx_event);
     // Init hw if exists.
     if (io->driver->init)
     {

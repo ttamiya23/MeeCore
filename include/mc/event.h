@@ -36,6 +36,12 @@ extern "C"
         void *ctx;
     } mc_callback_t;
 
+    /* Initialize event. */
+    void mc_event_init(mc_event_t *event);
+
+    /* Initialize callback. */
+    void mc_callback_init(mc_callback_t *cb, mc_callback_func_t func, void *ctx);
+
     /* Register callback to event. */
     void mc_event_register(mc_event_t *event, mc_callback_t *cb);
 

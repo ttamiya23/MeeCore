@@ -41,8 +41,6 @@ namespace
             mc_sys_init(&sys2);
             mc_sys_init(&sys3);
             mc_io_init(&io);
-            // Hack: unregister and register callback
-            mc_event_unregister(&io.state->rx_event, &console.state->rx_callback);
             mc_sys_console_init(&console);
         }
 

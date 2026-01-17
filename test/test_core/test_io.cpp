@@ -55,9 +55,6 @@ namespace
             std::memset(cb.data, 0, sizeof(cb.data));
             mc_io_init(&io);
             mc_io_set_mode(&io, MC_IO_MODE_TEXT_LINE);
-
-            // Hack: need to unregister events and clear errors
-            mc_event_unregister(&io.state->rx_event, &cb_handle);
             mc_io_register_rx_callback(&io, &cb_handle);
         }
     };

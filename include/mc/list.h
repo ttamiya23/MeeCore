@@ -57,6 +57,9 @@ extern "C"
         uint32_t count;
     } mc_list_t;
 
+    /* Initialize list. */
+    void mc_list_init(mc_list_t *list);
+
     /* Add a node to the end of the list. */
     void mc_list_append(mc_list_t *list, mc_node_t *node);
 

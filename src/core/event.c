@@ -1,5 +1,19 @@
 #include "mc/event.h"
+#include "mc/list.h"
 #include "mc/utils.h"
+
+void mc_event_init(mc_event_t *event)
+{
+    MC_ASSERT(event != NULL);
+    mc_list_init(&event->listeners);
+}
+
+void mc_callback_init(mc_callback_t *cb, mc_callback_func_t func, void *ctx)
+{
+    MC_ASSERT(cb != NULL);
+    cb->func = func;
+    cb->ctx = ctx;
+}
 
 void mc_event_register(mc_event_t *event, mc_callback_t *cb)
 {

@@ -45,7 +45,7 @@ namespace
         void SetUp() override
         {
             MeeCoreTest::SetUp();
-            event = {0};
+            mc_event_init(&event);
             InitializeData(data1, cb1);
             InitializeData(data2, cb2);
             InitializeData(data3, cb3);
@@ -54,12 +54,30 @@ namespace
     private:
         void InitializeData(my_event_data_t &data, mc_callback_t &cb)
         {
-            mc_event_unregister(&event, &cb);
             data.num = 0;
             data.event = &event;
             data.callback = &cb;
         }
     };
+
+    TEST_F(EventTest, InitResetsEvent)
+    {
+        mc_event_register(&event, &cb1);
+        EXPECT_NE(0, event.listeners.count);
+
+        // Init should reset state.
+        mc_event_init(&event);
+        EXPECT_EQ(0, event.listeners.count);
+    }
+
+    TEST_F(EventTest, InitCallbackSucceeds)
+    {
+        // Local cb
+        mc_callback_t cb;
+        mc_callback_init(&cb, add_to_num, &data1);
+        EXPECT_EQ(cb.ctx, &data1);
+        EXPECT_EQ(cb.func, add_to_num);
+    }
 
     TEST_F(EventTest, TriggerInvokesCallbacks)
     {
@@ -99,6 +117,8 @@ namespace
     TEST_F(EventTest, AssertDeathIfNull)
     {
         int increment = 4;
+        EXPECT_ANY_THROW(mc_event_init(NULL));
+        EXPECT_ANY_THROW(mc_callback_init(NULL, add_to_num, &data1));
         EXPECT_ANY_THROW(mc_event_register(NULL, &cb1));
         EXPECT_ANY_THROW(mc_event_register(&event, NULL));
         EXPECT_ANY_THROW(mc_event_unregister(NULL, &cb1));

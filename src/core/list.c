@@ -1,6 +1,14 @@
 #include "mc/list.h"
 #include "mc/utils.h"
 
+void mc_list_init(mc_list_t *list)
+{
+    MC_ASSERT(list != NULL);
+    list->count = 0;
+    list->head = NULL;
+    list->tail = NULL;
+}
+
 void mc_list_append(mc_list_t *list, mc_node_t *node)
 {
     MC_ASSERT(list != NULL);

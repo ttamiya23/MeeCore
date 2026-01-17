@@ -33,6 +33,14 @@ namespace
 
     TEST_F(ListTest, InitZerosOutList)
     {
+        // Alter list state
+        mc_list_append(&list, &item1.node);
+        EXPECT_NE(nullptr, list.head);
+        EXPECT_NE(nullptr, list.tail);
+        EXPECT_NE(0, mc_list_count(&list));
+
+        // Init should reset
+        mc_list_init(&list);
         EXPECT_EQ(nullptr, list.head);
         EXPECT_EQ(nullptr, list.tail);
         EXPECT_EQ(0, mc_list_count(&list));
@@ -306,6 +314,16 @@ namespace
 
     TEST_F(ListTest, AppendAssertDeathIfListIsNull)
     {
+        EXPECT_ANY_THROW(mc_list_init(NULL));
         EXPECT_ANY_THROW(mc_list_append(NULL, &item1.node));
+        EXPECT_ANY_THROW(mc_list_append(&list, NULL));
+        EXPECT_ANY_THROW(mc_list_prepend(NULL, &item1.node));
+        EXPECT_ANY_THROW(mc_list_prepend(&list, NULL));
+        EXPECT_ANY_THROW(mc_list_remove(NULL, &item1.node));
+        EXPECT_ANY_THROW(mc_list_remove(&list, NULL));
+        EXPECT_ANY_THROW(mc_list_peek_head(NULL));
+        EXPECT_ANY_THROW(mc_list_peek_tail(NULL));
+        EXPECT_ANY_THROW(mc_list_pop_head(NULL));
+        EXPECT_ANY_THROW(mc_list_pop_tail(NULL));
     }
 }

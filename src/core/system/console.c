@@ -492,8 +492,8 @@ void mc_sys_console_init(const mc_system_console_t *console)
     console->state->is_initialized = MC_INITIALIZED;
 
     // Register IO Callback
-    console->state->rx_callback.ctx = (void *)console;
-    console->state->rx_callback.func = console_rx_handler;
+    mc_callback_init(&console->state->rx_callback, console_rx_handler,
+                     (void *)console);
     mc_io_register_rx_callback(console->io, &console->state->rx_callback);
 }
 

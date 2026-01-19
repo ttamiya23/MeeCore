@@ -11,8 +11,8 @@ extern "C"
 // Macro for defining digital context. Users should always use this.
 #define MC_DEFINE_DIGITAL_SYSTEM_WITH_CONFIG(NAME, CONFIG, DEVICE) \
     static mc_digital_system_ctx_t NAME##_ctx = {                  \
-        .config = &CONFIG,                                         \
-        .device = &DEVICE};                                        \
+        .device = &DEVICE,                                         \
+        .config = &CONFIG};                                        \
                                                                    \
     MC_DEFINE_SYSTEM(NAME, mc_digital_sys_driver, NAME##_ctx);
 

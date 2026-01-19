@@ -11,8 +11,8 @@ extern "C"
 // Macro for defining analog context. Users should always use this.
 #define MC_DEFINE_ANALOG_SYSTEM_WITH_CONFIG(NAME, CONFIG, DEVICE) \
     static mc_analog_system_ctx_t NAME##_ctx = {                  \
-        .config = &CONFIG,                                        \
-        .device = &DEVICE};                                       \
+        .device = &DEVICE,                                        \
+        .config = &CONFIG};                                       \
                                                                   \
     MC_DEFINE_SYSTEM(NAME, mc_analog_sys_driver, NAME##_ctx);
 

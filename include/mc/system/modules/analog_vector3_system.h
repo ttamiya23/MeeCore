@@ -10,9 +10,9 @@ extern "C"
 // Macro for defining analog context. Users should always use this.
 #define MC_DEFINE_ANALOG_VECTOR3_SYSTEM_WITH_CONFIG(NAME, CONFIG, DEVICE) \
     static mc_analog_vector3_system_ctx_t NAME##_ctx = {                  \
-        .x = {.config = &CONFIG.x, .device = &DEVICE.x},                  \
-        .y = {.config = &CONFIG.y, .device = &DEVICE.y},                  \
-        .z = {.config = &CONFIG.z, .device = &DEVICE.z}};                 \
+        .x = {.device = &DEVICE.x, .config = &CONFIG.x},                  \
+        .y = {.device = &DEVICE.y, .config = &CONFIG.y},                  \
+        .z = {.device = &DEVICE.z, .config = &CONFIG.z}};                 \
                                                                           \
     MC_DEFINE_SYSTEM(NAME, mc_analog_vector3_sys_driver, NAME##_ctx);
 

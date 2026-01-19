@@ -17,6 +17,10 @@ extern "C"
         .y = {.driver = &DRIVER.y, .ctx = &CTX, .config = &NAME##_config}, \
         .z = {.driver = &DRIVER.z, .ctx = &CTX, .config = &NAME##_config}};
 
+#define MC_DEFINE_ANALOG_VECTOR3_DATA_OBJECT(NAME)               \
+    static mc_analog_vector3_data_object_ctx_t NAME##_ctx = {0}; \
+    MC_DEFINE_ANALOG_VECTOR3(NAME, mc_analog_vector3_data_object_driver, NAME##_ctx)
+
     // Analog vector struct
     typedef struct mc_analog_vector3_t
     {
@@ -32,6 +36,18 @@ extern "C"
         mc_analog_driver_t y;
         mc_analog_driver_t z;
     } mc_analog_vector3_driver_t;
+
+    // Ctx for analog vector3 data object
+    typedef struct mc_analog_vector3_data_object_ctx_t
+    {
+        int32_t x;
+        int32_t y;
+        int32_t z;
+        mc_status_t error;
+    } mc_analog_vector3_data_object_ctx_t;
+
+    // Driver for analog vector3 data object
+    extern const mc_analog_vector3_driver_t mc_analog_vector3_data_object_driver;
 
     // Initialize the device.
     void mc_analog_vector3_init(const mc_analog_vector3_t *dev,

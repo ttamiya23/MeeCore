@@ -8,13 +8,17 @@ extern "C"
 #include "mc/status.h"
 #include <stdbool.h>
 
-#define MC_DEFINE_DIGITAL(NAME, DRIVER, CTX) \
-    mc_digital_config_t NAME##_config = {0}; \
-                                             \
-    const mc_digital_t NAME = {              \
-        .driver = &DRIVER,                   \
-        .ctx = &CTX,                         \
+#define MC_DEFINE_DIGITAL(NAME, DRIVER, CTX)        \
+    static mc_digital_config_t NAME##_config = {0}; \
+                                                    \
+    const mc_digital_t NAME = {                     \
+        .driver = &DRIVER,                          \
+        .ctx = &CTX,                                \
         .config = &NAME##_config}
+
+#define MC_DEFINE_DIGITAL_DATA_OBJECT(NAME)               \
+    static mc_digital_data_object_ctx_t NAME##_ctx = {0}; \
+    MC_DEFINE_DIGITAL(NAME, mc_digital_data_object_driver, NAME##_ctx)
 
     // Driver struct for digital.
     typedef struct mc_digital_driver_t
@@ -39,6 +43,16 @@ extern "C"
         void *ctx;
         mc_digital_config_t *config;
     } mc_digital_t;
+
+    // Ctx for digital data object
+    typedef struct mc_digital_data_object_ctx_t
+    {
+        bool state;
+        mc_status_t error;
+    } mc_digital_data_object_ctx_t;
+
+    // Driver for digital data object
+    extern const mc_digital_driver_t mc_digital_data_object_driver;
 
     // Initialize the device.
     void mc_digital_init(const mc_digital_t *dev, bool is_read_only);

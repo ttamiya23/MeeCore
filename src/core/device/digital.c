@@ -59,3 +59,36 @@ void mc_digital_set_read_only(const mc_digital_t *dev,
     CHECK_DIGITAL(dev);
     dev->config->is_read_only = enable;
 }
+
+// digital data object methods
+static void mc_digital_data_object_init(void *ctx)
+{
+    mc_digital_data_object_ctx_t *digital_ctx =
+        (mc_digital_data_object_ctx_t *)ctx;
+    digital_ctx->state = false;
+    digital_ctx->error = MC_OK;
+}
+
+static mc_status_t mc_digital_data_object_set_state(void *ctx, bool state)
+{
+    mc_digital_data_object_ctx_t *digital_ctx =
+        (mc_digital_data_object_ctx_t *)ctx;
+    digital_ctx->state = state;
+    return digital_ctx->error;
+}
+
+static mc_result_t mc_digital_data_object_get_state(void *ctx)
+{
+    mc_digital_data_object_ctx_t *digital_ctx =
+        (mc_digital_data_object_ctx_t *)ctx;
+    if (digital_ctx->error != MC_OK)
+    {
+        return MC_ERR_VAL(digital_ctx->error);
+    }
+    return MC_OK_VAL(digital_ctx->state);
+}
+
+const mc_digital_driver_t mc_digital_data_object_driver = {
+    .init = mc_digital_data_object_init,
+    .set_state = mc_digital_data_object_set_state,
+    .get_state = mc_digital_data_object_get_state};

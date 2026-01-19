@@ -16,6 +16,10 @@ extern "C"
         .ctx = &CTX,                        \
         .config = &NAME##_config}
 
+#define MC_DEFINE_ANALOG_DATA_OBJECT(NAME)               \
+    static mc_analog_data_object_ctx_t NAME##_ctx = {0}; \
+    MC_DEFINE_ANALOG(NAME, mc_analog_data_object_driver, NAME##_ctx)
+
     // Driver struct for analog.
     typedef struct mc_analog_driver_t
     {
@@ -38,6 +42,16 @@ extern "C"
         void *ctx;
         mc_analog_config_t *config;
     } mc_analog_t;
+
+    // Ctx for analog data object
+    typedef struct mc_analog_data_object_ctx_t
+    {
+        int32_t value;
+        mc_status_t error;
+    } mc_analog_data_object_ctx_t;
+
+    // Driver for analog data object
+    extern const mc_analog_driver_t mc_analog_data_object_driver;
 
     // Initialize the device.
     void mc_analog_init(const mc_analog_t *dev, bool is_read_only);

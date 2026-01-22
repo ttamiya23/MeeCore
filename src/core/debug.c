@@ -2,7 +2,7 @@
 #include "mc/debug.h"
 #include "mc/utils.h"
 
-static const mc_io_t *debug_io = NULL;
+static const mc_stream_t *debug_stream = NULL;
 static mc_log_level_t current_level = MC_LOG_LEVEL_TRACE;
 
 // Helper: convert log level into string
@@ -25,10 +25,10 @@ static const char *get_level_str(mc_log_level_t level)
     }
 }
 
-// Set the IO stream where logs go (e.g., &console)
-void mc_debug_init(const mc_io_t *io)
+// Set the stream where logs go (e.g., &console)
+void mc_debug_init(const mc_stream_t *stream)
 {
-    debug_io = io;
+    debug_stream = stream;
 }
 
 // Change filter at runtime
@@ -41,7 +41,7 @@ mc_status_t _mc_log(mc_log_level_t log_level, const char *file, int line,
                     const char *format, ...)
 {
     mc_status_t ret = MC_ERROR;
-    if (!debug_io || debug_io->state->is_initialized != MC_INITIALIZED)
+    if (!debug_stream || debug_stream->state->is_initialized != MC_INITIALIZED)
     {
         return ret;
     }
@@ -53,10 +53,10 @@ mc_status_t _mc_log(mc_log_level_t log_level, const char *file, int line,
     va_start(args, format);
 
     // Eg: "[DBG] debug.c:52 Create example message\r\n"
-    ret = mc_io_printf(debug_io, "%s %s:%d: ", get_level_str(log_level), file,
-                       line);
-    mc_io_vprintf(debug_io, format, args);
-    mc_io_printf(debug_io, "\r\n");
+    ret = mc_stream_printf(debug_stream, "%s %s:%d: ",
+                           get_level_str(log_level), file, line);
+    mc_stream_vprintf(debug_stream, format, args);
+    mc_stream_printf(debug_stream, "\r\n");
 
     va_end(args);
 

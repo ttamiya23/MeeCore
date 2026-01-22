@@ -7,7 +7,7 @@ extern "C"
 
 #include "mc/status.h"
 #include "mc/system/core.h"
-#include "mc/io.h"
+#include "mc/stream.h"
 
 // Defaults
 #define SYS_CONSOLE_DEFAULT_HEADER_COUNT 5
@@ -16,21 +16,21 @@ extern "C"
 // Macros for cleaner definitions
 #define MC_SYS_ENTRY(ID, SYS, NAME) {.id = ID, .system = &SYS, .name = NAME}
 
-#define MC_DEFINE_SYSTEM_CONSOLE(NAME, IO, SYSTEMS, SYS_COUNT, ARGS_COUNT, \
-                                 HEADER_COUNT)                             \
-    static int32_t NAME##_args[ARGS_COUNT];                                \
-    static const mc_system_console_config_t NAME##_config =                \
-        {                                                                  \
-            .systems = SYSTEMS,                                            \
-            .system_count = SYS_COUNT,                                     \
-            .args_buffer = NAME##_args,                                    \
-            .args_count = ARGS_COUNT,                                      \
-            .header_count = HEADER_COUNT};                                 \
-    static mc_system_console_state_t NAME##_state = {0};                   \
-    static const mc_system_console_t NAME =                                \
-        {                                                                  \
-            .io = &IO,                                                     \
-            .config = &NAME##_config,                                      \
+#define MC_DEFINE_SYSTEM_CONSOLE(NAME, STREAM, SYSTEMS, SYS_COUNT, ARGS_COUNT, \
+                                 HEADER_COUNT)                                 \
+    static int32_t NAME##_args[ARGS_COUNT];                                    \
+    static const mc_system_console_config_t NAME##_config =                    \
+        {                                                                      \
+            .systems = SYSTEMS,                                                \
+            .system_count = SYS_COUNT,                                         \
+            .args_buffer = NAME##_args,                                        \
+            .args_count = ARGS_COUNT,                                          \
+            .header_count = HEADER_COUNT};                                     \
+    static mc_system_console_state_t NAME##_state = {0};                       \
+    static const mc_system_console_t NAME =                                    \
+        {                                                                      \
+            .stream = &STREAM,                                                 \
+            .config = &NAME##_config,                                          \
             .state = &NAME##_state}
 
     // Struct for each system.
@@ -66,13 +66,13 @@ extern "C"
     // Console struct.
     typedef struct mc_system_console_t
     {
-        // The IO interface used for replying (e.g. UART, USB).
-        const mc_io_t *io;
+        // The stream interface used for replying (e.g. UART, USB).
+        const mc_stream_t *stream;
         const mc_system_console_config_t *config;
         mc_system_console_state_t *state;
     } mc_system_console_t;
 
-    /* Initialize the console and attach it to an IO stream. */
+    /* Initialize the console and attach it to a stream. */
     void mc_sys_console_init(const mc_system_console_t *console);
 
     /* Dump system info */

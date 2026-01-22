@@ -6,7 +6,7 @@ extern "C"
 #endif
 
 #include "mc/status.h"
-#include "mc/io.h"
+#include "mc/stream.h"
 
 #ifndef MC_DEBUG_LOG_LEVEL
 #define MC_DEBUG_LOG_LEVEL 1
@@ -25,8 +25,8 @@ extern "C"
         MC_LOG_LEVEL_CRITICAL = 6,
     } mc_log_level_t;
 
-    // Set the IO stream where logs go.
-    void mc_debug_init(const mc_io_t *io);
+    // Set the stream where logs go.
+    void mc_debug_init(const mc_stream_t *stream);
 
     // Change filter at runtime.
     void mc_debug_set_level(mc_log_level_t level);

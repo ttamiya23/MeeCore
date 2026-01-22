@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mc/io.h"
+#include "mc/stream.h"
 
 #define FAKE_RX_SIZE 1024
 #define FAKE_TX_SIZE 1024
@@ -17,14 +17,14 @@ typedef struct
     int output_index;
 
     uint8_t status; // For mocking status
-} fake_io_ctx_t;
+} fake_stream_ctx_t;
 
-// Driver to fake IO
-extern const mc_io_driver_t fake_io_driver;
+// Driver to fake stream
+extern const mc_stream_driver_t fake_stream_driver;
 
 // Push string to input data.
-void fake_io_push_string(fake_io_ctx_t *ctx, const char *str);
+void fake_stream_push_string(fake_stream_ctx_t *ctx, const char *str);
 
 // Push char array of set length to input data.
-void fake_io_push_char_array(fake_io_ctx_t *ctx, const char *str,
-                             uint16_t length);
+void fake_stream_push_char_array(fake_stream_ctx_t *ctx, const char *str,
+                                 uint16_t length);

@@ -152,9 +152,9 @@ static mc_status_t send_result(const mc_system_console_t *console,
     int32_t val = result.ok ? result.value : result.error;
     if (!result.ok)
     {
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, "E", 1));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "E", 1));
     }
-    MC_RETURN_IF_ERROR(mc_io_printf(console->io, "%d", val));
+    MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "%d", val));
     return MC_OK;
 }
 
@@ -163,22 +163,22 @@ static mc_status_t send_result(const mc_system_console_t *console,
 static mc_status_t send_response(const mc_system_console_t *console,
                                  const char *cmd_echo, mc_result_t result)
 {
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, STX, 1));
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, STX, 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
 
     // Echo the command (trimmed)
     uint8_t len = get_cmd_length(cmd_echo);
     if (len)
     {
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, cmd_echo, len));
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, cmd_echo, len));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
     }
 
     // Send result
     MC_RETURN_IF_ERROR(send_result(console, result));
 
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, ETX, 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, ETX, 1));
     return MC_OK;
 }
 
@@ -188,50 +188,50 @@ static mc_status_t send_system_dump(
     const mc_system_console_t *console, const char *cmd_echo,
     const mc_system_entry_t *systems, uint8_t sys_count)
 {
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, STX, 1));
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, STX, 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
 
     // Echo the command, if it exists (trimmed)
     uint8_t len = get_cmd_length(cmd_echo);
     if (len)
     {
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, cmd_echo, len));
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, cmd_echo, len));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
     }
 
     // Header Row: "sys\t0\t1\t2..."
-    MC_RETURN_IF_ERROR(mc_io_printf(console->io, "sys"));
+    MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "sys"));
     for (int i = 0; i < console->config->header_count; i++)
     {
-        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "\t%d", i));
+        MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "\t%d", i));
     }
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
 
     // Input/Output Row: "s.x\t100\t200..."
     for (uint8_t sys_i = 0; sys_i < sys_count; sys_i++)
     {
         const mc_system_entry_t sys = systems[sys_i];
-        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "s%d.x", sys.id));
+        MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "s%d.x", sys.id));
         for (int i = 0; i < console->config->header_count; i++)
         {
-            MC_RETURN_IF_ERROR(mc_io_write(console->io, "\t", 1));
+            MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\t", 1));
             mc_result_t res = mc_sys_read_input(sys.system, i);
             MC_RETURN_IF_ERROR(send_result(console, res));
         }
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
 
-        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "s%d.y", sys.id));
+        MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "s%d.y", sys.id));
         for (int i = 0; i < console->config->header_count; i++)
         {
-            MC_RETURN_IF_ERROR(mc_io_write(console->io, "\t", 1));
+            MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\t", 1));
             mc_result_t res = mc_sys_read_output(sys.system, i);
             MC_RETURN_IF_ERROR(send_result(console, res));
         }
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
     }
 
     // End Frame
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, ETX, 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, ETX, 1));
     return MC_OK;
 }
 
@@ -251,21 +251,21 @@ mc_status_t send_sys_help(const mc_system_console_t *console, const char *cmd_ec
     // - targetPwm [x1]
     // - pwm [y1]
     // <ETX>
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, STX, 1));
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, STX, 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
 
     // Echo the command, if it exists (trimmed)
     uint8_t len = get_cmd_length(cmd_echo);
     if (len)
     {
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, cmd_echo, len));
-        MC_RETURN_IF_ERROR(mc_io_write(console->io, "\n", 1));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, cmd_echo, len));
+        MC_RETURN_IF_ERROR(mc_stream_write(console->stream, "\n", 1));
     }
     if (sys.name)
     {
-        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "%s ", sys.name));
+        MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "%s ", sys.name));
     }
-    MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[s%d]\n", sys.id));
+    MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "[s%d]\n", sys.id));
 
     uint8_t count = 0;
     if (sys.system->driver->get_alias_count)
@@ -276,39 +276,39 @@ mc_status_t send_sys_help(const mc_system_console_t *console, const char *cmd_ec
     mc_sys_cmd_info_t cmd;
     for (uint8_t i = 0; i < count; i++)
     {
-        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "- "));
+        MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "- "));
         sys.system->driver->get_alias(sys.system->ctx, i, &cmd);
         // Print alias
         if (cmd.alias)
         {
-            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "%s ", cmd.alias));
+            MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "%s ", cmd.alias));
         }
 
         // Print command type and ID
         if (cmd.type == MC_CMD_TYPE_FUNC)
         {
-            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[f%d", cmd.id));
+            MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "[f%d", cmd.id));
         }
         else if (cmd.type == MC_CMD_TYPE_INPUT)
         {
-            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[x%d", cmd.id));
+            MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "[x%d", cmd.id));
         }
         else
         {
-            MC_RETURN_IF_ERROR(mc_io_printf(console->io, "[y%d", cmd.id));
+            MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "[y%d", cmd.id));
         }
 
         // Print preset value
         if (cmd.has_preset)
         {
-            MC_RETURN_IF_ERROR(mc_io_printf(console->io, " = %d",
-                                            cmd.preset_val));
+            MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, " = %d",
+                                                cmd.preset_val));
         }
-        MC_RETURN_IF_ERROR(mc_io_printf(console->io, "]\n"));
+        MC_RETURN_IF_ERROR(mc_stream_printf(console->stream, "]\n"));
     }
 
     // End Frame
-    MC_RETURN_IF_ERROR(mc_io_write(console->io, ETX, 1));
+    MC_RETURN_IF_ERROR(mc_stream_write(console->stream, ETX, 1));
     return MC_OK;
 }
 
@@ -325,7 +325,7 @@ mc_status_t process_command(const mc_system_console_t *console, const char *cmd)
     // --- CHECK 1: "clear" command ---
     if (strncmp(token, "clear", 5) == 0)
     {
-        return mc_io_printf(console->io, "\x1B[2J\x1B[H");
+        return mc_stream_printf(console->stream, "\x1B[2J\x1B[H");
     }
 
     // Special corner case: if ? comes right after before system token
@@ -477,11 +477,11 @@ mc_status_t process_command(const mc_system_console_t *console, const char *cmd)
     return send_response(console, cmd_start, res);
 }
 
-// --- IO Callback Wrapper ---
+// --- Stream Callback Wrapper ---
 static void console_rx_handler(void *ctx, void *data)
 {
     mc_system_console_t *console = (mc_system_console_t *)ctx;
-    mc_io_event_data_t *event_data = (mc_io_event_data_t *)data;
+    mc_stream_event_data_t *event_data = (mc_stream_event_data_t *)data;
 
     process_command(console, event_data->message);
 }
@@ -491,10 +491,10 @@ void mc_sys_console_init(const mc_system_console_t *console)
     MC_ASSERT(console != NULL);
     console->state->is_initialized = MC_INITIALIZED;
 
-    // Register IO Callback
+    // Register Stream Callback
     mc_callback_init(&console->state->rx_callback, console_rx_handler,
                      (void *)console);
-    mc_io_register_rx_callback(console->io, &console->state->rx_callback);
+    mc_stream_register_rx_callback(console->stream, &console->state->rx_callback);
 }
 
 /* Dump system info */

@@ -2,9 +2,9 @@
 
 extern "C"
 {
-#include "mc/io.h"
+#include "mc/stream.h"
 #include "mc/system/console.h"
-#include "fakes/fake_io.h"
+#include "fakes/fake_stream.h"
 #include "fakes/system/fake_system.h"
 #include "fakes/system/fake_composite.h"
 }
@@ -13,8 +13,9 @@ namespace
 {
 
     // Globals
-    fake_io_ctx_t io_ctx;
-    MC_DEFINE_IO(io, fake_io_driver, io_ctx, 256, 256, MC_IO_MODE_TEXT_LINE);
+    fake_stream_ctx_t stream_ctx;
+    MC_DEFINE_STREAM(stream, fake_stream_driver, stream_ctx, 256, 256,
+                     MC_STREAM_MODE_TEXT_LINE);
     fake_sys_ctx_t sys_ctx1;
     MC_DEFINE_SYSTEM(sys1, fake_sys_driver, sys_ctx1);
     fake_sys_ctx_t sys_ctx2;
@@ -28,7 +29,7 @@ namespace
         MC_SYS_ENTRY(3, sys3, NULL),
     };
 
-    MC_DEFINE_SYSTEM_CONSOLE(console, io, systems, 3, 8, 5);
+    MC_DEFINE_SYSTEM_CONSOLE(console, stream, systems, 3, 8, 5);
 
     class ConsoleTest : public MeeCoreTest
     {
@@ -40,16 +41,16 @@ namespace
             mc_sys_init(&sys1);
             mc_sys_init(&sys2);
             mc_sys_init(&sys3);
-            mc_io_init(&io);
+            mc_stream_init(&stream);
             mc_sys_console_init(&console);
         }
 
         // Helper for sending a command.
         void send_command(const char *cmd)
         {
-            fake_io_push_string(&io_ctx, cmd);
-            fake_io_push_string(&io_ctx, "\n");
-            mc_io_update(&io);
+            fake_stream_push_string(&stream_ctx, cmd);
+            fake_stream_push_string(&stream_ctx, "\n");
+            mc_stream_update(&stream);
         }
     };
 
@@ -67,7 +68,7 @@ namespace
             "s1.x0\n"
             "3\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, SendWriteCommandSucceeds)
@@ -79,7 +80,7 @@ namespace
             "s1.x0 = 32\n"
             "0\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
         EXPECT_EQ(32, sys_ctx1.x[0]);
     }
 
@@ -91,7 +92,7 @@ namespace
             "s1.f0\n"
             "0\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
         EXPECT_EQ(1, sys_ctx1.y[0]);
     }
 
@@ -104,7 +105,7 @@ namespace
             "s2.y0\n"
             "9\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, SingleSystemDumpSucceeds)
@@ -129,7 +130,7 @@ namespace
             "s2.x\t4\t13\tE2\tE2\tE2\n"
             "s2.y\t9\tE2\tE2\tE2\tE2\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, CommandsWithAliasSucceed)
@@ -140,13 +141,13 @@ namespace
             "fake2.incrementY\n"
             "0\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
         EXPECT_EQ(1, sys_ctx2.y[0]);
 
-        // Reset IO output buffer
-        io_ctx.output_index = 0;
-        // Ensure the buffer string is also terminated/cleared if fake_io implementation relies on null terminator
-        io_ctx.output_data[0] = '\0';
+        // Reset stream output buffer
+        stream_ctx.output_index = 0;
+        // Ensure the buffer string is also terminated/cleared if fake_stream implementation relies on null terminator
+        stream_ctx.output_data[0] = '\0';
 
         sys_ctx3.sys2.x0_name = "testX0";
         send_command("s3.testX0 = 4");
@@ -155,7 +156,7 @@ namespace
             "s3.testX0 = 4\n"
             "0\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
         EXPECT_EQ(4, sys_ctx3.sys2.x[0]);
     }
 
@@ -168,7 +169,7 @@ namespace
             "s1.reset\n"
             "0\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
         EXPECT_EQ(0, sys_ctx1.x[0]);
     }
 
@@ -180,7 +181,7 @@ namespace
             "s1,f1,5\n"
             "E5\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, ExtraDelimitersGetIgnored)
@@ -192,7 +193,7 @@ namespace
             "s1)===,,,x1 (  .\t,2)\t,..\n"
             "0\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
         EXPECT_EQ(2, sys_ctx1.x[1]);
     }
 
@@ -203,7 +204,7 @@ namespace
             "\x02\n"
             "E2\n" // Invalid args
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, InvalidSystemReturnsError)
@@ -214,7 +215,7 @@ namespace
             "s6.x0\n"
             "E2\n" // Invalid args
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, InvalidAliasReturnsError)
@@ -225,13 +226,13 @@ namespace
             "s1.myFunction\n"
             "E2\n" // Invalid args
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, ClearCommandClearsTerminal)
     {
         send_command("clear");
-        EXPECT_STREQ("\x1B[2J\x1B[H", io_ctx.output_data);
+        EXPECT_STREQ("\x1B[2J\x1B[H", stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, HelpCommandPrintsHelp)
@@ -246,7 +247,7 @@ namespace
             "- output [y0]\n"
             "- reset [x0 = 0]\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
     TEST_F(ConsoleTest, DumpSucceeds)
@@ -276,7 +277,7 @@ namespace
             "s3.x\t6\t7\t8\t9\tE2\n"
             "s3.y\t10\t11\tE2\tE2\tE2\n"
             "\x03",
-            io_ctx.output_data);
+            stream_ctx.output_data);
     }
 
 }

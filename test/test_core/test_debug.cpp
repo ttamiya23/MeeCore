@@ -5,16 +5,16 @@
 extern "C"
 {
 #include "mc/debug.h"
-#include "mc/io.h"
-#include "fakes/fake_io.h"
+#include "mc/stream.h"
+#include "fakes/fake_stream.h"
 }
 
 namespace
 {
 
     // Globals
-    fake_io_ctx_t ctx;
-    MC_DEFINE_IO(io, fake_io_driver, ctx, 1024, 1024, MC_IO_MODE_TEXT_LINE);
+    fake_stream_ctx_t ctx;
+    MC_DEFINE_STREAM(stream, fake_stream_driver, ctx, 1024, 1024, MC_STREAM_MODE_TEXT_LINE);
 
     class DebugTest : public MeeCoreTest
     {
@@ -24,8 +24,8 @@ namespace
             MeeCoreTest::SetUp();
 
             // Reset and Initialize
-            mc_io_init(&io);
-            mc_debug_init(&io);
+            mc_stream_init(&stream);
+            mc_debug_init(&stream);
             mc_debug_set_level(MC_LOG_LEVEL_DEBUG);
         }
     };
@@ -65,7 +65,7 @@ namespace
         EXPECT_GT(strlen(ctx.output_data), 0);
     }
 
-    TEST_F(DebugTest, LogDoesNothingIfIoNull)
+    TEST_F(DebugTest, LogDoesNothingIfStreamNull)
     {
         // Re-init with NULL
         mc_debug_init(NULL);

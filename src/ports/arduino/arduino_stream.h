@@ -9,7 +9,7 @@ extern "C"
 
 // Macro for defining analog context. Users should always use this.
 #define MC_DEFINE_DEFAULT_ARDUINO_STREAM(NAME) \
-    bool NAME##_is_connected()                 \
+    static bool NAME##_is_connected()          \
     {                                          \
         return (bool)Serial;                   \
     }                                          \

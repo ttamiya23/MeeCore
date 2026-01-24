@@ -45,6 +45,7 @@ bool arduino_stream_read(void *ctx, char *c)
 extern "C"
 {
     extern const mc_stream_driver_t mc_arduino_stream_driver = {
+        .init = NULL,
         .write_char = arduino_stream_write,
         .read_char = arduino_stream_read,
         .get_status = arduino_stream_get_status};

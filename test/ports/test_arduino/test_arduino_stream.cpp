@@ -6,7 +6,7 @@ using namespace fakeit;
 
 extern "C"
 {
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 #include "ports/arduino/arduino_stream.h"
 }
 

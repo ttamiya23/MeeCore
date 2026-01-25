@@ -5,8 +5,8 @@
 extern "C"
 {
 #include "mc/debug.h"
-#include "mc/stream.h"
-#include "fakes/fake_stream.h"
+#include "mc/communication/stream.h"
+#include "fakes/communication/fake_stream.h"
 }
 
 namespace

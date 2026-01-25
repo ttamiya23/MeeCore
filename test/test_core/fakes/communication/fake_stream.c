@@ -1,4 +1,4 @@
-#include "fakes/fake_stream.h"
+#include "fakes/communication/fake_stream.h"
 #include <string.h>
 
 // Driver: Init (Initializes ctx)

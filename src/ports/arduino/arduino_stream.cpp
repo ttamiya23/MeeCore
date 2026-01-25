@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "ports/arduino/arduino_stream.h"
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 
 uint8_t arduino_stream_get_status(void *ctx)
 {

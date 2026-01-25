@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 
 #define FAKE_RX_SIZE 1024
 #define FAKE_TX_SIZE 1024

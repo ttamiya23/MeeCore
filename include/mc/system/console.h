@@ -7,7 +7,7 @@ extern "C"
 
 #include "mc/status.h"
 #include "mc/system/core.h"
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 
 // Defaults
 #define SYS_CONSOLE_DEFAULT_HEADER_COUNT 5

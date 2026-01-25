@@ -5,7 +5,7 @@ extern "C"
 {
 #endif
 
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 
 // Macro for defining analog context. Users should always use this.
 #define MC_DEFINE_DEFAULT_ARDUINO_STREAM(NAME) \

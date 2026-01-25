@@ -4,9 +4,9 @@
 #include "mc_test.h"
 extern "C"
 {
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 #include "mc/event.h"
-#include "fakes/fake_stream.h"
+#include "fakes/communication/fake_stream.h"
 }
 
 namespace

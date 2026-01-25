@@ -2,9 +2,9 @@
 
 extern "C"
 {
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 #include "mc/system/console.h"
-#include "fakes/fake_stream.h"
+#include "fakes/communication/fake_stream.h"
 #include "fakes/system/fake_system.h"
 #include "fakes/system/fake_composite.h"
 }

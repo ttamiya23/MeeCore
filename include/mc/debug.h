@@ -6,7 +6,7 @@ extern "C"
 #endif
 
 #include "mc/status.h"
-#include "mc/stream.h"
+#include "mc/communication/stream.h"
 
 #ifndef MC_DEBUG_LOG_LEVEL
 #define MC_DEBUG_LOG_LEVEL 1

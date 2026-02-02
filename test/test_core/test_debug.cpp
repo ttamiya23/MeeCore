@@ -6,7 +6,9 @@ extern "C"
 {
 #include "mc/debug.h"
 #include "mc/communication/stream.h"
+#include "mc/time.h"
 #include "fakes/communication/fake_stream.h"
+#include "fakes/fake_time.h"
 }
 
 namespace
@@ -14,6 +16,7 @@ namespace
 
     // Globals
     fake_stream_ctx_t ctx;
+    fake_time_ctx_t time_ctx;
     MC_DEFINE_STREAM(stream, fake_stream_driver, ctx, 1024, 1024, MC_STREAM_MODE_TEXT_LINE);
 
     class DebugTest : public MeeCoreTest
@@ -27,6 +30,7 @@ namespace
             mc_stream_init(&stream);
             mc_debug_init(&stream);
             mc_debug_set_level(MC_LOG_LEVEL_DEBUG);
+            mc_time_init(&fake_time_driver, &time_ctx);
         }
     };
 
@@ -34,6 +38,9 @@ namespace
     {
         // Set Level to WARNING (Should ignore INFO/DEBUG)
         mc_debug_set_level(MC_LOG_LEVEL_WARNING);
+
+        // Set time to 1000 ms
+        fake_time_set_ms(&time_ctx, 1000);
 
         // Log an INFO message (Should be ignored)
         MC_LOG_INFORMATION("This should be invisible");
@@ -43,11 +50,8 @@ namespace
         MC_LOG_WARNING("This is a warning %d", 99);
 
         // Verify output contains specific parts
-        EXPECT_TRUE(strstr(ctx.output_data, "[WRN]") != nullptr);
-
-        // Note: Since this file is now test_debug.cpp, the log will contain .cpp
-        EXPECT_TRUE(strstr(ctx.output_data, "test_debug.cpp") != nullptr);
-
+        EXPECT_TRUE(strstr(ctx.output_data, "[WRN]       1000") != nullptr);
+        EXPECT_TRUE(strstr(ctx.output_data, "test_debug.cpp:") != nullptr);
         EXPECT_TRUE(strstr(ctx.output_data, "This is a warning 99") != nullptr);
     }
 

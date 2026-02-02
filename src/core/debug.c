@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include "mc/debug.h"
+#include "mc/time.h"
 #include "mc/utils.h"
 
 static const mc_stream_t *debug_stream = NULL;
@@ -52,9 +53,9 @@ mc_status_t _mc_log(mc_log_level_t log_level, const char *file, int line,
     va_list args;
     va_start(args, format);
 
-    // Eg: "[DBG] debug.c:52 Create example message\r\n"
-    ret = mc_stream_printf(debug_stream, "%s %s:%d: ",
-                           get_level_str(log_level), file, line);
+    // Eg: "[DBG]   94967295 debug.c:52 Create example message\r\n"
+    ret = mc_stream_printf(debug_stream, "%s %10i %s:%d: ",
+                           get_level_str(log_level), mc_time_get_ms(), file, line);
     mc_stream_vprintf(debug_stream, format, args);
     mc_stream_printf(debug_stream, "\r\n");
 

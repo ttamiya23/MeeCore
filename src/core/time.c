@@ -26,12 +26,15 @@ void mc_time_init(const mc_time_driver_t *driver, void *ctx)
 
 uint32_t mc_time_get_ms(void)
 {
-    MC_ASSERT(sys_time_initialized == MC_INITIALIZED);
-    return sys_time_driver->get_ms(sys_time_ctx);
+    return sys_time_initialized == MC_INITIALIZED
+               ? sys_time_driver->get_ms(sys_time_ctx)
+               : 0;
 }
 
 void mc_time_delay(uint32_t ms)
 {
-    MC_ASSERT(sys_time_initialized == MC_INITIALIZED);
-    sys_time_driver->delay(sys_time_ctx, ms);
+    if (sys_time_initialized == MC_INITIALIZED)
+    {
+        sys_time_driver->delay(sys_time_ctx, ms);
+    }
 }
